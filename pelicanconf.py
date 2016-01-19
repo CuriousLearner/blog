@@ -39,3 +39,4 @@ DEFAULT_PAGINATION = 10
 #RELATIVE_URLS = True
 
 THEME = 'theme/pelican-clean-blog'
+SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
