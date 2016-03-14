@@ -46,3 +46,5 @@ SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
 MENUITEMS = (
     ('FOSS','/category/foss.html'),
 )
+
+RELATIVE_URLS = True
