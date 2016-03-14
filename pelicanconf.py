@@ -33,6 +33,8 @@ SOCIAL = (
     ('envelope','mailto:sanyam@sanyamkhurana.com')
 )
 
+STATIC_PATHS = ['images']
+
 DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
@@ -40,3 +42,7 @@ DEFAULT_PAGINATION = 10
 
 THEME = 'theme/pelican-clean-blog'
 SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
+
+MENUITEMS = (
+    ('FOSS','/category/foss.html'),
+)
