@@ -46,7 +46,7 @@ THEME = 'theme/pelican-clean-blog'
 SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
 
 MENUITEMS = (
-    ('FOSS','/category/foss.html'),
+    ('FOSS','blog/category/foss.html'),
 )
 
 RELATIVE_URLS = True
