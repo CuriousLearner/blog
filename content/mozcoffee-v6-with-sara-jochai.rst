@@ -62,7 +62,7 @@ After that Sara and Jochai educated attendees about “Internet Privacy” , “
     :align: center
     :alt: Sara and Jochai
 
-After this, we had to separate help desks set-up for Technical and Non-Technical respectively. And here we released another project developed in just those 5 days: Moz-Connect (This would be expanded more) We collected details of everyone through Moz-Connect, later we'll have an automated system set up to invite contributors (if they willingly selected to volunteer for Mozilla in the Moz-Connect).
+After this, we had two separate help desks set-up for Technical and Non-Technical respectively. And here we released another project developed in just those 5 days: Moz-Connect (This would be expanded more). We collected details of everyone through `Moz-Connect <https://github.com/mozpacers/moz-connect>`_, later we'll have an automated system set up to invite contributors (if they willingly selected to volunteer for Mozilla in the Moz-Connect) via mail.
 
 Me, Nikhil and Manraj were there on Tech Desk and Kanika, Pushpita were there on the non-tech desks. Met a lot of people who inquired about how to contribute, some people specifically were interested in the tech we're using and asking why we chose them. We tried to answer their queries in the best possible way we could.
 

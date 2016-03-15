@@ -45,8 +45,8 @@ DEFAULT_PAGINATION = 10
 THEME = 'theme/pelican-clean-blog'
 SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
 
-MENUITEMS = (
-    ('FOSS','blog/category/foss.html'),
-)
+# MENUITEMS = (
+#     ('FOSS','blog/category/foss.html'),
+# )
 
 RELATIVE_URLS = True
