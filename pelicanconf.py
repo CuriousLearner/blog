@@ -33,8 +33,8 @@ SOCIAL = (
     ('envelope','mailto:sanyam@sanyamkhurana.com')
 )
 
-STATIC_PATHS = ['images', 'extra/CNAME']
-EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
+# STATIC_PATHS = ['images', 'extra/CNAME']
+# EXTRA_PATH_METADATA = {'extra/CNAME': {'path': 'CNAME'},}
 
 
 DEFAULT_PAGINATION = 10
@@ -42,7 +42,7 @@ DEFAULT_PAGINATION = 10
 # Uncomment following line if you want document-relative URLs when developing
 #RELATIVE_URLS = True
 
-THEME = 'theme/pelican-clean-blog'
+THEME = 'theme/clean-blog'
 SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
 
 # MENUITEMS = (
