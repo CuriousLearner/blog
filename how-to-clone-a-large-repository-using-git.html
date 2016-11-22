@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Sanyam Khurana">
+
+
+        <title>How to clone a large repository using git</title>
+
+        <!-- Bootstrap Core CSS -->
+        <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="./theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="./theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="So, I was trying to clone the official Mozilla gecko repo and it had around 455182 commits. As usual I executed on my terminal: git ...">
+
+        <meta name="author" content="Sanyam Khurana">
+
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Sanyam Khurana">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="Sanyam Khurana" >
+	<meta property="og:url" content="./how-to-clone-a-large-repository-using-git.html">
+	<meta property="og:title" content="How to clone a large repository using git">
+	<meta property="article:published_time" content="2015-12-28 14:14:00+05:30">
+            <meta property="og:description" content="So, I was trying to clone the official Mozilla gecko repo and it had around 455182 commits. As usual I executed on my terminal: git ...">
+
+            <meta property="og:image" content="./theme/images/post-bg.jpg">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="./">Sanyam Khurana</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="./pages/about.html">About</a></li>
+                            <li><a href="./pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('./theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>How to clone a large repository using git</h1>
+                        <span class="meta">Posted by
+                                <a href="./author/sanyam-khurana.html">Sanyam Khurana</a>
+                             on Mon 28 December 2015
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>So, I was trying to clone the official Mozilla gecko repo and it had
+around 455182 commits.</p>
+<p>As usual I executed on my terminal:</p>
+<blockquote>
+git clone <a class="reference external" href="https://github.com/mozilla/gecko-dev">https://github.com/mozilla/gecko-dev</a></blockquote>
+<p>Then it took whole night to get cloned. I was awake the whole night. At
+5:20 AM, it was around 90% received and then boom, it just crashed.</p>
+<p>All the data downloaded of more than 1 GB was wasted.</p>
+<p>Well, whatever happens, always happens for good. This provided me an
+awesome opportunity to learn how to easily clone large repos.</p>
+<p>So, there are two ways around this.</p>
+<div class="section" id="do-a-shallow-clone">
+<h2><strong>Do a shallow clone!</strong></h2>
+<p><strong>Wait, what? What is a shallow clone?</strong></p>
+<p>Well, I mean clone the repo but not with all commits. Let's do it for
+just latest commit ie only one commit. Later once all the objects are
+extracted, we can deepen the clone.</p>
+<p><strong>So, how do you do that in git?</strong></p>
+<p>With the depth parameter as:</p>
+<blockquote>
+git clone --depth=1 <a class="reference external" href="https://github.com/mozilla/gecko-dev">https://github.com/mozilla/gecko-dev</a></blockquote>
+<p>Here I've given depth of 1 commit, and suddenly the 1.5 GB repo became
+just around 258 MB to be downloaded.</p>
+<p>If you still are stuck, and even this is difficult to clone because of
+unstable connection then prefer downloading a bundle, or explore <a class="reference external" href="http://stackoverflow.com/questions/3954852/how-to-complete-a-git-clone-for-a-big-project-on-an-unstable-connection">more
+option via this SO
+Question</a></p>
+<p><strong>Once you have shallow clone, you can deepen it.</strong></p>
+<blockquote>
+git fetch --depth=100</blockquote>
+<p>to fetch 100 commits</p>
+<p>or if you want to get all commits then simply use:</p>
+<blockquote>
+git fetch --unshallow</blockquote>
+<p>and that would fetch all the commits and make your repo similar to what
+you do in the initial place like using git clone simply.</p>
+<p>I hope this would help someone :)</p>
+</div>
+
+    </article>
+
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/ErSanyamKhurana">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://facebook.com/sanyam.khurana96">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:sanyam@sanyamkhurana.com">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="./theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="./theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="./theme/js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

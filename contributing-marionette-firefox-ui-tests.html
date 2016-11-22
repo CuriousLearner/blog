@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Sanyam Khurana">
+
+
+        <title>Contributing more to Marionette and Firefox UI Tests</title>
+
+        <!-- Bootstrap Core CSS -->
+        <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="./theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="./theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="If you don't know about Marionette; you can read my previous blog post here. I've been recently given some follow-up bugs by my mentor. ...">
+
+        <meta name="author" content="Sanyam Khurana">
+
+        <meta name="tags" content="mozilla">
+        <meta name="tags" content="marionette">
+        <meta name="tags" content="python">
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Sanyam Khurana">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="Sanyam Khurana" >
+	<meta property="og:url" content="./contributing-marionette-firefox-ui-tests.html">
+	<meta property="og:title" content="Contributing more to Marionette and Firefox UI Tests">
+	<meta property="article:published_time" content="2016-10-06 00:53:00+05:30">
+            <meta property="og:description" content="If you don't know about Marionette; you can read my previous blog post here. I've been recently given some follow-up bugs by my mentor. ...">
+
+            <meta property="og:image" content="./theme/images/post-bg.jpg">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="./">Sanyam Khurana</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="./pages/about.html">About</a></li>
+                            <li><a href="./pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('./theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Contributing more to Marionette and Firefox UI Tests</h1>
+                        <span class="meta">Posted by
+                                <a href="./author/sanyam-khurana.html">Sanyam Khurana</a>
+                             on Thu 06 October 2016
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p>If you don't know about Marionette; you can read my <a class="reference external" href="/getting-started-marionette.html">previous blog post here</a>.</p>
+<p>I've been recently given some follow-up bugs by my mentor. I've just finished up fixing this bug:
+<a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1298800">Add support for callbacks to restart() and quit() methods of Marionette</a>. Now I've picked up a follow up bug to <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1298803">Add a test to quit firefox</a>.</p>
+<p>While trying to fix this bug, I reported two bugs in the Marionette component (<a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1309556">Bug 1309556</a>, <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1309141">Bug 1309141</a>) which blocks my current bug. So, I'll be first fixing up my reported bugs and then come back to this follow up bug which is assigned to me.</p>
+<p>Till now, the journey in contributing to Marionette has been really awesome and I learned quite a lot of things. I got a chance to read a lot of code and I'm really impressed by the writing styles of the developers. The code base is very neat and definitely good for people who want to see some real test cases in action (something which was not being explained in those <em>Testing 101 talks</em>) and also improve upon their Python skills.</p>
+<p>I would like to thank Henrik [:whimboo] who is my mentor and guided me so patiently &amp; helped in resolving all my doubts. I'm also reading more about <cite>mach</cite> command line tool and <cite>marionette</cite> in general.</p>
+<p>I recently also came accross <tt class="docutils literal">Firefox Puppeteer</tt> which is a library built upon the existing <tt class="docutils literal">Marionette Python Client</tt>. More appropriately; you can write <tt class="docutils literal">Firefox UI tests</tt> for the <tt class="docutils literal">chrome components</tt> using <tt class="docutils literal">Puppetteer</tt>.</p>
+<p>I'm still to read more about this and I hope at that point of time I'll be able to join all the <em>learning dots</em> and explain it all in my next blog post.</p>
+
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="./tag/mozilla.html">mozilla</a>, <a href="./tag/marionette.html">marionette</a>, <a href="./tag/python.html">python</a>, </p>
+        </div>
+
+<hr>
+<div class="sharing">
+</div>
+    <hr>
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/ErSanyamKhurana">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://facebook.com/sanyam.khurana96">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:sanyam@sanyamkhurana.com">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>.
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="./theme/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="./theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="./theme/js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
