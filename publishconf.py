@@ -22,7 +22,7 @@ DELETE_OUTPUT_DIRECTORY = True
 # Following items are often useful when publishing
 
 DISQUS_SITENAME = "curiouslearner"
-#GOOGLE_ANALYTICS = ""
+GOOGLE_ANALYTICS = "UA-61049901-1"
 
 PLUGIN_PATHS = ['plugins']
 PLUGINS = ['share_post']
