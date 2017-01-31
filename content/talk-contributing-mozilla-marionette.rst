@@ -4,7 +4,7 @@ Talk on contributing to Mozilla Marionette
 :author: Sanyam Khurana
 :category: FOSS
 :slug: talk-contributing-mozilla-marionette
-:tags: mozilla, marionette, python
+:tags: mozilla, marionette, python, remo
 
 I've always felt that newbies find it very difficult to get started into any Open Source project. If we talk specifically about code-contribution; which is an essential part of the entire ecosystem, then the no. of people are not enough. I've always found myself surrounded by a bunch of folks who wanted to contribute in Open Source software; and thus asking me questions about how to find bugs, where to get started, etc. One of the most difficult thing they told me is that they don't understand project well enough and thus are not able to recognize on how to get ahead with a particular bug.
 
