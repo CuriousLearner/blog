@@ -1,5 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Mon, 05 Dec 2016 01:53:00 +0530</lastBuildDate><item><title>Talk on contributing to Mozilla Marionette</title><link>http://SanyamKhurana.com/blog/talk-contributing-mozilla-marionette.html</link><description>&lt;p&gt;I've always felt that newbies find it very difficult to get started into any Open Source project. If we talk specifically about code-contribution; which is an essential part of the entire ecosystem, then the no. of people are not enough. I've always found myself surrounded by a bunch of folks who wanted to contribute in Open Source software; and thus asking me questions about how to find bugs, where to get started, etc. One of the most difficult thing they told me is that they don't understand project well enough and thus are not able to recognize on how to get ahead with a particular bug.&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 29 Jan 2017 12:08:00 +0530</lastBuildDate><item><title>NIEC Activate Mozilla with WebVR</title><link>http://SanyamKhurana.com/blog/niec-mozilla-activate-webvr.html</link><description>&lt;p&gt;On Saturday, January 28, 2017, we had an event planned at Northern India Engineering College on &lt;tt class="docutils literal"&gt;Activate Mozilla Campaign&lt;/tt&gt;. Our aim was to cover &lt;cite&gt;WebVR&lt;/cite&gt; track under &lt;tt class="docutils literal"&gt;Build the Web&lt;/tt&gt; activity.&lt;/p&gt;
+&lt;p&gt;The event was scheduled from 12:00 PM IST to 4:00 PM IST.&lt;/p&gt;
+&lt;p&gt;I reached the venue at 10:40 AM and helped a bit with arrangements. Saturday was a day off for all college students, so honestly I didn't expect much audience.&lt;/p&gt;
+&lt;p&gt;But, I was wrong. Students are more willing to learn and soon there were lot of students. In starting there were less people, but then we got a total audience of around 70+ which is huge considering that it was a holiday for them and they just came here to learn about FOSS.&lt;/p&gt;
+&lt;p&gt;Unfortunately, out of the core-organizers, only Shivam was available. But we got support from other student volunteers to do various arrangements and co-ordinating all the sessions smoothly. I would take this opportunity to thank each one of them.&lt;/p&gt;
+&lt;p&gt;Since, there were no other speakers, I had to take all the sessions. It began with an interactive session on what students understand by the term FOSS (Free &amp;amp; Open Source Software). I told about how Free Software and Open Source Software are same yet different from each other.&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_1.jpg" /&gt;
+&lt;p&gt;After this we discussed about Mozilla and the Open Web. Since it was &lt;tt class="docutils literal"&gt;Data Privacy Day&lt;/tt&gt;, we also discussed about how important is privacy in the online world, yet most of us don't have proper information on it. We also discussed about &lt;cite&gt;Free Basics&lt;/cite&gt; and how various organizations keep track of our online identities; and how Mozilla as an organization is doing in protecting the Free Web.&lt;/p&gt;
+&lt;p&gt;Next session was on &lt;cite&gt;Introduction to Git &amp;amp; Github&lt;/cite&gt;. Although focus was on Activate Mozilla campaign, but I really wanted to teach about Version control to people considering that most people are Engineering students.&lt;/p&gt;
+&lt;img alt="Sanyam talking about Version Control using Git" class="align-center" src="images/niec-moz-activate_2.jpg" /&gt;
+&lt;img alt="Sanyam teaching about branching in version control systems" class="align-center" src="images/niec-moz-activate_3.jpg" /&gt;
+&lt;p&gt;After this we had a small break to let people grab the knowledge they just had. I was surprised by the enthusiasm of these students. In the break time too, many of them surrounded me with various questions like how to contribute to FOSS, how to start et. all. So, yes, it wasn't a break for me ;)&lt;/p&gt;
+&lt;p&gt;After this session, we jumped on to Activate Mozilla Campaign. We told about various tracks under Activate Mozilla Campaign. The session was kick started with an introduction to Virtual Reality. We discussed about Visual and Input Immersion and how it is changing the Web as we use it today.&lt;/p&gt;
+&lt;p&gt;After this, we jumped on to learning A-Frame and making Virtual Reality scenes.&lt;/p&gt;
+&lt;img alt="Sanyam's talk on WebVR" class="align-center" src="images/niec-moz-activate_4.jpg" /&gt;
+&lt;img alt="Sanyam's talk on WebVR and A-Frame JS" class="align-center" src="images/niec-moz-activate_5.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_6.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_7.jpg" /&gt;
+&lt;p&gt;Then we gave time to audience to try using A Frame to develop something. I will collect all those projects and post them here soon :)&lt;/p&gt;
+&lt;p&gt;In the end we distributed swags to students.&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla Swags" class="align-center" src="images/niec-moz-activate_8.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_9.jpg" /&gt;
+&lt;p&gt;After the event, we took feedback from people. Some of them are here:&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-1.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-2.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-3.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-4.jpg" /&gt;
+&lt;p&gt;Out of these, I'm astonished to see, that 100% people want to learn more about it. One student wrote that he would really like if more simpler terms would be used. Surely, I would keep this in mind, and if someone told me this thing during the session, I would've helped them there itself. But I'd surely take care from next session.&lt;/p&gt;
+&lt;p&gt;And there is some MozLove on twitter as well :)&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback Twitter" class="align-center" src="images/niec-moz-activate-twitter-1.png" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback Twitter" class="align-center" src="images/niec-moz-activate-twitter-2.png" /&gt;
+&lt;p&gt;Now, I'm flooded with a lot of mails from students who're willing to contribute to FOSS and requesting for guidance. I have started replying to some, and will be replying to all of them soon.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 29 Jan 2017 12:08:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-01-29:blog/niec-mozilla-activate-webvr.html</guid><category>mozilla</category><category>remo</category><category>foss</category></item><item><title>Representing Mozilla in FOSS UnConference</title><link>http://SanyamKhurana.com/blog/mozilla-foss-unconference.html</link><description>&lt;p&gt;On December 17, 2016; we had FOSS un-conference where all Open Source groups gathered to discuss about the FOSS culture. We had people from PyDelhi, PyData Delhi, Mozilla Delhi (MozPacers), LinuxChix India, Sympy, etc.&lt;/p&gt;
+&lt;p&gt;We had three talks scheduled:&lt;/p&gt;
+&lt;p&gt;Netfilters by Shyam Saini, Networking by Manpreet [:msn] &amp;amp; Deep learning by Shagun&lt;/p&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_1.jpg" /&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_2.jpg" /&gt;
+&lt;p&gt;After the talks, we had a panel discussion where there was representative from each community discussing about how each community works; what are the pros and cons in different Open source communities, how can we improve the participation to FOSS.&lt;/p&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_3.jpg" /&gt;
+&lt;p&gt;We also discussed about women participants in different open source communities &amp;amp; also about increasing their participation in every community.&lt;/p&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_4.jpg" /&gt;
+&lt;p&gt;I'm also actively helping in reviving LinuxChix India which focuses on empowering women tech participation in Open source world. Hope to see some good participation there as well.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 09 Jan 2017 11:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-01-09:blog/mozilla-foss-unconference.html</guid><category>mozilla</category><category>remo</category><category>foss</category></item><item><title>How to test your Ansible Deployment with Vagrant</title><link>http://SanyamKhurana.com/blog/ansible-deployment-vagrant.html</link><description>&lt;p&gt;When you start writing Ansible for automating your deployment, one common problem is about testing if it does work as you intend to do it. Some people prefer to do it directly on a server. But then it has all sorts of problems associated (for example when the no. of servers to be provisioned/deployed grows) and I clearly don't like the idea to test Ansible on servers directly. So, I chose the option to use virtual machines using Vagrant.&lt;/p&gt;
+&lt;p&gt;With Vagrant you could test complex setups like (say) having 4 machines behind a load balancer (just to start with). I've tried to both provision as well as deployment using Ansible + Vagrant. In this post, I'll be quickly covering about testing deployment using Ansible + Vagrant.&lt;/p&gt;
+&lt;p&gt;In your directory you run Vagrant init; that would provide you a Vagrantfile to start up your virtual machine. Here is a basic configuration that would enable you to boot up an ubuntu machine with a static ip which you could use later to put in your ansible host file.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+Vagrant.configure&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt;config&lt;span class="p"&gt;|&lt;/span&gt;
+  config.vm.box &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;, ip: &lt;span class="s2"&gt;&amp;quot;10.0.0.10&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;, guest: 22, host: 22
+end
+&lt;/pre&gt;
+&lt;p&gt;Now you can boot up your virtual machine using &lt;tt class="docutils literal"&gt;`vagrant up`&lt;/tt&gt; and try to login using &lt;tt class="docutils literal"&gt;`vagrant ssh`&lt;/tt&gt;. After ssh-ing into your virtual server; you can do &lt;cite&gt;ifconfig&lt;/cite&gt; to verify that the IP of the server is &lt;cite&gt;10.0.0.10&lt;/cite&gt;.&lt;/p&gt;
+&lt;p&gt;In your inventory file you can now mention the IP of the host to &lt;tt class="docutils literal"&gt;`10.0.0.10`&lt;/tt&gt;, exactly what we mentioned in the Vagrant file.&lt;/p&gt;
+&lt;p&gt;Your ansible.cfg file can be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;defaults&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;inventory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ./virtualhosts
+&lt;span class="nv"&gt;private_key_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; /path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+&lt;span class="nv"&gt;remote_user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; vagrant
+&lt;span class="nv"&gt;host_key_checking&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; False
+&lt;/pre&gt;
+&lt;p&gt;and we'll refer the hosts as virtualhosts, so your &lt;tt class="docutils literal"&gt;virtualhosts&lt;/tt&gt; inventory file would be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+project_web &lt;span class="nv"&gt;ansible_ssh_host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;10.0.0.10 &lt;span class="nv"&gt;ansible_ssh_port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt; &lt;span class="nv"&gt;ansible_ssh_user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;vagrant &lt;span class="nv"&gt;ansible_ssh_private_key_file&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+
+&lt;span class="o"&gt;[&lt;/span&gt;project&lt;span class="o"&gt;]&lt;/span&gt;
+project_web
+
+&lt;span class="o"&gt;[&lt;/span&gt;project:vars&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;repo_remote&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;origin
+&lt;span class="nv"&gt;repo_branch&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;master
+&lt;span class="nv"&gt;DEPLOYMENT_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DEV
+&lt;/pre&gt;
+&lt;p&gt;Replace the &lt;tt class="docutils literal"&gt;ansible_ssh_private_key_file&lt;/tt&gt; with a valid path from your &lt;tt class="docutils literal"&gt;.vagrant&lt;/tt&gt; directory.&lt;/p&gt;
+&lt;p&gt;Now try running your Ansible with&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+ansible-playbook -i virtualhosts playbook.yml
+&lt;/pre&gt;
+&lt;p&gt;And it's done, with your &lt;tt class="docutils literal"&gt;ansible.cfg&lt;/tt&gt;, the private ssh key would be correctly chosen for authentication and the &lt;tt class="docutils literal"&gt;playbook&lt;/tt&gt; would run by user &lt;tt class="docutils literal"&gt;vagrant&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;One can model more complex setups with lot of servers and load balancer to mimic actual deployment on servers.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 28 Dec 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-12-28:blog/ansible-deployment-vagrant.html</guid></item><item><title>Talk on contributing to Mozilla Marionette</title><link>http://SanyamKhurana.com/blog/talk-contributing-mozilla-marionette.html</link><description>&lt;p&gt;I've always felt that newbies find it very difficult to get started into any Open Source project. If we talk specifically about code-contribution; which is an essential part of the entire ecosystem, then the no. of people are not enough. I've always found myself surrounded by a bunch of folks who wanted to contribute in Open Source software; and thus asking me questions about how to find bugs, where to get started, etc. One of the most difficult thing they told me is that they don't understand project well enough and thus are not able to recognize on how to get ahead with a particular bug.&lt;/p&gt;
 &lt;p&gt;I am currently contributing to Mozilla Marionette which is an automation driver for Mozilla's Gecko engine. You can read about my experience on that in blog post &lt;a class="reference external" href="/getting-started-marionette.html"&gt;Getting started with Marionette&lt;/a&gt; &amp;amp; &lt;a class="reference external" href="/contributing-marionette-firefox-ui-tests.html"&gt;Contributing more to Marionette and Firefox UI Tests&lt;/a&gt;. I recently decided to give a talk explaining people about Marionette.&lt;/p&gt;
 &lt;p&gt;I delivered a talk at PyDelhi Meetup (one of the Open Source group I'm actively volunteering for :) ). The talk was scheduled for November 27, 2016. My talk was from 3:30 PM - 4:30 PM IST. In the end there was  a QA session where some people came forward to ask questions.&lt;/p&gt;
 &lt;p&gt;Here are some photos of the event:&lt;/p&gt;

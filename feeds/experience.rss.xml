@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/experience.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 15 Mar 2016 01:46:00 +0530</lastBuildDate><item><title>Moved to a static blog</title><link>http://SanyamKhurana.com/blog/moving-to-static-blog.html</link><description>&lt;p&gt;Starting from today, my blog is now entirely shifted from &lt;a class="reference external" href="http://ersanyamkhurana.wordpress.com"&gt;ersanyamkhurana.wordpress.com&lt;/a&gt; to &lt;a class="reference external" href="http://www.sanyamkhurana.com/blog"&gt;sanyamkhurana.com/blog&lt;/a&gt;&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/experience.rss.xml" rel="self"></atom:link><lastBuildDate>Wed, 28 Dec 2016 00:53:00 +0530</lastBuildDate><item><title>How to test your Ansible Deployment with Vagrant</title><link>http://SanyamKhurana.com/blog/ansible-deployment-vagrant.html</link><description>&lt;p&gt;When you start writing Ansible for automating your deployment, one common problem is about testing if it does work as you intend to do it. Some people prefer to do it directly on a server. But then it has all sorts of problems associated (for example when the no. of servers to be provisioned/deployed grows) and I clearly don't like the idea to test Ansible on servers directly. So, I chose the option to use virtual machines using Vagrant.&lt;/p&gt;
+&lt;p&gt;With Vagrant you could test complex setups like (say) having 4 machines behind a load balancer (just to start with). I've tried to both provision as well as deployment using Ansible + Vagrant. In this post, I'll be quickly covering about testing deployment using Ansible + Vagrant.&lt;/p&gt;
+&lt;p&gt;In your directory you run Vagrant init; that would provide you a Vagrantfile to start up your virtual machine. Here is a basic configuration that would enable you to boot up an ubuntu machine with a static ip which you could use later to put in your ansible host file.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+Vagrant.configure&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt;config&lt;span class="p"&gt;|&lt;/span&gt;
+  config.vm.box &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;, ip: &lt;span class="s2"&gt;&amp;quot;10.0.0.10&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;, guest: 22, host: 22
+end
+&lt;/pre&gt;
+&lt;p&gt;Now you can boot up your virtual machine using &lt;tt class="docutils literal"&gt;`vagrant up`&lt;/tt&gt; and try to login using &lt;tt class="docutils literal"&gt;`vagrant ssh`&lt;/tt&gt;. After ssh-ing into your virtual server; you can do &lt;cite&gt;ifconfig&lt;/cite&gt; to verify that the IP of the server is &lt;cite&gt;10.0.0.10&lt;/cite&gt;.&lt;/p&gt;
+&lt;p&gt;In your inventory file you can now mention the IP of the host to &lt;tt class="docutils literal"&gt;`10.0.0.10`&lt;/tt&gt;, exactly what we mentioned in the Vagrant file.&lt;/p&gt;
+&lt;p&gt;Your ansible.cfg file can be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;defaults&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;inventory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ./virtualhosts
+&lt;span class="nv"&gt;private_key_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; /path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+&lt;span class="nv"&gt;remote_user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; vagrant
+&lt;span class="nv"&gt;host_key_checking&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; False
+&lt;/pre&gt;
+&lt;p&gt;and we'll refer the hosts as virtualhosts, so your &lt;tt class="docutils literal"&gt;virtualhosts&lt;/tt&gt; inventory file would be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+project_web &lt;span class="nv"&gt;ansible_ssh_host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;10.0.0.10 &lt;span class="nv"&gt;ansible_ssh_port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt; &lt;span class="nv"&gt;ansible_ssh_user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;vagrant &lt;span class="nv"&gt;ansible_ssh_private_key_file&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+
+&lt;span class="o"&gt;[&lt;/span&gt;project&lt;span class="o"&gt;]&lt;/span&gt;
+project_web
+
+&lt;span class="o"&gt;[&lt;/span&gt;project:vars&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;repo_remote&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;origin
+&lt;span class="nv"&gt;repo_branch&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;master
+&lt;span class="nv"&gt;DEPLOYMENT_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DEV
+&lt;/pre&gt;
+&lt;p&gt;Replace the &lt;tt class="docutils literal"&gt;ansible_ssh_private_key_file&lt;/tt&gt; with a valid path from your &lt;tt class="docutils literal"&gt;.vagrant&lt;/tt&gt; directory.&lt;/p&gt;
+&lt;p&gt;Now try running your Ansible with&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+ansible-playbook -i virtualhosts playbook.yml
+&lt;/pre&gt;
+&lt;p&gt;And it's done, with your &lt;tt class="docutils literal"&gt;ansible.cfg&lt;/tt&gt;, the private ssh key would be correctly chosen for authentication and the &lt;tt class="docutils literal"&gt;playbook&lt;/tt&gt; would run by user &lt;tt class="docutils literal"&gt;vagrant&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;One can model more complex setups with lot of servers and load balancer to mimic actual deployment on servers.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 28 Dec 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-12-28:blog/ansible-deployment-vagrant.html</guid></item><item><title>Moved to a static blog</title><link>http://SanyamKhurana.com/blog/moving-to-static-blog.html</link><description>&lt;p&gt;Starting from today, my blog is now entirely shifted from &lt;a class="reference external" href="http://ersanyamkhurana.wordpress.com"&gt;ersanyamkhurana.wordpress.com&lt;/a&gt; to &lt;a class="reference external" href="http://www.sanyamkhurana.com/blog"&gt;sanyamkhurana.com/blog&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;I already liked the idea of static blog and setting up blog for &lt;a class="reference external" href="http://pydelhi.org/blog"&gt;PyDelhi&lt;/a&gt; and &lt;a class="reference external" href="http://mozpacers.org/blog"&gt;Mozilla Delhi&lt;/a&gt; made me realized that I should too shift on using a static blog. It's so much fun to do this, just simple text editing in rST or MD and it's done.&lt;/p&gt;
 &lt;p&gt;The journey seems promising and interesting. This blog is now on Pelican which runs on Python :)&lt;/p&gt;
 </description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 15 Mar 2016 01:46:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-03-15:blog/moving-to-static-blog.html</guid></item><item><title>Bootstrap Modal Scroll Bug on Chrome [Easy-Fix]</title><link>http://SanyamKhurana.com/blog/bootstrap-modal-scroll-bug-on-chrome-easy-fix.html</link><description>&lt;p&gt;As usual, I was contributing more to the PyDelhi Conference project and
