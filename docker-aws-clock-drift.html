@@ -9,7 +9,7 @@
         <meta name="author" content="Sanyam Khurana">
 
 
-        <title>Patched first bug for mozilla-central</title>
+        <title>Dockerizing application that use AWS: Lessons learnt</title>
 
         <!-- Bootstrap Core CSS -->
         <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +35,7 @@
 
 
 
-        <meta name="description" content="Well, everything seems difficult until you start! How will I make a patch? Will I ever able to understand that code? Will I really able ...">
+        <meta name="description" content="I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses Boto3 to connect to ...">
 
         <meta name="author" content="Sanyam Khurana">
 
@@ -45,10 +45,10 @@
 
 	<meta property="og:type" content="article">
             <meta property="article:author" content="Sanyam Khurana" >
-	<meta property="og:url" content="./patched-first-bug-for-mozilla-central.html">
-	<meta property="og:title" content="Patched first bug for mozilla-central">
-	<meta property="article:published_time" content="2016-02-05 13:41:00+05:30">
-            <meta property="og:description" content="Well, everything seems difficult until you start! How will I make a patch? Will I ever able to understand that code? Will I really able ...">
+	<meta property="og:url" content="./docker-aws-clock-drift.html">
+	<meta property="og:title" content="Dockerizing application that use AWS: Lessons learnt">
+	<meta property="article:published_time" content="2017-04-04 12:43:00+05:30">
+            <meta property="og:description" content="I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses Boto3 to connect to ...">
 
             <meta property="og:image" content="./theme/images/post-bg.jpg">
 </head>
@@ -88,10 +88,10 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
-                        <h1>Patched first bug for mozilla-central</h1>
+                        <h1>Dockerizing application that use AWS: Lessons learnt</h1>
                         <span class="meta">Posted by
                                 <a href="./author/sanyam-khurana.html">Sanyam Khurana</a>
-                             on Fri 05 February 2016
+                             on Tue 04 April 2017
                         </span>
                         
                     </div>
@@ -106,28 +106,24 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p>Well, everything seems difficult until you start!</p>
-<p>How will I make a patch? Will I ever able to understand that code? Will
-I really able to do it?</p>
-<p>Everyone has these questions in mind and various others, while
-struggling to contribute to a huge code-base like that of Mozilla. So,
-recently I started reading stuff from MDN (Mozilla Developer Network)
-and then with bugsahoy and bugzilla, started figuring out
-good-first-bugs.</p>
-<p>The difficulty was, it uses such terms, I haven't even heard of! So, I
-was actually really afraid of commenting that I want to pick it up. But
-now, I was really frustrated with myself, and thought to give it a try
-to any bug, people would definitely help me, and I will figure a way
-out.</p>
-<p>So, I reached <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1221494">this
-bug</a> where
-enough of the instructions were already there, and it seemed like a very
-quick fix. This was a CSS bug in animation inspector of developer tools.</p>
-<p>Having submitted a patch, I got review for my code and accordingly I did
-the changes, and on Feb 1, 2016. This patch got accepted :)</p>
-<p>Now I'm working on another bug which is on JS in the animation inspector
-| Dev tools. It's almost done, and I hope I would submit one more patch
-soon.</p>
+        <p>I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses <cite>Boto3</cite> to connect to Amazon SQS and SNS. While containerizing this pipeline, I managed to run 2 services that power the backward flow of the pipeline in 2 different containers while the forward flow pipeline was breaking because of some issue. I decided to look into it the next day. As usual my Mac got in sleep mode.</p>
+<p>The very next day, I did <tt class="docutils literal"><span class="pre">docker-compose</span> up</tt>, I was expecting that 2 containers would run and I would start debugging the issue with the forward flow pipeline service; and it wasn't that easy.</p>
+<p>As soon as the 2 containers were spawned, they were destroyed. After inspecting the logs, I realized I was getting an error while connecting to Amazon services as:</p>
+<pre class="code bash literal-block">
+Amazon SQS SignatureDoesNotMatch: An error occurred <span class="o">(</span>SignatureDoesNotMatch<span class="o">)</span>
+when calling the GetQueueUrl operation: Signature expired<span class="o">)</span><span class="s2">&quot;</span>
+</pre>
+<p>I immediately tried to verify the AWS keys for expiry, but they were correctly working. The services would run separately on a host correctly. So, I realized it has something to do with Docker.</p>
+<p>This would happen if you're using any of the Amazon's servies and here is the how I came to know about the problem: I tried to manually run the container and then exec a shell in it; to know the date. I was astonished to see that my container was running at a time lag of around one day.</p>
+<p>Amazon allows only a time discrepancy of 15 mins than the actual time. So, the solution to this problem is either match the time of the host to the container while running it. <strong>But this can be a problem if the host's time is not correct</strong>. So, you cannot <strong>always</strong> guarantee that it would work on all your Dev, Stage and Prod environments.</p>
+<p>So, I set the TZ variable for running the container, and kept Time Zone as <tt class="docutils literal">Asia/Kolkata</tt> inside the <tt class="docutils literal">Dockerfile</tt> like:</p>
+<pre class="code bash literal-block">
+ENV <span class="nv">TZ</span><span class="o">=</span>Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/<span class="nv">$TZ</span> /etc/localtime <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="nv">$TZ</span> &gt; /etc/timezone
+</pre>
+<p>This shall ensure that correct time zone reaches the container.</p>
+<p>I was pretty close to the solution, but not in the 15 mins discrepancy window that Amazon allows. So, another issue was <a class="reference external" href="https://en.wikipedia.org/wiki/Clock_drift">clock drift</a>. I immediately realized that my Mac was on sleep mode all the time. So, it was clearly <tt class="docutils literal">Clock drift</tt>. I restarted it and then everything was in place.</p>
+<p>So, if you're using containers for services that use any Amazon service, ensure to set the Time Zone information explicitly. Let me know if you faced this kind of issue and how you solved it.</p>
 
     </article>
 
