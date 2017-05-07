@@ -1,5 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 04 Apr 2017 12:43:00 +0530</lastBuildDate><item><title>Dockerizing application that use AWS: Lessons learnt</title><link>http://SanyamKhurana.com/blog/docker-aws-clock-drift.html</link><description>&lt;p&gt;I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses &lt;cite&gt;Boto3&lt;/cite&gt; to connect to Amazon SQS and SNS. While containerizing this pipeline, I managed to run 2 services that power the backward flow of the pipeline in 2 different containers while the forward flow pipeline was breaking because of some issue. I decided to look into it the next day. As usual my Mac got in sleep mode.&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 07 May 2017 21:15:00 +0530</lastBuildDate><item><title>Mercurial commands list for contributing to Mozilla</title><link>http://SanyamKhurana.com/blog/mozilla-mercurial-commands.html</link><description>&lt;p&gt;Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that most people still prefer git over mercurial and use &lt;a class="reference external" href="https://github.com/glandium/git-cinnabar"&gt;git-cinnabar&lt;/a&gt; as a bridge to do all version control stuff in git and then prepare mercurial ready patches.&lt;/p&gt;
+&lt;p&gt;Although this approach is quite good and people like me who are more familiar with git should do it this way. But, I wanted to get acquainted with Mercurial as a version control tool and tried to do it the hard way (Most of the time my mentors were not able to help me since they used git and I used Mercurial). Mercurial works on basis of changesets. In this blog post, I'm keeping notes of various common commands that would help me and anyone navigate their way using mercurial.&lt;/p&gt;
+&lt;p&gt;These notes assume that you've basic familarity with various terminologies used in DVCS such as git. I've also mentioned analogies to how both version control systems work. (Something that took me time to figure out).&lt;/p&gt;
+&lt;div class="section" id="mercurial-commands"&gt;
+&lt;h2&gt;Mercurial Commands&lt;/h2&gt;
+&lt;p&gt;Mercurial works on basis of changesets. Here are the common commands that you can use throughout Mozilla's projects:&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Pull changes from remote repository to local&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;No! This is not same as &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt;! Read out the next command to understand the analogy.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg pull
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Always update to the tip of repo&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg update
+&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; : This is different from &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt;. &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt; essentially does &lt;tt class="docutils literal"&gt;git fetch&lt;/tt&gt; i.e. fetch remote changes to local and then do &lt;tt class="docutils literal"&gt;git merge&lt;/tt&gt; which updates the local copy of your code.&lt;/p&gt;
+&lt;p&gt;So, &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt; = &lt;tt class="docutils literal"&gt;git fetch&lt;/tt&gt; + &lt;tt class="docutils literal"&gt;git merge&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;But in case of mercurial, &lt;tt class="docutils literal"&gt;hg pull&lt;/tt&gt; just fetches remote changes to local. It does not however update your working copy. If you want to update your local copy, then you should do &lt;tt class="docutils literal"&gt;hg update&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Update to specific revision of the repo&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;Here we update to revision 0 with &lt;cite&gt;-r&lt;/cite&gt; option. &lt;cite&gt;r&lt;/cite&gt; stands for &lt;cite&gt;revision&lt;/cite&gt;.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg update -r 0
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;See file a.txt at revision 0&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg cat -r &lt;span class="m"&gt;0&lt;/span&gt; a.txt
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;See difference from revision 0 to 1 in file a.txt&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg diff -r 0:1 a.txt
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg outgoing: What all changes are waiting to be pushed next&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg outgoing
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg incoming: Changes that are waiting to be brought in to your local from remote repository&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;You can see if there are changes on the remote and see their diff with respect to your working copy.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg incoming
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Difference between rollback and revert&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+If not committed &lt;span class="k"&gt;then&lt;/span&gt;:
+    hg revert
+&lt;span class="k"&gt;else&lt;/span&gt;:
+    hg rollback
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg backout: To backout a changeset that has been added to tree. Analogous to git revert.&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;In essence, what it does is, it looks at the changeset, figures out the opposite, and does that to your current working directory.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg backout -r &lt;span class="m"&gt;2&lt;/span&gt; --merge
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Limit the logs you see&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;By default hg log streams from tip till end. While working on large projects such as that of Mozilla with more than million commits, it is messy to let it just stream while you just wanted to see latest commits.&lt;/p&gt;
+&lt;p&gt;With -l option you define how many changesets you want to see. That's for displaying first 3 commits.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg log -l 3
+&lt;/pre&gt;
+&lt;p&gt;I hope this shall help people who have familarity with git and are playing around with mercurial.&lt;/p&gt;
+&lt;p&gt;I'll be updating this post with more commands soon. If you think there is some important command that is not here, please mention that in comments and I'll add it here.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 07 May 2017 21:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-05-07:blog/mozilla-mercurial-commands.html</guid><category>mozilla</category><category>remo</category><category>mozilla-rep</category></item><item><title>Dockerizing application that use AWS: Lessons learnt</title><link>http://SanyamKhurana.com/blog/docker-aws-clock-drift.html</link><description>&lt;p&gt;I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses &lt;cite&gt;Boto3&lt;/cite&gt; to connect to Amazon SQS and SNS. While containerizing this pipeline, I managed to run 2 services that power the backward flow of the pipeline in 2 different containers while the forward flow pipeline was breaking because of some issue. I decided to look into it the next day. As usual my Mac got in sleep mode.&lt;/p&gt;
 &lt;p&gt;The very next day, I did &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;docker-compose&lt;/span&gt; up&lt;/tt&gt;, I was expecting that 2 containers would run and I would start debugging the issue with the forward flow pipeline service; and it wasn't that easy.&lt;/p&gt;
 &lt;p&gt;As soon as the 2 containers were spawned, they were destroyed. After inspecting the logs, I realized I was getting an error while connecting to Amazon services as:&lt;/p&gt;
 &lt;pre class="code bash literal-block"&gt;
