@@ -9,7 +9,7 @@
         <meta name="author" content="Sanyam Khurana">
 
 
-        <title>Patched first bug for mozilla-central</title>
+        <title>Multiple task executions on Celery ETA usage</title>
 
         <!-- Bootstrap Core CSS -->
         <link href="./theme/css/bootstrap.min.css" rel="stylesheet">
@@ -35,20 +35,22 @@
 
 
 
-        <meta name="description" content="Well, everything seems difficult until you start! How will I make a patch? Will I ever able to understand that code? Will I really able ...">
+        <meta name="description" content="If you find yourself in a use-case which needs to schedule tasks with celery at given time intervals, then you must read this, before ...">
 
         <meta name="author" content="Sanyam Khurana">
 
+        <meta name="tags" content="celery">
+        <meta name="tags" content="python">
 
 	                <meta property="og:locale" content="">
 		<meta property="og:site_name" content="Sanyam Khurana">
 
 	<meta property="og:type" content="article">
             <meta property="article:author" content="Sanyam Khurana" >
-	<meta property="og:url" content="./patched-first-bug-for-mozilla-central.html">
-	<meta property="og:title" content="Patched first bug for mozilla-central">
-	<meta property="article:published_time" content="2016-02-05 13:41:00+05:30">
-            <meta property="og:description" content="Well, everything seems difficult until you start! How will I make a patch? Will I ever able to understand that code? Will I really able ...">
+	<meta property="og:url" content="./celery-eta-broker-transport-options.html">
+	<meta property="og:title" content="Multiple task executions on Celery ETA usage">
+	<meta property="article:published_time" content="2017-05-07 21:15:00+05:30">
+            <meta property="og:description" content="If you find yourself in a use-case which needs to schedule tasks with celery at given time intervals, then you must read this, before ...">
 
             <meta property="og:image" content="./theme/images/post-bg.jpg">
 </head>
@@ -88,10 +90,10 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
-                        <h1>Patched first bug for mozilla-central</h1>
+                        <h1>Multiple task executions on Celery ETA usage</h1>
                         <span class="meta">Posted by
                                 <a href="./author/sanyam-khurana.html">Sanyam Khurana</a>
-                             on Fri 05 February 2016
+                             on Sun 07 May 2017
                         </span>
                         
                     </div>
@@ -106,31 +108,29 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p>Well, everything seems difficult until you start!</p>
-<p>How will I make a patch? Will I ever able to understand that code? Will
-I really able to do it?</p>
-<p>Everyone has these questions in mind and various others, while
-struggling to contribute to a huge code-base like that of Mozilla. So,
-recently I started reading stuff from MDN (Mozilla Developer Network)
-and then with bugsahoy and bugzilla, started figuring out
-good-first-bugs.</p>
-<p>The difficulty was, it uses such terms, I haven't even heard of! So, I
-was actually really afraid of commenting that I want to pick it up. But
-now, I was really frustrated with myself, and thought to give it a try
-to any bug, people would definitely help me, and I will figure a way
-out.</p>
-<p>So, I reached <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1221494">this
-bug</a> where
-enough of the instructions were already there, and it seemed like a very
-quick fix. This was a CSS bug in animation inspector of developer tools.</p>
-<p>Having submitted a patch, I got review for my code and accordingly I did
-the changes, and on Feb 1, 2016. This patch got accepted :)</p>
-<p>Now I'm working on another bug which is on JS in the animation inspector
-| Dev tools. It's almost done, and I hope I would submit one more patch
-soon.</p>
+        <p>If you find yourself in a use-case which needs to schedule tasks with celery at given time intervals, then you must read this, before this small tweak causes a havoc to your business.</p>
+<p>This behavior occurs when the ETA of a task is greater that the visibility time out set up on your celery app object. Let me explain the case that happened with me.</p>
+<p>According to my use case I use to schedule several tasks at different times of the day. There was a task that ran as a cron by celery beat every day at 12 AM to schedule tasks at different times of the day.</p>
+<p>I noticed although the main task worked at 12 AM everyday and used to schedule the sub tasks, some of the sub tasks were triggered multiple times.</p>
+<p>I was not able to find how was this even happening, until I came across this post: <a class="reference external" href="http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks">http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks</a></p>
+<p>So, I updated my celery_config using the celery app object like:</p>
+<div class="highlight"><pre><span class="n">celery</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="c"># This config was overridden to prevent execution of tasks multiple</span>
+    <span class="c"># times in case ETA is greater than visibility timeout.</span>
+    <span class="c"># http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks</span>
+    <span class="n">BROKER_TRANSPORT_OPTIONS</span><span class="o">=</span><span class="p">{</span>
+        <span class="s">&#39;visibility_timeout&#39;</span><span class="p">:</span> <span class="mi">86400</span>
+    <span class="p">},</span>  <span class="c"># 1 day</span>
+<span class="p">)</span>
+</pre></div>
+<p>The comments depict exactly the issue and the link to blog post so anyone who is new to the project could know why this snippet was added.</p>
+<p>I've just compiled it here so that it may help someone who faces similar issue and might be scratching their head, wondering if they made a logical error in their code.</p>
 
     </article>
 
+        <div class="tags">
+            <p>tags: <a href="./tag/celery.html">celery</a>, <a href="./tag/python.html">python</a>, </p>
+        </div>
 
 <hr>
 <div class="sharing">
