@@ -1,0 +1,1658 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 20 Jun 2017 20:34:00 +0530</lastBuildDate><item><title>Contributing enhancement patch to CPython</title><link>http://SanyamKhurana.com/blog/contributing-cpython-enhancement.html</link><description>&lt;p&gt;I started contributing to &lt;a class="reference external" href="https://github.com/python/cpython"&gt;CPython&lt;/a&gt; this year from &lt;a class="reference external" href="/pycon-pune-2017.html"&gt;PyCon Pune sprints&lt;/a&gt;. That was one of the best PyCon I've ever attended. Since then, I've spent some time in going through documentation, core dev-guide and now I'm still reading about internals of the Python programming language.&lt;/p&gt;
+&lt;p&gt;I recently contributed an enhancement patch to Python 3.7 which might be back-ported to Python 3.6. Let's understand the scenario and the enhancement:&lt;/p&gt;
+&lt;p&gt;New contributor to Python 3 might use old Python 2 syntax treating &lt;tt class="docutils literal"&gt;print&lt;/tt&gt; as a statement rather than a function and then see an error like:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;
+                &lt;span class="o"&gt;^&lt;/span&gt;
+&lt;span class="ne"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Missing&lt;/span&gt; &lt;span class="n"&gt;parentheses&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;print&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The task was to improve the error message based on different kinds of user input. This shall ensure that we don't only show error to the user but also suggest the correct syntax to be used as a hint. So after the patch being applied, the error message shall say this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;
+                &lt;span class="o"&gt;^&lt;/span&gt;
+&lt;span class="ne"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Missing&lt;/span&gt; &lt;span class="n"&gt;parentheses&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;print&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;Did&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt; &lt;span class="n"&gt;mean&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;?&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Sounds easy? Right? No, we aren't done yet. This was a simple print statement dealing with just a string. Potentially someone can try to print anything. What if someone wants to print a tuple?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+          &lt;span class="o"&gt;^&lt;/span&gt;
+&lt;span class="ne"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Missing&lt;/span&gt; &lt;span class="n"&gt;parentheses&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;print&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;Did&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt; &lt;span class="n"&gt;mean&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;end&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot; &amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;?&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;So, the correct syntax is suggested to the user according to Python3.&lt;/p&gt;
+&lt;p&gt;Along with this, there are cases when someone adds soft-spaces, or just use excessive whitespace like:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt;    &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;
+  &lt;span class="n"&gt;File&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;stdin&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;line&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt;    &lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;
+                   &lt;span class="o"&gt;^&lt;/span&gt;
+&lt;span class="ne"&gt;SyntaxError&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;Missing&lt;/span&gt; &lt;span class="n"&gt;parentheses&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;call&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;print&amp;#39;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt; &lt;span class="n"&gt;Did&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt; &lt;span class="n"&gt;mean&lt;/span&gt; &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hello&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="err"&gt;?&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This was the first patch where I had to deal with C code. It was more of reading and understanding what the current code does. I had to do a complete re-write of this patch two times in a span of just 1.5 days (Thanks to Nick and Serhiy for the quick reviews).&lt;/p&gt;
+&lt;p&gt;Here's why:&lt;/p&gt;
+&lt;p&gt;The first time I wrote the patch, I used raw C APIs, which means I used &lt;tt class="docutils literal"&gt;malloc&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;free&lt;/tt&gt; for memory allocation and deallocation for manipulating the string input that was received from the user.&lt;/p&gt;
+&lt;p&gt;While this might work, but there is already a lot of work done by Python core-devs &amp;amp; they've created an entire &lt;a class="reference external" href="https://docs.python.org/3/c-api/"&gt;C API layer&lt;/a&gt;. So, in the first review, I was pointed to use this API layer, so I had to re-write the patch. One of the learning I had is that virtually any API can fail. So, it is necessary to always check the results before using them.&lt;/p&gt;
+&lt;p&gt;Most of the methods from the C-API layer that were used in this patch were dealing with &lt;a class="reference external" href="https://docs.python.org/3/c-api/unicode.html"&gt;Unicode objects&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Another important learning was to deallocate the previous memory at each check point (if some of the API call fails and there is no memory allocated on heap then deallocate all the previous allocated memory).&lt;/p&gt;
+&lt;p&gt;Apart from handling the striping of characters that were input on the shell and detecting the tuple syntax, I also wrote test cases for the new feature. In CPython, most of the test cases are written in Python (except a few). Typically in this use case, we only need to check the functionality of the Python layer, so test cases were written in Python.&lt;/p&gt;
+&lt;p&gt;Let's see how the added feature does what it is intended to do:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c1"&gt;// Static helper for setting legacy print error message&lt;/span&gt;
+&lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt;
+&lt;span class="nf"&gt;_set_legacy_print_statement_msg&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;PySyntaxErrorObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Py_ssize_t&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;strip_sep_obj&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_FromString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot; &lt;/span&gt;&lt;span class="se"&gt;\t\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strip_sep_obj&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="c1"&gt;// PRINT_OFFSET is to remove `print ` word from the data.&lt;/span&gt;
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;PRINT_OFFSET&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;Py_ssize_t&lt;/span&gt; &lt;span class="n"&gt;text_len&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_GET_LENGTH&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_Substring&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;text&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;PRINT_OFFSET&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;text_len&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;Py_DECREF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strip_sep_obj&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;_PyUnicode_XStrip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;strip_sep_obj&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;Py_DECREF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;Py_DECREF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strip_sep_obj&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="c1"&gt;// gets the modified text_len after stripping `print `&lt;/span&gt;
+    &lt;span class="n"&gt;text_len&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_GET_LENGTH&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;maybe_end_arg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;text_len&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_READ_CHAR&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;text_len&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="sc"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;maybe_end_arg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot; end=&lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;error_msg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_FromFormat&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="s"&gt;&amp;quot;Missing parentheses in call to &amp;#39;print&amp;#39;. Did you mean print(%U%s)?&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;new_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;maybe_end_arg&lt;/span&gt;
+    &lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;Py_DECREF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;error_msg&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="n"&gt;Py_XSETREF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;msg&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;error_msg&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This function returns the following:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;1 if the error message is successfully set.&lt;/li&gt;
+&lt;li&gt;-1 in case any of the C-API fails.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So, first we use &lt;tt class="docutils literal"&gt;strip_sep_obj&lt;/tt&gt; to define all the symbols that we need to strip from the input received from the user. Next, when we get the string, it would be of the form &lt;tt class="docutils literal"&gt;print &amp;quot;Hello&amp;quot;&lt;/tt&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;strip_sep_obj&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_FromString&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot; &lt;/span&gt;&lt;span class="se"&gt;\t\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;strip_sep_obj&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="c1"&gt;// PRINT_OFFSET is to remove `print ` word from the data.&lt;/span&gt;
+&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;PRINT_OFFSET&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What we're interested in is about the text after the print and space. That accounts for the &lt;tt class="docutils literal"&gt;PRINT_OFFSET&lt;/tt&gt; that is set to constant 6.&lt;/p&gt;
+&lt;p&gt;Next, &lt;tt class="docutils literal"&gt;_PyUnicode_XStrip&lt;/tt&gt; uses to strip &lt;tt class="docutils literal"&gt;strip_sep_obj&lt;/tt&gt; from the &lt;tt class="docutils literal"&gt;data&lt;/tt&gt; we assigned earlier. The 2 in this function is a constant value that implies stripping the input from both sides of the &lt;tt class="docutils literal"&gt;data&lt;/tt&gt;.&lt;/p&gt;
+&lt;pre class="code c literal-block"&gt;
+&lt;span class="n"&gt;PyObject&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;_PyUnicode_XStrip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;strip_sep_obj&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;Next, we get the length of the text and check if the input meant to print a tuple by checking the last character from the Unicode buffer to be equal to string literal &lt;tt class="docutils literal"&gt;,&lt;/tt&gt;.&lt;/p&gt;
+&lt;pre class="code c literal-block"&gt;
+&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;maybe_end_arg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;text_len&lt;/span&gt; &lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;PyUnicode_READ_CHAR&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;new_data&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;text_len&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="sc"&gt;','&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;maybe_end_arg&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot; end=&lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt; &lt;/span&gt;&lt;span class="se"&gt;\&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;After setting up the &lt;tt class="docutils literal"&gt;maybe_end_arg&lt;/tt&gt; we format the new message and use &lt;tt class="docutils literal"&gt;Py_XSETREF&lt;/tt&gt; to set the new &lt;tt class="docutils literal"&gt;error_msg&lt;/tt&gt; to the &lt;tt class="docutils literal"&gt;PySyntaxErrorObject&lt;/tt&gt; instance.&lt;/p&gt;
+&lt;pre class="code c literal-block"&gt;
+&lt;span class="n"&gt;Py_XSETREF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;self&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;msg&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;error_msg&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://github.com/python/cpython/commit/3a7f03584ab75afbf5507970711c87042e423bb4"&gt;Here is the full patch&lt;/a&gt; if you want to see. The meaning of each of the methods used can be easily found from the official documentation.&lt;/p&gt;
+&lt;p&gt;I hope to write about my learning in more detail and also explain about different parts of the programming language in a future post.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 20 Jun 2017 20:34:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-06-20:blog/contributing-cpython-enhancement.html</guid><category>foss</category><category>python</category><category>cpython</category></item><item><title>Multiple task executions on Celery ETA usage</title><link>http://SanyamKhurana.com/blog/celery-eta-broker-transport-options.html</link><description>&lt;p&gt;If you find yourself in a use-case which needs to schedule tasks with celery at given time intervals, then you must read this, before this small tweak causes a havoc to your business.&lt;/p&gt;
+&lt;p&gt;This behavior occurs when the ETA of a task is greater that the visibility time out set up on your celery app object. Let me explain the case that happened with me.&lt;/p&gt;
+&lt;p&gt;According to my use case I use to schedule several tasks at different times of the day. There was a task that ran as a cron by celery beat every day at 12 AM to schedule tasks at different times of the day.&lt;/p&gt;
+&lt;p&gt;I noticed although the main task worked at 12 AM everyday and used to schedule the sub tasks, some of the sub tasks were triggered multiple times.&lt;/p&gt;
+&lt;p&gt;I was not able to find how was this even happening, until I came across this post: &lt;a class="reference external" href="http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks"&gt;http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;So, I updated my celery_config using the celery app object like:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;celery&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="c"&gt;# This config was overridden to prevent execution of tasks multiple&lt;/span&gt;
+    &lt;span class="c"&gt;# times in case ETA is greater than visibility timeout.&lt;/span&gt;
+    &lt;span class="c"&gt;# http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks&lt;/span&gt;
+    &lt;span class="n"&gt;BROKER_TRANSPORT_OPTIONS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s"&gt;&amp;#39;visibility_timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;86400&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;  &lt;span class="c"&gt;# 1 day&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The comments depict exactly the issue and the link to blog post so anyone who is new to the project could know why this snippet was added.&lt;/p&gt;
+&lt;p&gt;I've just compiled it here so that it may help someone who faces similar issue and might be scratching their head, wondering if they made a logical error in their code.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 07 May 2017 21:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-05-07:blog/celery-eta-broker-transport-options.html</guid><category>celery</category><category>python</category></item><item><title>Mercurial commands list for contributing to Mozilla</title><link>http://SanyamKhurana.com/blog/mozilla-mercurial-commands.html</link><description>&lt;p&gt;Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that most people still prefer git over mercurial and use &lt;a class="reference external" href="https://github.com/glandium/git-cinnabar"&gt;git-cinnabar&lt;/a&gt; as a bridge to do all version control stuff in git and then prepare mercurial ready patches.&lt;/p&gt;
+&lt;p&gt;Although this approach is quite good and people like me who are more familiar with git should do it this way. But, I wanted to get acquainted with Mercurial as a version control tool and tried to do it the hard way (Most of the time my mentors were not able to help me since they used git and I used Mercurial). Mercurial works on basis of changesets. In this blog post, I'm keeping notes of various common commands that would help me and anyone navigate their way using mercurial.&lt;/p&gt;
+&lt;p&gt;These notes assume that you've basic familarity with various terminologies used in DVCS such as git. I've also mentioned analogies to how both version control systems work. (Something that took me time to figure out).&lt;/p&gt;
+&lt;div class="section" id="mercurial-commands"&gt;
+&lt;h2&gt;Mercurial Commands&lt;/h2&gt;
+&lt;p&gt;Mercurial works on basis of changesets. Here are the common commands that you can use throughout Mozilla's projects:&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Pull changes from remote repository to local&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;No! This is not same as &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt;! Read out the next command to understand the analogy.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg pull
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Always update to the tip of repo&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg update
+&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; : This is different from &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt;. &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt; essentially does &lt;tt class="docutils literal"&gt;git fetch&lt;/tt&gt; i.e. fetch remote changes to local and then do &lt;tt class="docutils literal"&gt;git merge&lt;/tt&gt; which updates the local copy of your code.&lt;/p&gt;
+&lt;p&gt;So, &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt; = &lt;tt class="docutils literal"&gt;git fetch&lt;/tt&gt; + &lt;tt class="docutils literal"&gt;git merge&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;But in case of mercurial, &lt;tt class="docutils literal"&gt;hg pull&lt;/tt&gt; just fetches remote changes to local. It does not however update your working copy. If you want to update your local copy, then you should do &lt;tt class="docutils literal"&gt;hg update&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Update to specific revision of the repo&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;Here we update to revision 0 with &lt;cite&gt;-r&lt;/cite&gt; option. &lt;cite&gt;r&lt;/cite&gt; stands for &lt;cite&gt;revision&lt;/cite&gt;.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg update -r 0
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;See file a.txt at revision 0&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg cat -r &lt;span class="m"&gt;0&lt;/span&gt; a.txt
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;See difference from revision 0 to 1 in file a.txt&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg diff -r 0:1 a.txt
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg outgoing: What all changes are waiting to be pushed next&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg outgoing
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg incoming: Changes that are waiting to be brought in to your local from remote repository&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;You can see if there are changes on the remote and see their diff with respect to your working copy.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg incoming
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Difference between rollback and revert&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+If not committed &lt;span class="k"&gt;then&lt;/span&gt;:
+    hg revert
+&lt;span class="k"&gt;else&lt;/span&gt;:
+    hg rollback
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg backout: To backout a changeset that has been added to tree. Analogous to git revert.&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;In essence, what it does is, it looks at the changeset, figures out the opposite, and does that to your current working directory.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg backout -r &lt;span class="m"&gt;2&lt;/span&gt; --merge
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Limit the logs you see&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;By default hg log streams from tip till end. While working on large projects such as that of Mozilla with more than million commits, it is messy to let it just stream while you just wanted to see latest commits.&lt;/p&gt;
+&lt;p&gt;With -l option you define how many changesets you want to see. That's for displaying first 3 commits.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg log -l 3
+&lt;/pre&gt;
+&lt;p&gt;I hope this shall help people who have familarity with git and are playing around with mercurial.&lt;/p&gt;
+&lt;p&gt;I'll be updating this post with more commands soon. If you think there is some important command that is not here, please mention that in comments and I'll add it here.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 07 May 2017 21:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-05-07:blog/mozilla-mercurial-commands.html</guid><category>mozilla</category><category>remo</category><category>mozilla-rep</category></item><item><title>Dockerizing application that use AWS: Lessons learnt</title><link>http://SanyamKhurana.com/blog/docker-aws-clock-drift.html</link><description>&lt;p&gt;I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses &lt;cite&gt;Boto3&lt;/cite&gt; to connect to Amazon SQS and SNS. While containerizing this pipeline, I managed to run 2 services that power the backward flow of the pipeline in 2 different containers while the forward flow pipeline was breaking because of some issue. I decided to look into it the next day. As usual my Mac got in sleep mode.&lt;/p&gt;
+&lt;p&gt;The very next day, I did &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;docker-compose&lt;/span&gt; up&lt;/tt&gt;, I was expecting that 2 containers would run and I would start debugging the issue with the forward flow pipeline service; and it wasn't that easy.&lt;/p&gt;
+&lt;p&gt;As soon as the 2 containers were spawned, they were destroyed. After inspecting the logs, I realized I was getting an error while connecting to Amazon services as:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+Amazon SQS SignatureDoesNotMatch: An error occurred &lt;span class="o"&gt;(&lt;/span&gt;SignatureDoesNotMatch&lt;span class="o"&gt;)&lt;/span&gt;
+when calling the GetQueueUrl operation: Signature expired&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;I immediately tried to verify the AWS keys for expiry, but they were correctly working. The services would run separately on a host correctly. So, I realized it has something to do with Docker.&lt;/p&gt;
+&lt;p&gt;This would happen if you're using any of the Amazon's servies and here is the how I came to know about the problem: I tried to manually run the container and then exec a shell in it; to know the date. I was astonished to see that my container was running at a time lag of around one day.&lt;/p&gt;
+&lt;p&gt;Amazon allows only a time discrepancy of 15 mins than the actual time. So, the solution to this problem is either match the time of the host to the container while running it. &lt;strong&gt;But this can be a problem if the host's time is not correct&lt;/strong&gt;. So, you cannot &lt;strong&gt;always&lt;/strong&gt; guarantee that it would work on all your Dev, Stage and Prod environments.&lt;/p&gt;
+&lt;p&gt;So, I set the TZ variable for running the container, and kept Time Zone as &lt;tt class="docutils literal"&gt;Asia/Kolkata&lt;/tt&gt; inside the &lt;tt class="docutils literal"&gt;Dockerfile&lt;/tt&gt; like:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+ENV &lt;span class="nv"&gt;TZ&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/&lt;span class="nv"&gt;$TZ&lt;/span&gt; /etc/localtime &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="nv"&gt;$TZ&lt;/span&gt; &amp;gt; /etc/timezone
+&lt;/pre&gt;
+&lt;p&gt;This shall ensure that correct time zone reaches the container.&lt;/p&gt;
+&lt;p&gt;I was pretty close to the solution, but not in the 15 mins discrepancy window that Amazon allows. So, another issue was &lt;a class="reference external" href="https://en.wikipedia.org/wiki/Clock_drift"&gt;clock drift&lt;/a&gt;. I immediately realized that my Mac was on sleep mode all the time. So, it was clearly &lt;tt class="docutils literal"&gt;Clock drift&lt;/tt&gt;. I restarted it and then everything was in place.&lt;/p&gt;
+&lt;p&gt;So, if you're using containers for services that use any Amazon service, ensure to set the Time Zone information explicitly. Let me know if you faced this kind of issue and how you solved it.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 04 Apr 2017 12:43:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-04-04:blog/docker-aws-clock-drift.html</guid></item><item><title>Event Report - PyDelhi Conf 2017</title><link>http://SanyamKhurana.com/blog/pydelhi-conf-2017.html</link><description>&lt;p&gt;This was second year of PyDelhi Conf! It was a two day event organized at IIM-Lucknow, Noida Campus from March 18, 2017 to March 19, 2017.&lt;/p&gt;
+&lt;p&gt;The two day event covered various talks and workshops along with dev-sprints to help newbies to contribute to various Open Source projects.&lt;/p&gt;
+&lt;p&gt;I also presented a talk at PyDelhi Conf on &lt;em&gt;&amp;quot;Building High Performance systems using Django&amp;quot;&lt;/em&gt;. The slides of the talk are available &lt;a class="reference external" href="http://SanyamKhurana.com/presentations/django-optimizations"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The major attraction in the event were a lot of panel discussions. One of the discussion was on increasing women participation in Open Source and appreciate the efforts of female contributors in computing.&lt;/p&gt;
+&lt;p&gt;Another panel discussion was on &amp;quot;OSS communities in Delhi: How we can possibly collaborate together&amp;quot;; where there were many Open Source contributors present from various communities.&lt;/p&gt;
+&lt;p&gt;Here is a group photo of all volunteers for PyDelhiConf:&lt;/p&gt;
+&lt;img alt="Group Photo of volunteers for PyDelhi Conf" class="align-center" src="images/pydelhi-conf-2017-1.jpg" /&gt;
+&lt;p&gt;You can find all the photos of the event on &lt;a class="reference external" href="https://www.flickr.com/photos/theskumar/sets/72157679909955640/"&gt;Flickr&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I'd like to congratulate every volunteer to come forward and help in conducting the conference. We're waiting excitingly to host PyCon India 2017 in Delhi!&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 03 Apr 2017 15:50:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-04-03:blog/pydelhi-conf-2017.html</guid><category>mozilla</category><category>foss</category></item><item><title>Event Report - PyCon Pune 2017</title><link>http://SanyamKhurana.com/blog/pycon-pune-2017.html</link><description>&lt;p&gt;After PyCon India &amp;amp; PyDelhiConf; here comes another lovely Python Conference in India -- PyCon Pune. It was first year of the conference in 2017 and I feel really delighted for getting a chance to attend it. The conference was on 16th and 17th Feb followed by 2 days of Dev-Sprint on 18th and 19th Feb. It was a very brave decision to have conference on weekdays, and I was astonished to see so many people at the conference.&lt;/p&gt;
+&lt;p&gt;Unlike other two Python Conferences, this conference was on single track (which made my life sorted for being a volunteer). Following is about my journey to PyCon Pune.&lt;/p&gt;
+&lt;img alt="A group photograph with everyone" class="align-center" src="images/pycon-pune-2017-1.jpg" /&gt;
+&lt;div class="section" id="day-0"&gt;
+&lt;h2&gt;DAY 0&lt;/h2&gt;
+&lt;p&gt;The journey started on Feb 15th 2017 in the morning. I boarded the flight at 5:00 AM and landed at 7:00 AM in Pune. This day was the day before the PyCon Pune Conference would actually begin. We had a lot to do on this day. I'd like to thank Chandan and Sayan for accomodating me at their place. We had a lot of friends crashing in which made the remaining days epic and full of fun.&lt;/p&gt;
+&lt;p&gt;Sayan and Chandan left at 10:00 AM for Reserved Bit. Me and Subho reached there at 12:00 PM and found a bunch of folks hacking on various stuff. I met Nick Coghlan (Core-Contributor CPython), Honza (Core-Contributor- Django Project). Farhan was hacking with Siddhesh to set up the video recording software (OBS) on various machines. Finally, after a lot of hassle it worked on Linux.&lt;/p&gt;
+&lt;p&gt;A lot happened on 15th. From helping with badges to wondering with Kushal and Amol for getting various stuff done, the day went by very quickly. In night we reached Amanora Fern, Pune; the venue where the conference was scheduled. The venue was totally fabulous and I was awestruck. I helped in setting up video equipments along with Farhan, Siddhesh and Abdul. See the happiness, after making it work :)&lt;/p&gt;
+&lt;img alt="Sanyam &amp;amp; Farhaan feeling happy" class="align-center" src="images/pycon-pune-2017-2.jpeg" /&gt;
+&lt;p&gt;Later I helped a little with setting up the PSF + Pyladies Pune booth. We then went to dinner &amp;amp; returned at home at 12:00 AM.&lt;/p&gt;
+&lt;p&gt;I slept at 12:30 AM; was really tired. A lot had already happened over 24 hours. I was deprived of sleep. Amit was supposed to come to Pune at 5:00 AM in the morning and told me that he would call. Although my phone tried to scream a lot, but I didn't wake up :P&lt;/p&gt;
+&lt;p&gt;Later Subho waked me up at 5:00 AM -- and then again I had just 4 hour 30 min sleep in the last 47 hours.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-1"&gt;
+&lt;h2&gt;DAY 1&lt;/h2&gt;
+&lt;p&gt;We prepared to go to venue at 7:00 AM since we were handling registrations. Kushal came to give us a ride to the Conference venue in his car. We got to DC, Pune to get some meals for the Volunteers. I noticed Kushal wore the Conf t-shirt with an awesome quote by Brett Cannon (core-developer of CPython). I tweeted that, which got a lot of attention:&lt;/p&gt;
+&lt;img alt="Kushal wearing the official PyCon Pune t-shirt" class="align-center" src="images/pycon-pune-2017-3.jpg" /&gt;
+&lt;p&gt;Most of my day went running around (but not too much when compared to PyCon India since there was single track at PyCon Pune; which I personally liked very much). Also, this is how I look when deprived of sleep.&lt;/p&gt;
+&lt;img alt="Homo-sapien bot deprived of sleep and feeling high on first day" class="align-center" src="images/pycon-pune-2017-4.png" /&gt;
+&lt;p&gt;The conference kicked-off with Keynote by Honza (Core-developer to Django project) on his OSS Life. Next talk was by Anand Chitipothu on writing Beautiful Code, which helped me in learning more about writing good code with Python.&lt;/p&gt;
+&lt;p&gt;Later in the day we had a Keynote by John Hawley, our very own Perl guy declared as a Python Programmer. One thing I liked very much during all the days was to be with John (Whatever happens in the conference, I would hear his famous dialogue &amp;quot;Kushal is to be blamed for that!&amp;quot; :P).&lt;/p&gt;
+&lt;p&gt;Me and Amit had a dinner with him in Delhi before the conference. Here is a picture of that day:&lt;/p&gt;
+&lt;img alt="Amit, John and Sanyam while dropping John back to the Hotel" class="align-center" src="images/pycon-pune-2017-5.jpg" /&gt;
+&lt;p&gt;In evening, there was an awesome session by Praveen Patil (our very own Physics teacher), who showed us how Python can be used in classroom to teach various concepts to kids (and also why some teachers are criminals, because they're not able to explain something with ease).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-2"&gt;
+&lt;h2&gt;DAY 2&lt;/h2&gt;
+&lt;p&gt;The second day began again with Kushal picking us up, but this time to Reserved Bit. We both (Amit and me) got to Reserved Bit and helped in packing up t-shirts and then loading them in the cars. We then left for the venue with T-shirts.&lt;/p&gt;
+&lt;p&gt;The first keynote was by Katie, followed by Stephen Turbull and then by Nick Coghlan who is core-developer of CPython.&lt;/p&gt;
+&lt;p&gt;There was also a community talks session where me and Amit talked about PyDelhi, ILUG-D and LinuxChix India. I'll update the link of the video once it is uploaded.&lt;/p&gt;
+&lt;p&gt;The whole day was absolutely amazing. After the conference, we all went for the dinner.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-3"&gt;
+&lt;h2&gt;DAY 3&lt;/h2&gt;
+&lt;p&gt;Dev Sprints -- Me and Amit were desperately waiting for this day. We decided to walk to the venue.&lt;/p&gt;
+&lt;img alt="On our way to Red Hat office, Pune" class="align-center" src="images/pycon-pune-2017-6.jpg" /&gt;
+&lt;p&gt;On previous day, we decided to put our best effort to contribute to CPython taking help from Nick. Our goal was to do at least one patch in the two day devsprint. Yes, we both have Impostor Syndrome.&lt;/p&gt;
+&lt;p&gt;We reached Red Hat office at 10:00 AM in the morning. Nick was right there helping a few folks with CPython. The desk was pretty much occupied, so I decided to sit on the staircase nearby Nick. He was telling various things about how to set up the project etc. Me and Amit had CPython already set up, so we helped other folks.&lt;/p&gt;
+&lt;p&gt;Then we tried to understand how the issue tracker works for Python bugs. We aimed at searching some easy fixes, but most of them looked a lot aliented. So, we decided to first take up some documentation and related fixes.&lt;/p&gt;
+&lt;p&gt;Took me 1.30 hour to scrutinize the issue I wanted to work in. With help on Nick I was able to figure out the changes needed in str.index() docstring (Yes, in the C code ;)).&lt;/p&gt;
+&lt;p&gt;This was a really quick fix, and I couldn't believe that I've just opened up a PR on CPython repository. I checked with Amit and realized that we both opened our first PR at almost same point of time. The day went by and I opened a total of 4 PRs to the CPython repository. Amit did 2 fixes.&lt;/p&gt;
+&lt;p&gt;In the night we roamed at DC (Destination Center, Pune). It was just superb. For the second day of dev-sprint, we decided to do contribution to Django project and understand the workflow of the entire development cycle of Django. Reaching back home, I tried to find some bugs on the django project to work on. There was no documentation fixes; and all easy marked fixes were already assigned; and were being worked on. So, I tried to search for other bugs, but it was a no success. So, we decided to ask Honza and see if we could find something to work on. Else we would try to do some code-contributions to CPython repo.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-4"&gt;
+&lt;h2&gt;DAY 4&lt;/h2&gt;
+&lt;p&gt;We reached the Red Hat office at 10:00 AM next day. Again we were late, there were a bunch of folks sitting with Nick trying to get patches in CPython.&lt;/p&gt;
+&lt;p&gt;We couldn't find Honza and took a seat nearby Nick to start working on finding some bug that require some code contributions. I found a bug related to the &lt;cite&gt;help&lt;/cite&gt; module which had various cases to be handled. It was already having two patches and wasn't updated from long. I asked Nick, if I could take it, and he responded affirmatively.&lt;/p&gt;
+&lt;p&gt;I tried to look at the patches, but at that moment I couldn't understand exactly what was being done. I decided to write it from scratch and cover every use case that is being spilled over many comments in the bug.&lt;/p&gt;
+&lt;p&gt;Once I made it work for one of the use case, the earlier patches started to make sense. I showed it to Nick via IRC and then he replied on the bug documenting what all cases are to be covered. I read more code changes and it worked for every use case. I showed it to Nick.&lt;/p&gt;
+&lt;p&gt;He told me that he won't merge it because although this is one of the approach to solve this problem, he would further like to discuss with other core-contributors to this in entirely different fashion, such as introducing an &lt;cite&gt;__help__&lt;/cite&gt; magic method. He told that I should submit a PR upstream so that would be a good starting point to get this landed.&lt;/p&gt;
+&lt;p&gt;And this is how it was another PR to CPython from PyCon Pune sprints. Now I tried to look over what other people were doing in the devsprints. I met a lot of people and yet again found out most of them know me by the name &lt;cite&gt;CuriousLearner&lt;/cite&gt;. But this conference was special, people tried to address me by my real name. As usual all of them pronounced it wrong and then told me that CuriousLearner is a lot easier :)&lt;/p&gt;
+&lt;p&gt;In afternoon, I was reading the core-contributors guide and found a documentation bug and asked Nick if I should report it. And now I had 5 PRs + 1 bug report to CPython repository over the span of 1.5 days. Here is a picture of us working on CPython :)&lt;/p&gt;
+&lt;img alt="Folks hacking on CPython" class="align-center" src="images/pycon-pune-2017-7.jpg" /&gt;
+&lt;p&gt;None of the PRs are merged yet; since each one of us is waiting for the CLA (Contributor License Agreement) to be approved by PSF; which would probably be done only on Monday.&lt;/p&gt;
+&lt;p&gt;In afternoon, we had a panel discussion with all the keynote speakers on &amp;quot;How one should learn to program?&amp;quot;. After that, we played some billiard, spent some time with John in the hardware room and then clicked some photos together.&lt;/p&gt;
+&lt;p&gt;Here is a picture I had with Nick after two amazing days of learning in dev-sprints:&lt;/p&gt;
+&lt;img alt="Sanyam Khurana with Nick Coghlan" class="align-center" src="images/pycon-pune-2017-8.jpg" /&gt;
+&lt;p&gt;Amit and me left the venue at 6:45 PM bidding everyone good bye -- until next time.&lt;/p&gt;
+&lt;p&gt;This has been the most awesome Python event I've ever attended. Now I'm wait eagerly to work over the PRs to get them merged upstream and of course looking forward to PyCon Pune 2018.&lt;/p&gt;
+&lt;p&gt;I would also like to congratulate every volunteer to put in so much effort to make this a huge success.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 19 Feb 2017 10:07:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-02-19:blog/pycon-pune-2017.html</guid></item><item><title>NIEC Activate Mozilla with WebVR</title><link>http://SanyamKhurana.com/blog/niec-mozilla-activate-webvr.html</link><description>&lt;p&gt;On Saturday, January 28, 2017, we had an event planned at Northern India Engineering College on &lt;tt class="docutils literal"&gt;Activate Mozilla Campaign&lt;/tt&gt;. Our aim was to cover &lt;cite&gt;WebVR&lt;/cite&gt; track under &lt;tt class="docutils literal"&gt;Build the Web&lt;/tt&gt; activity.&lt;/p&gt;
+&lt;p&gt;The event was scheduled from 12:00 PM IST to 4:00 PM IST.&lt;/p&gt;
+&lt;p&gt;I reached the venue at 10:40 AM and helped a bit with arrangements. Saturday was a day off for all college students, so honestly I didn't expect much audience.&lt;/p&gt;
+&lt;p&gt;But, I was wrong. Students are more willing to learn and soon there were lot of students. In starting there were less people, but then we got a total audience of around 70+ which is huge considering that it was a holiday for them and they just came here to learn about FOSS.&lt;/p&gt;
+&lt;p&gt;Unfortunately, out of the core-organizers, only Shivam was available. But we got support from other student volunteers to do various arrangements and co-ordinating all the sessions smoothly. I would take this opportunity to thank each one of them.&lt;/p&gt;
+&lt;p&gt;Since, there were no other speakers, I had to take all the sessions. It began with an interactive session on what students understand by the term FOSS (Free &amp;amp; Open Source Software). I told about how Free Software and Open Source Software are same yet different from each other.&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_1.jpg" /&gt;
+&lt;p&gt;After this we discussed about Mozilla and the Open Web. Since it was &lt;tt class="docutils literal"&gt;Data Privacy Day&lt;/tt&gt;, we also discussed about how important is privacy in the online world, yet most of us don't have proper information on it. We also discussed about &lt;cite&gt;Free Basics&lt;/cite&gt; and how various organizations keep track of our online identities; and how Mozilla as an organization is doing in protecting the Free Web.&lt;/p&gt;
+&lt;p&gt;Next session was on &lt;cite&gt;Introduction to Git &amp;amp; Github&lt;/cite&gt;. Although focus was on Activate Mozilla campaign, but I really wanted to teach about Version control to people considering that most people are Engineering students.&lt;/p&gt;
+&lt;img alt="Sanyam talking about Version Control using Git" class="align-center" src="images/niec-moz-activate_2.jpg" /&gt;
+&lt;img alt="Sanyam teaching about branching in version control systems" class="align-center" src="images/niec-moz-activate_3.jpg" /&gt;
+&lt;p&gt;After this we had a small break to let people grab the knowledge they just had. I was surprised by the enthusiasm of these students. In the break time too, many of them surrounded me with various questions like how to contribute to FOSS, how to start et. all. So, yes, it wasn't a break for me ;)&lt;/p&gt;
+&lt;p&gt;After this session, we jumped on to Activate Mozilla Campaign. We told about various tracks under Activate Mozilla Campaign. The session was kick started with an introduction to Virtual Reality. We discussed about Visual and Input Immersion and how it is changing the Web as we use it today.&lt;/p&gt;
+&lt;p&gt;After this, we jumped on to learning A-Frame and making Virtual Reality scenes.&lt;/p&gt;
+&lt;img alt="Sanyam's talk on WebVR" class="align-center" src="images/niec-moz-activate_4.jpg" /&gt;
+&lt;img alt="Sanyam's talk on WebVR and A-Frame JS" class="align-center" src="images/niec-moz-activate_5.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_6.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_7.jpg" /&gt;
+&lt;p&gt;Then we gave time to audience to try using A Frame to develop something. I will collect all those projects and post them here soon :)&lt;/p&gt;
+&lt;p&gt;In the end we distributed swags to students.&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla Swags" class="align-center" src="images/niec-moz-activate_8.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla" class="align-center" src="images/niec-moz-activate_9.jpg" /&gt;
+&lt;p&gt;After the event, we took feedback from people. Some of them are here:&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-1.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-2.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-3.jpg" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback" class="align-center" src="images/niec-moz-activate-feedback-4.jpg" /&gt;
+&lt;p&gt;Out of these, I'm astonished to see, that 100% people want to learn more about it. One student wrote that he would really like if more simpler terms would be used. Surely, I would keep this in mind, and if someone told me this thing during the session, I would've helped them there itself. But I'd surely take care from next session.&lt;/p&gt;
+&lt;p&gt;And there is some MozLove on twitter as well :)&lt;/p&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback Twitter" class="align-center" src="images/niec-moz-activate-twitter-1.png" /&gt;
+&lt;img alt="NIEC Activate Mozilla Feedback Twitter" class="align-center" src="images/niec-moz-activate-twitter-2.png" /&gt;
+&lt;p&gt;Now, I'm flooded with a lot of mails from students who're willing to contribute to FOSS and requesting for guidance. I have started replying to some, and will be replying to all of them soon.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 29 Jan 2017 12:08:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-01-29:blog/niec-mozilla-activate-webvr.html</guid><category>mozilla</category><category>remo</category><category>foss</category></item><item><title>Representing Mozilla in FOSS UnConference</title><link>http://SanyamKhurana.com/blog/mozilla-foss-unconference.html</link><description>&lt;p&gt;On December 17, 2016; we had FOSS un-conference where all Open Source groups gathered to discuss about the FOSS culture. We had people from PyDelhi, PyData Delhi, Mozilla Delhi (MozPacers), LinuxChix India, Sympy, etc.&lt;/p&gt;
+&lt;p&gt;We had three talks scheduled:&lt;/p&gt;
+&lt;p&gt;Netfilters by Shyam Saini, Networking by Manpreet [:msn] &amp;amp; Deep learning by Shagun&lt;/p&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_1.jpg" /&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_2.jpg" /&gt;
+&lt;p&gt;After the talks, we had a panel discussion where there was representative from each community discussing about how each community works; what are the pros and cons in different Open source communities, how can we improve the participation to FOSS.&lt;/p&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_3.jpg" /&gt;
+&lt;p&gt;We also discussed about women participants in different open source communities &amp;amp; also about increasing their participation in every community.&lt;/p&gt;
+&lt;img alt="FOSS unconference" class="align-center" src="images/foss-unconference_4.jpg" /&gt;
+&lt;p&gt;I'm also actively helping in reviving LinuxChix India which focuses on empowering women tech participation in Open source world. Hope to see some good participation there as well.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 09 Jan 2017 11:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-01-09:blog/mozilla-foss-unconference.html</guid><category>mozilla</category><category>remo</category><category>foss</category></item><item><title>How to test your Ansible Deployment with Vagrant</title><link>http://SanyamKhurana.com/blog/ansible-deployment-vagrant.html</link><description>&lt;p&gt;When you start writing Ansible for automating your deployment, one common problem is about testing if it does work as you intend to do it. Some people prefer to do it directly on a server. But then it has all sorts of problems associated (for example when the no. of servers to be provisioned/deployed grows) and I clearly don't like the idea to test Ansible on servers directly. So, I chose the option to use virtual machines using Vagrant.&lt;/p&gt;
+&lt;p&gt;With Vagrant you could test complex setups like (say) having 4 machines behind a load balancer (just to start with). I've tried to both provision as well as deployment using Ansible + Vagrant. In this post, I'll be quickly covering about testing deployment using Ansible + Vagrant.&lt;/p&gt;
+&lt;p&gt;In your directory you run Vagrant init; that would provide you a Vagrantfile to start up your virtual machine. Here is a basic configuration that would enable you to boot up an ubuntu machine with a static ip which you could use later to put in your ansible host file.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+Vagrant.configure&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt;config&lt;span class="p"&gt;|&lt;/span&gt;
+  config.vm.box &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;, ip: &lt;span class="s2"&gt;&amp;quot;10.0.0.10&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;, guest: 22, host: 22
+end
+&lt;/pre&gt;
+&lt;p&gt;Now you can boot up your virtual machine using &lt;tt class="docutils literal"&gt;`vagrant up`&lt;/tt&gt; and try to login using &lt;tt class="docutils literal"&gt;`vagrant ssh`&lt;/tt&gt;. After ssh-ing into your virtual server; you can do &lt;cite&gt;ifconfig&lt;/cite&gt; to verify that the IP of the server is &lt;cite&gt;10.0.0.10&lt;/cite&gt;.&lt;/p&gt;
+&lt;p&gt;In your inventory file you can now mention the IP of the host to &lt;tt class="docutils literal"&gt;`10.0.0.10`&lt;/tt&gt;, exactly what we mentioned in the Vagrant file.&lt;/p&gt;
+&lt;p&gt;Your ansible.cfg file can be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;defaults&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;inventory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ./virtualhosts
+&lt;span class="nv"&gt;private_key_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; /path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+&lt;span class="nv"&gt;remote_user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; vagrant
+&lt;span class="nv"&gt;host_key_checking&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; False
+&lt;/pre&gt;
+&lt;p&gt;and we'll refer the hosts as virtualhosts, so your &lt;tt class="docutils literal"&gt;virtualhosts&lt;/tt&gt; inventory file would be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+project_web &lt;span class="nv"&gt;ansible_ssh_host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;10.0.0.10 &lt;span class="nv"&gt;ansible_ssh_port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt; &lt;span class="nv"&gt;ansible_ssh_user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;vagrant &lt;span class="nv"&gt;ansible_ssh_private_key_file&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+
+&lt;span class="o"&gt;[&lt;/span&gt;project&lt;span class="o"&gt;]&lt;/span&gt;
+project_web
+
+&lt;span class="o"&gt;[&lt;/span&gt;project:vars&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;repo_remote&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;origin
+&lt;span class="nv"&gt;repo_branch&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;master
+&lt;span class="nv"&gt;DEPLOYMENT_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DEV
+&lt;/pre&gt;
+&lt;p&gt;Replace the &lt;tt class="docutils literal"&gt;ansible_ssh_private_key_file&lt;/tt&gt; with a valid path from your &lt;tt class="docutils literal"&gt;.vagrant&lt;/tt&gt; directory.&lt;/p&gt;
+&lt;p&gt;Now try running your Ansible with&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+ansible-playbook -i virtualhosts playbook.yml
+&lt;/pre&gt;
+&lt;p&gt;And it's done, with your &lt;tt class="docutils literal"&gt;ansible.cfg&lt;/tt&gt;, the private ssh key would be correctly chosen for authentication and the &lt;tt class="docutils literal"&gt;playbook&lt;/tt&gt; would run by user &lt;tt class="docutils literal"&gt;vagrant&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;One can model more complex setups with lot of servers and load balancer to mimic actual deployment on servers.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 28 Dec 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-12-28:blog/ansible-deployment-vagrant.html</guid></item><item><title>Talk on contributing to Mozilla Marionette</title><link>http://SanyamKhurana.com/blog/talk-contributing-mozilla-marionette.html</link><description>&lt;p&gt;I've always felt that newbies find it very difficult to get started into any Open Source project. If we talk specifically about code-contribution; which is an essential part of the entire ecosystem, then the no. of people are not enough. I've always found myself surrounded by a bunch of folks who wanted to contribute in Open Source software; and thus asking me questions about how to find bugs, where to get started, etc. One of the most difficult thing they told me is that they don't understand project well enough and thus are not able to recognize on how to get ahead with a particular bug.&lt;/p&gt;
+&lt;p&gt;I am currently contributing to Mozilla Marionette which is an automation driver for Mozilla's Gecko engine. You can read about my experience on that in blog post &lt;a class="reference external" href="/getting-started-marionette.html"&gt;Getting started with Marionette&lt;/a&gt; &amp;amp; &lt;a class="reference external" href="/contributing-marionette-firefox-ui-tests.html"&gt;Contributing more to Marionette and Firefox UI Tests&lt;/a&gt;. I recently decided to give a talk explaining people about Marionette.&lt;/p&gt;
+&lt;p&gt;I delivered a talk at PyDelhi Meetup (one of the Open Source group I'm actively volunteering for :) ). The talk was scheduled for November 27, 2016. My talk was from 3:30 PM - 4:30 PM IST. In the end there was  a QA session where some people came forward to ask questions.&lt;/p&gt;
+&lt;p&gt;Here are some photos of the event:&lt;/p&gt;
+&lt;img alt="Sanyam speaking on Mozilla Marionette &amp;amp; Firefox UI Test" class="align-center" src="images/mozilla-marionette-talk_1.jpg" /&gt;
+&lt;img alt="Crowd willing to learn about contributing to Marionette" class="align-center" src="images/mozilla-marionette-talk_2.jpg" /&gt;
+&lt;img alt="Crowd willing to learn about contributing to Marionette" class="align-center" src="images/mozilla-marionette-talk_3.jpg" /&gt;
+&lt;img alt="Crowd willing to learn about contributing to Marionette" class="align-center" src="images/mozilla-marionette-talk_4.jpg" /&gt;
+&lt;p&gt;One of the most important thing I felt is people hesitate in asking questions. This is because after the QA was officialy over, a lot of people came to me with specific questions and told that they were hesistant during QA session. So for those folks, just remember:&lt;/p&gt;
+&lt;blockquote&gt;
+He who asks a question is a fool for five minutes; he who does not ask a question remains a fool forever.
+– Chinese Proverb&lt;/blockquote&gt;
+&lt;p&gt;Other than that, we're all friends :) So, come and clear your doubts! Ask me anything. No one is judging you on the basis of questions you ask. It's more important that you try, rather than the fear of failiure stop you from even taking the first step.&lt;/p&gt;
+&lt;p&gt;For those who missed the talk, I've tried to process the video and uploaded it on Youtube (That's why this update took so much time).&lt;/p&gt;
+&lt;p&gt;You can watch the talk on Youtube (&lt;a class="reference external" href="https://youtu.be/l1tZaud0GO4"&gt;https://youtu.be/l1tZaud0GO4&lt;/a&gt;)&lt;/p&gt;
+&lt;center&gt;
+    &lt;iframe width="600" height="400" src="https://www.youtube.com/embed/l1tZaud0GO4" frameborder="0" allowfullscreen&gt;
+    &lt;/iframe&gt;
+&lt;/center&gt;&lt;p&gt;Your comments are much appreciated. Tell me if this session helped you, or how further sessions could be improved!&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 05 Dec 2016 01:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-12-05:blog/talk-contributing-mozilla-marionette.html</guid><category>mozilla</category><category>marionette</category><category>python</category><category>remo</category></item><item><title>Mozilla's Equal Rating Challenge</title><link>http://SanyamKhurana.com/blog/mozilla-equal-rating-challenge.html</link><description>&lt;p&gt;The event took place at Hotel Lalit, New Delhi on November 18, 2016. Once again we got a chance to meet Jochai (one of the Mozilla staff) &lt;a class="reference external" href="/mozcoffee-v6-with-sara-jochai.html"&gt;after around 6 months&lt;/a&gt; and he recognized me :)&lt;/p&gt;
+&lt;p&gt;The event was powered by SFLC (Software Freedom Law Centre) &amp;amp; Mozilla. Local community volunteers (Mozpacers) helped with the registration.&lt;/p&gt;
+&lt;img alt="Mozilla Equal Rating Challenge" class="align-center" src="images/mozilla-equal-rating-challenge-1.jpg" /&gt;
+&lt;p&gt;The event began at 3:00 PM where Jochai introduced people to the problem on making Internet accessible to everyone. After his kick off speech, there was a panel discussion where this issue was discussed. Jochai Ben-Avie, Mishi Choudhary and Smriti Parsheera were speakers. After the panel discussion, people came forward with their questions and got responses from the panel members.&lt;/p&gt;
+&lt;img alt="Mozilla Equal Rating Challenge" class="align-center" src="images/mozilla-equal-rating-challenge-2.jpg" /&gt;
+&lt;p&gt;After that we had tea and a great disccussion with Jochai. We also talked with SFLC team to conduct an event where they can explain about different form to Open Source LISENCE to people and how are they different from each other.&lt;/p&gt;
+&lt;p&gt;We soon plan to have an integrated event with SFLC team where Mozillians would tell about Open Web and community structuring and they will tell about FOSS Laws.&lt;/p&gt;
+&lt;img alt="Mozilla Equal Rating Challenge" class="align-center" src="images/mozilla-equal-rating-challenge-3.jpg" /&gt;
+&lt;p&gt;It was a really good experience all together!&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sat, 26 Nov 2016 13:30:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-11-26:blog/mozilla-equal-rating-challenge.html</guid><category>mozilla</category><category>mozilla-rep</category><category>remo</category></item><item><title>Mozilla Rep Mentorship Meeting 2</title><link>http://SanyamKhurana.com/blog/mozilla-rep-mentorship-meeting-2.html</link><description>&lt;p&gt;Today I had another online meeting with my Mozilla Reps Mentor Biraj from 6:00 PM - 6:30 PM.&lt;/p&gt;
+&lt;p&gt;Here are the Minutes of Meeting:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;He reviewed initial set of goals I've set.&lt;/li&gt;
+&lt;li&gt;I told about my current contributions.&lt;/li&gt;
+&lt;li&gt;We discussed about conducting an online and an offline event.&lt;/li&gt;
+&lt;li&gt;I plan to conduct an event teaching people about Marionette and it's usage so that they can further contribute to gecko engine.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can refer to my intial post for the &lt;a class="reference external" href="/mozilla-rep-goals-1.html"&gt;goals I set as a Mozilla Rep&lt;/a&gt;.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sat, 12 Nov 2016 06:30:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-11-12:blog/mozilla-rep-mentorship-meeting-2.html</guid><category>mozilla</category><category>mozilla-rep</category><category>remo</category></item><item><title>Mozilla @StoryMirror Youth Creative Conclave</title><link>http://SanyamKhurana.com/blog/mozilla-story-mirror-youth-creative-conclave.html</link><description>&lt;p&gt;We had an amazing event scheduled on October 8, 2016 at Hansraj college in Delhi University. I reached the venue at 10:00 AM where I found Anup and other Mozillians preparing for the event.&lt;/p&gt;
+&lt;img alt="Mozilla Story Mirror youth creative" class="align-center" src="images/mozilla-youth-creative-1.jpg" /&gt;
+&lt;p&gt;We had three talks scheduled. First one was by Anup; where he introducted people to Mozilla and world of Open Source. We discussed about Open Web and privacy issues; and the role of Mozilla is shaping the web.&lt;/p&gt;
+&lt;img alt="Anup speaking at Mozilla Story Mirror youth creative" class="align-center" src="images/mozilla-youth-creative-2.jpg" /&gt;
+&lt;img alt="Crowd at Mozilla Story Mirror youth creative" class="align-center" src="images/mozilla-youth-creative-3.jpg" /&gt;
+&lt;p&gt;Next session was taken by me where we discussed about DVCS (Distributed Version Control System) Git which is used in almost every other software product for versioning purposes.&lt;/p&gt;
+&lt;img alt="Sanyam speaking at Mozilla Story Mirror youth creative" class="align-center" src="images/mozilla-youth-creative-4.jpg" /&gt;
+&lt;img alt="Sanyam telling about his contribution story in Mozilla Story Mirror youth creative" class="align-center" src="images/mozilla-youth-creative-5.jpg" /&gt;
+&lt;p&gt;Last session was taken by Rajeev where he discussed about local community Mozilla Delhi (Mozpacers) and how people can join in and learn.&lt;/p&gt;
+&lt;img alt="Rajeev speaking at Mozilla Story Mirror youth creative" class="align-center" src="images/mozilla-youth-creative-6.jpg" /&gt;
+&lt;p&gt;After the event there were a lot of students coming to learn about &amp;quot;How to contribute in Open Source&amp;quot;. Many of them inquired about contributing code to Open Source projects. I guided them the best I could and referred them to resources.&lt;/p&gt;
+&lt;p&gt;The event was a great success :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sat, 15 Oct 2016 21:30:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-10-15:blog/mozilla-story-mirror-youth-creative-conclave.html</guid><category>mozilla</category><category>mozilla-rep</category><category>remo</category></item><item><title>Goals as a Mozilla Rep for fourth quarter of 2016!</title><link>http://SanyamKhurana.com/blog/mozilla-rep-goals-1.html</link><description>&lt;p&gt;I was given this task by my mentor to write down my goals as a Mozilla Rep and then track down my activities every quarter to know where I'm heading.&lt;/p&gt;
+&lt;p&gt;So, for the last quarter of 2016, the areas where I'd be focusing on are the following:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Contribute code actively &amp;amp; extensively in one of the modules of Mozilla's gecko engine.&lt;/li&gt;
+&lt;li&gt;Learn about different tracks on Activate Mozilla Campaign and spread awareness among others.&lt;/li&gt;
+&lt;li&gt;Improve upon my public speaking skills; giving back knowledge to the community.&lt;/li&gt;
+&lt;li&gt;Motivate &amp;amp; help others to contribute to Mozilla.&lt;/li&gt;
+&lt;li&gt;Advance deeper into leadership startegies and techniques.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I hope that in this quarter, I'll be able to work through majority of goals mentioned above.&lt;/p&gt;
+&lt;p&gt;After the end of the quarter, I'll track my progress through the above checklist.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 12 Oct 2016 02:42:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-10-12:blog/mozilla-rep-goals-1.html</guid><category>mozilla</category><category>remo</category></item><item><title>Contributing more to Marionette and Firefox UI Tests</title><link>http://SanyamKhurana.com/blog/contributing-marionette-firefox-ui-tests.html</link><description>&lt;p&gt;If you don't know about Marionette; you can read my &lt;a class="reference external" href="/getting-started-marionette.html"&gt;previous blog post here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I've been recently given some follow-up bugs by my mentor. I've just finished up fixing this bug:
+&lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1298800"&gt;Add support for callbacks to restart() and quit() methods of Marionette&lt;/a&gt;. Now I've picked up a follow up bug to &lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1298803"&gt;Add a test to quit firefox&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;While trying to fix this bug, I reported two bugs in the Marionette component (&lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1309556"&gt;Bug 1309556&lt;/a&gt;, &lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1309141"&gt;Bug 1309141&lt;/a&gt;) which blocks my current bug. So, I'll be first fixing up my reported bugs and then come back to this follow up bug which is assigned to me.&lt;/p&gt;
+&lt;p&gt;Till now, the journey in contributing to Marionette has been really awesome and I learned quite a lot of things. I got a chance to read a lot of code and I'm really impressed by the writing styles of the developers. The code base is very neat and definitely good for people who want to see some real test cases in action (something which was not being explained in those &lt;em&gt;Testing 101 talks&lt;/em&gt;) and also improve upon their Python skills.&lt;/p&gt;
+&lt;p&gt;I would like to thank Henrik [:whimboo] who is my mentor and guided me so patiently &amp;amp; helped in resolving all my doubts. I'm also reading more about &lt;cite&gt;mach&lt;/cite&gt; command line tool and &lt;cite&gt;marionette&lt;/cite&gt; in general.&lt;/p&gt;
+&lt;p&gt;I recently also came accross &lt;tt class="docutils literal"&gt;Firefox Puppeteer&lt;/tt&gt; which is a library built upon the existing &lt;tt class="docutils literal"&gt;Marionette Python Client&lt;/tt&gt;. More appropriately; you can write &lt;tt class="docutils literal"&gt;Firefox UI tests&lt;/tt&gt; for the &lt;tt class="docutils literal"&gt;chrome components&lt;/tt&gt; using &lt;tt class="docutils literal"&gt;Puppetteer&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;I'm still to read more about this and I hope at that point of time I'll be able to join all the &lt;em&gt;learning dots&lt;/em&gt; and explain it all in my next blog post.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Thu, 06 Oct 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-10-06:blog/contributing-marionette-firefox-ui-tests.html</guid><category>mozilla</category><category>marionette</category><category>python</category></item><item><title>Learning Django REST Framework</title><link>http://SanyamKhurana.com/blog/drf-concepts.html</link><description>&lt;p&gt;I'm currently reading the documentation of Django REST Framework; and in this post I'll mention few terms I've encountered and quick summary of what is it about so that I can refer to this later.&lt;/p&gt;
+&lt;p&gt;Note: I'm making these with reference to mostly JSON data format for ease of understanding. But your RESTful API may support other data formats.&lt;/p&gt;
+&lt;div class="section" id="django-rest-framework"&gt;
+&lt;h2&gt;Django REST Framework&lt;/h2&gt;
+&lt;/div&gt;
+&lt;div class="section" id="serialization"&gt;
+&lt;h2&gt;Serialization&lt;/h2&gt;
+&lt;p&gt;It is the process of converting complex data type (Objects) to primitive data type (&lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;) so that it can be passed as &lt;tt class="docutils literal"&gt;JSON&lt;/tt&gt;. Notice that it is not about converting object to &lt;tt class="docutils literal"&gt;JSON&lt;/tt&gt; format, but objects to a primitive data type such as &lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="renderers"&gt;
+&lt;h2&gt;Renderers&lt;/h2&gt;
+&lt;p&gt;Once you have the primitive data type (&lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;), it is the responsibility of renderer to dump it as &lt;tt class="docutils literal"&gt;JSON&lt;/tt&gt; to the client. ( or in whatever data format the client wants data which is depicted by &lt;tt class="docutils literal"&gt;Accept&lt;/tt&gt; header). It is intermediate representation of template &amp;amp; contenxt; and converts final byte stream that is served to the client.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="parsers"&gt;
+&lt;h2&gt;Parsers&lt;/h2&gt;
+&lt;p&gt;When you receive a request on your API, the parser converts the &lt;tt class="docutils literal"&gt;request.data&lt;/tt&gt; into primitive data type (such as &lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;) which then can be deserialized as an object. The content that your API permits is depicted by &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;Content-Type&lt;/span&gt;&lt;/tt&gt; header and then appropriate Parser class can be used.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="content-negotiation"&gt;
+&lt;h2&gt;Content Negotiation&lt;/h2&gt;
+&lt;p&gt;It is the process of selecting the best representation format depending on the Rederers available in your API. This phase is partly client driven; and partly server-driven.
+The renderer is selected based on client's &lt;tt class="docutils literal"&gt;Accept&lt;/tt&gt; header and also by the priority order in which Renderers are available in your API.&lt;/p&gt;
+&lt;p&gt;I'll update this post later with more important things :)&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 03 Oct 2016 12:27:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-10-03:blog/drf-concepts.html</guid><category>django</category><category>python</category><category>drf</category></item><item><title>Volunteering for PyCon India 2016</title><link>http://SanyamKhurana.com/blog/pycon-india-2016.html</link><description>&lt;p&gt;Going back in time; October 3, 2015 in Bangalore; Last day of PyCon India 2015; someone told -- &amp;quot;It takes 9 months to organize PyCon India&amp;quot;&lt;/p&gt;
+&lt;p&gt;At that time, 9 months looked like a lot of time to me and I thought may be 4-5 months should be good enough.&lt;/p&gt;
+&lt;p&gt;Coming back; 2016 -- PyCon India was organized in Delhi. And boy; behind the scenes these 3 day event took so much time -- so much preperations. I remember working on various stuff with other volunteers in PyDelhi meet-ups; sometimes hangout calls with other volunteers late night. And certainly realized that organizing an event such as PyCon India is not a child's play.&lt;/p&gt;
+&lt;p&gt;This PyCon India helped me in learning organizational skills. Organizing an event such as PyCon India, takes so much effort from people having diversified skill set. From venue to food tasting; I was fortunate enough to see it all. So, let's get into the journey of this 3 day event!&lt;/p&gt;
+&lt;div class="section" id="day-0-pycon-india-workshop-tutorials"&gt;
+&lt;h2&gt;Day 0 -- PyCon India Workshop / Tutorials&lt;/h2&gt;
+&lt;p&gt;Officially, PyCon India begins! I reached the venue at 7 AM and found Akkshay telling volunteers what to do. We had a look at all the arrangements including DevSprints hall, food, room for Open Spaces and kids Zone.&lt;/p&gt;
+&lt;p&gt;There were workshops going on parallelly in 3 different tracks. Also there were bunch of folks learning to contribute in Open Source in PyCon India DevSprints. I was in the DevSprints for most of the time; (sometimes running from one audi to another check the status of the talks and helping with various stuff; as much as I could do).&lt;/p&gt;
+&lt;p&gt;In afternoon, we started preparing swag kits for PyCon India attendees &amp;amp; it was quite fun.&lt;/p&gt;
+&lt;p&gt;In the evening, we had a Volunteers meet to discuss -- 'What went wrong?', 'How could we correct that for the other two days?', etc. Session Chairs were assigned for each hall and volunteers were explained about their respective work.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-1-conference-day-1"&gt;
+&lt;h2&gt;Day 1 -- Conference Day 1&lt;/h2&gt;
+&lt;p&gt;I reached JNU at 7 AM. I started preparing up to do a live social media feed of all the happening in PyCon India. At around 8 AM, the registrations began. Me and Hans started clicking pictures and posting them on the Social Media. Here is a picture of me trying to do a live social media feed:&lt;/p&gt;
+&lt;img alt="Sanyam trying to do a live social media feed" class="align-center" src="images/pycon-india-2016-1.jpg" /&gt;
+&lt;p&gt;Most of the day went running across the venue &amp;amp; helping with anything &amp;amp; everything. We also had a discussion on Python Express -- how to reach more audience and spread the love of Open Source and Python. Here is a picture of me while recording the MoM for the same.&lt;/p&gt;
+&lt;img alt="Sanyam making MoM for Python Express discussion" class="align-center" src="images/pycon-india-2016-2.jpg" /&gt;
+&lt;p&gt;In the evening we went for Volunteers dinner and had a lot of fun!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-2-conference-day-2"&gt;
+&lt;h2&gt;Day 2 -- Conference Day 2&lt;/h2&gt;
+&lt;p&gt;Officially the last day of PyCon India 2016; I could already sense the sadness of friends parting apart for another year. I reached the venue at 7:00 PM and today we missed the first keynote. Amit, Sahil and me went to Akshay's home to pick up the PyCon India t-shirts. Till the time we returned, the keynote was already over.&lt;/p&gt;
+&lt;p&gt;At around 11:30 we had the DGPLUG stair case meet :) We met Sirtaj, Kushal's mentor and learned about Kushal's journey in Open Source world. Here is a photo of same:&lt;/p&gt;
+&lt;img alt="DGPLUG stair case meet" class="align-center" src="images/pycon-india-2016-6.jpg" /&gt;
+&lt;p&gt;In the afternoon, after lunch we started distributing t-shirts. Here are the awesome Pythonistas waiting to grab PyCon India t-shirt. In less than 2 hours we were able to distribute t-shirts to everyone.&lt;/p&gt;
+&lt;img alt="People waiting eagerly to grab awesome PyCon India 2016 t-shirt" class="align-center" src="images/pycon-india-2016-5.jpg" /&gt;
+&lt;p&gt;In the evening we had discussion about &amp;quot;What things went wrong and how can we improve further?&amp;quot;. Then different communities were welcomed to pitch to conduct PyCon India 2017 in their city. Since no one came forward, PyDelhi took the initiative to conduct PyCon India next year here in Delhi.&lt;/p&gt;
+&lt;p&gt;In the end I tried to meet every friend and bid adios to them until next year :) It was quite fun and I learned a lot about organizational skills. Here are some photos which marked the last moment of PyCon India 2016!&lt;/p&gt;
+&lt;img alt="The one with VanL and DGPLUG folks" class="align-center" src="images/pycon-india-2016-3.jpg" /&gt;
+&lt;img alt="Another one with DGPLUG folks" class="align-center" src="images/pycon-india-2016-7.jpg" /&gt;
+&lt;img alt="Another one with VanL" class="align-center" src="images/pycon-india-2016-4.jpg" /&gt;
+&lt;p&gt;This event would not have been possible without the support of the community. So, I want to thank all the volunteers who came forward &amp;amp; helped in organizing PyCon India and making it so big. See you all next year in Delhi for PyCon India 2017 and let us make it even more big. Here is an awesome picture with everyone!&lt;/p&gt;
+&lt;img alt="Another one with VanL" class="align-center" src="images/pycon-india-2016-8.jpg" /&gt;
+&lt;p&gt;With this thought, &lt;cite&gt;CuriousLearner&lt;/cite&gt; signs off :)&lt;/p&gt;
+&lt;p&gt;PS: I realized so many people knew me by my nick -- and I didn't know them :(&lt;/p&gt;
+&lt;p&gt;PPS: Thanks to Kushal and Sayan for the pictures.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 03 Oct 2016 12:27:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-10-03:blog/pycon-india-2016.html</guid><category>pycon</category><category>pyconindia</category><category>python</category></item><item><title>Mozilla Rep Mentorship Meeting 1</title><link>http://SanyamKhurana.com/blog/mozilla-rep-mentorship-meeting-1.html</link><description>&lt;p&gt;Just had the very first Mozilla Rep Mentorship e-meet today. It was scheduled to be on 21/09/16 from 9:30 PM IST to 10:00 PM IST. But I reached home early and it was held from 9:00 PM to 9:30 PM IST.&lt;/p&gt;
+&lt;p&gt;Here are the Minutes of Meeting:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;Mentor welcomed to Mozilla Reps.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Mentor introduced himself and told about his contribution areas&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;I introduced myself and told about my current contribution areas&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;A little discussion on Reps Next&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;dl class="first docutils"&gt;
+&lt;dt&gt;Asked a few questions like&lt;/dt&gt;
+&lt;dd&gt;&lt;ul class="first last simple"&gt;
+&lt;li&gt;Why you joined Mozilla Reps?&lt;/li&gt;
+&lt;li&gt;What is the motivation behind joining Mozilla?&lt;/li&gt;
+&lt;li&gt;Since how much time you're contributing to Mozilla and in which areas?&lt;/li&gt;
+&lt;li&gt;What are your personal goals for being Mozilla Rep?&lt;/li&gt;
+&lt;li&gt;What are the community goals for being Mozilla Rep?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;The mentorship would be for 1 year and for first three months we'll be focussing on developing personal skills and little bit on community goals.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Post that we'll be focussing majorly on community goals (on both local and global level); organising events etc.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;I was given task to submit personal and community goals in next 20-30 days&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;These would be updated in every quarter; and would be worked upon.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I hope to learn more about Mozilla, it's product and Open Web through this program. Meanwhile I'm also &lt;a class="reference external" href="/getting-started-marionette.html"&gt;contributing to Marionette&lt;/a&gt;.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 21 Sep 2016 21:30:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-09-21:blog/mozilla-rep-mentorship-meeting-1.html</guid><category>mozilla</category><category>mozilla-rep</category><category>remo</category></item><item><title>Becoming a Mozilla Representative</title><link>http://SanyamKhurana.com/blog/mozilla-rep.html</link><description>&lt;p&gt;Okay, this was kind of surprising. I applied for Mozilla Reps around 4 months ago but my application was put on hold since at that time, since Mozilla was revamping the Mozilla Reps program as Reps Next and there were not enough mentors available.&lt;/p&gt;
+&lt;p&gt;It so happened today, that I got a mail today in the morning titled &amp;quot;Welcome to Reps Program!&amp;quot;&lt;/p&gt;
+&lt;p&gt;I was shocked, opened it up and there I got the news that I'm now a Mozilla Rep and was assigned a mentor under whom I'll be working for next 1 year. I've been contributing to Mozilla from more than 1.5 year(s) now. You can get a &lt;a class="reference external" href="/journey-to-being-a-mozillian.html"&gt;glimpse of my journey here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Reps Next program majorly focuses on improving personal skills of the candidate. It's completely revamped version of &lt;a class="reference external" href="https://reps.mozilla.org/"&gt;Mozilla Reps Program&lt;/a&gt; and you can know &lt;a class="reference external" href="https://blog.mozilla.org/mozillareps/2016/06/16/repsnext-introduction-video/"&gt;more about it here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I've a meeting scheduled with my mentor today at 9:30 PM IST and I'll update about the same in another blog post.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 21 Sep 2016 14:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-09-21:blog/mozilla-rep.html</guid><category>mozilla</category><category>mozilla-rep</category><category>remo</category></item><item><title>Getting started with Marionette</title><link>http://SanyamKhurana.com/blog/getting-started-marionette.html</link><description>&lt;p&gt;I've recently started contributing to Marionette. It is an automation driver for Mozilla's gecko engine. If you're familiar with tools like Selenium; then Marionette is almost along similar lines. It's written in Python and is easy to get started with. So if you're familiar with Python and looking to contribute; then you can read more about it here:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette"&gt;https://developer.mozilla.org/en-US/docs/Mozilla/QA/Marionette&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I've always heard from good developers like &lt;a class="reference external" href="http://saurabh-kumar.com"&gt;Saurabh Kumar&lt;/a&gt; that writing tests should be part of your code. Although it increases the development time at that moment but in the long run, it makes your code more reliable and easy to maintain. Also you're more confident making changes to your software product and chances of breaking something and not recognizing until it is pushed to production is decreased exponentially. I always wanted to learn how to write good software and how to write tests for them; hence Marionette was something I wanted to contribute to and learn about.&lt;/p&gt;
+&lt;p&gt;I was introduced to the mentor in early 2016; but after 7th Sem exams I was crushed with a lot of things. Never the less, finally I've started contributing to it.&lt;/p&gt;
+&lt;p&gt;I've been mentored by Henrik Skupin [:whimboo]. I hope I'll be able to learn more about writing test cases and some best practices in coding.&lt;/p&gt;
+&lt;p&gt;My first bug in Marionette is &lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1271330"&gt;https://bugzilla.mozilla.org/show_bug.cgi?id=1271330&lt;/a&gt; which got landed today in Firefox 49, Firefox 50 and Firefox 51. Although this was a starting patch, but it helped me in learning about navigating my way through the Marionette code and about testing in general.&lt;/p&gt;
+&lt;p&gt;I hope to solve more bugs and contribute more to Marionette.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Fri, 26 Aug 2016 11:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-08-26:blog/getting-started-marionette.html</guid><category>mozilla</category><category>marionette</category><category>python</category></item><item><title>PyDelhi Meet and Devsprint</title><link>http://SanyamKhurana.com/blog/pydelhi-meet-devsprint.html</link><description>&lt;p&gt;So, I hurried to the venue for the meet from Kidzilla event, but I was late as expected :P&lt;/p&gt;
+&lt;p&gt;When I reached, Anuvrat was digging deep into module. I agree I couldn't grasp much, since I reached late.&lt;/p&gt;
+&lt;p&gt;After this we had a Dev Sprint for which we moved to the Computer Lab. The Dev Sprint started with an introduction.
+We had a bunch of Raspberry Pis with us, so all participants were divided into groups of four to have one RPi each and everyone started implementing Radio Internet. More info about it can be read here: &lt;a class="reference external" href="http://contractorwolf.com/raspberry-pi-radio/"&gt;Rpi Plus Internet radio&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;So, we first installed the required modules and tried to set-up RPi. We were able to play the stream directly from Internet. Next part we were targetting at was to make a Python Script and use subprocess to stream the Radio from RPi. Also implementing a GUI was part of the plan.&lt;/p&gt;
+&lt;p&gt;But unfortunately, we couldn't do it, because of lack of time and given that most of us had no idea about connecting RPi and figuring out the Internet issues.&lt;/p&gt;
+&lt;p&gt;None the less, it was a good experience learning something new.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 04 Apr 2016 17:48:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-04-04:blog/pydelhi-meet-devsprint.html</guid><category>FOSS</category><category>PyDelhi</category></item><item><title>KidZilla by MozPacers</title><link>http://SanyamKhurana.com/blog/kidzilla-by-mozpacers.html</link><description>&lt;p&gt;On April 2, 2016 we had a day full of interactive learning with kids of Bal Sahyog Orphanage, Cannaught Place, Delhi.&lt;/p&gt;
+&lt;p&gt;I reached at Rajiv Chowk metro at 9:45 AM and found Kona, Saurabh, Kanika, Pushpita and Debarun there.&lt;/p&gt;
+&lt;p&gt;So, we tried to walk up to the venue and was welcomed by Sandeep who takes care of the Computer Science Department there. We had a bunch of kids waiting enthusiastically to learn new things.&lt;/p&gt;
+&lt;p&gt;They were from different age groups and classes (from 10 years old to 16 years old). So, first session was by Pushpita discussing about Mozilla.&lt;/p&gt;
+&lt;img alt="Pushpita talking about Introduction to Mozilla" class="align-center" src="images/kidzilla_1.jpeg" /&gt;
+&lt;p&gt;Second session was by Kanika on basics of Network and introduction to Internet.&lt;/p&gt;
+&lt;img alt="Kanika talking about Networks" class="align-center" src="images/kidzilla_2.jpg" /&gt;
+&lt;p&gt;I didn't had any session scheduled, but I felt the initial session plan was bit overwhelming for those kids so I suggested Pushpita to use simple terms as much as possible as our main aim was to make students learn. Meanwhile, we were distributing swags to students in between every session.&lt;/p&gt;
+&lt;p&gt;We wanted to make it fruitful for the kids, so we tried to explain the things in the best possible way we could. I just re-iterated through the sessions by Pushpita and Kanika to ensure that the they're able to grasp what we were telling them.&lt;/p&gt;
+&lt;img alt="Sanyam talking about Mozilla and basics of Internet" class="align-center" src="images/kidzilla_3.jpeg" /&gt;
+&lt;p&gt;After this, we divided students into groups and then each mozpacer was mentoring kids on designing a webpage with HTML. Me, Kanika, Saurabh, Chirag and Sonal were teaching 4 groups.&lt;/p&gt;
+&lt;img alt="Sanyam teaching kids to code" class="align-center" src="images/kidzilla_4.jpg" /&gt;
+&lt;p&gt;Here is a picture of enthusiastic students who were being taught by Chirag and Sonal.&lt;/p&gt;
+&lt;img alt="Chirag and Sonal teaching to code" class="align-center" src="images/kidzilla_5.jpeg" /&gt;
+&lt;p&gt;After this, we had an ice breaking session where we had a quiz about what we told in earlier sessions. We divided students into two teams and there was lot of enthusiasm in the teams. Meanwhile, I was very impressed when I saw some kids playing with software like Photoshop. Some were playing games and yet another kid was just bugging me to learn about Bash.&lt;/p&gt;
+&lt;p&gt;After this, we had a photo session and then left the venue.&lt;/p&gt;
+&lt;p&gt;Here is our groupfie :)&lt;/p&gt;
+&lt;img alt="MozPacers (Mozilla Delhi) group picture" class="align-center" src="images/kidzilla_6.jpg" /&gt;
+&lt;p&gt;I had to hurry to go to PyDelhi Meet. (Next post will be on this!)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 03 Apr 2016 12:13:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-04-03:blog/kidzilla-by-mozpacers.html</guid><category>FOSS</category><category>Mozilla</category><category>mozpacers</category></item><item><title>Moved to a static blog</title><link>http://SanyamKhurana.com/blog/moving-to-static-blog.html</link><description>&lt;p&gt;Starting from today, my blog is now entirely shifted from &lt;a class="reference external" href="http://ersanyamkhurana.wordpress.com"&gt;ersanyamkhurana.wordpress.com&lt;/a&gt; to &lt;a class="reference external" href="http://www.sanyamkhurana.com/blog"&gt;sanyamkhurana.com/blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I already liked the idea of static blog and setting up blog for &lt;a class="reference external" href="http://pydelhi.org/blog"&gt;PyDelhi&lt;/a&gt; and &lt;a class="reference external" href="http://mozpacers.org/blog"&gt;Mozilla Delhi&lt;/a&gt; made me realized that I should too shift on using a static blog. It's so much fun to do this, just simple text editing in rST or MD and it's done.&lt;/p&gt;
+&lt;p&gt;The journey seems promising and interesting. This blog is now on Pelican which runs on Python :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 15 Mar 2016 01:46:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-03-15:blog/moving-to-static-blog.html</guid></item><item><title>Finally Mozilla Dev Tools Bug patched</title><link>http://SanyamKhurana.com/blog/mozilla-dev-tool-bug.html</link><description>&lt;p&gt;Alright, finally it's done. I patched the &lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1222937"&gt;Mozilla Dev Tools bug&lt;/a&gt;. with help of my mentor Patrick Brosset (pbro). He was the one who helped me with getting started to land my first patch in Mozilla-Central. He is indeed very helpful and I'm greatful to him for being my mentor. We had regular chat on irc and he helped me in explaining various aspects about this bug, how the files are inter-linked and of course, with my silly doubts.&lt;/p&gt;
+&lt;p&gt;So, this bug was essentially spreaded over many files, unlike the very first bug I solved. While I wrote the patch in around 2 days for this, it was stuck due the test I had to write. One after another, storm of exams and other things crushed me so hard that I was not able to write the test for it. But then, I decided to do it and started studying the test file, contacted pbro on irc and took help and there I was with this bug patched.&lt;/p&gt;
+&lt;p&gt;pbro also gives me detailed code-review about every patch I write and it helps me a lot in improving my coding skills. I've learned about coding-standards and some really good practices in CSS and JS.&lt;/p&gt;
+&lt;p&gt;Now, I'm gonna pick up some more bugs and learn along the way.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 08 Mar 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-03-08:blog/mozilla-dev-tool-bug.html</guid></item><item><title>PyDelhi Conference 2016</title><link>http://SanyamKhurana.com/blog/pydelhi-conf-2016.html</link><description>&lt;p&gt;And here I am, at PyDelhi Conference, as a volunteer, as an attendee, as a speaker and what not?&lt;/p&gt;
+&lt;p&gt;So, I reached the venue at 7:30 AM and people were already there making arrangements. I and Rishabh started with final set-up regarding our workshop, and testing things out.&lt;/p&gt;
+&lt;p&gt;After this, I started going to each audi to set up the speakers and projectors. Me and theskumar were looking out for the connectors for Mac at each audi and other setup. Then we got ready for attending keynote by Kiran, but un-fortunately, I couldn't sit for longer due to preperations for my workshop, which was scheduled just after that.&lt;/p&gt;
+&lt;p&gt;Me, Rishabh and Anuvrat presented workshop on Python for beginners and Mobile as a micro-bit. First, Anuvrat took a quick session on teaching Python for beginners while me and Risabh took the microbit part.&lt;/p&gt;
+&lt;p&gt;We demonstrated 'kivy-shell' which is developed by Kivy Developers and Qua-non (Akkshay), one of the core-contributors of kivy project helped us with all the initial preperations for this. While the initial set-up took time for everyone, but everyone seemed happy after the workshop. They had a lot of doubts and we tried to answer them in the best possible way we could, in the QA session.&lt;/p&gt;
+&lt;p&gt;After that, I got to another audi to help. Most of my time in the conference was spent roaming in-between the three audis to help people as a volunteer.&lt;/p&gt;
+&lt;p&gt;Had some interesting discussions too with many people, got to learn various things, and overall this was a huge success for the PyDelhi community. Here are some of the pictures from the conference:&lt;/p&gt;
+&lt;p&gt;After the conference all volunteers celebrated with dinner.&lt;/p&gt;
+&lt;p&gt;Next we plan to hold PyCon India 2016 here in Delhi, so preperations are in full swing for it, and I'll include that in a later blog post.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 07 Mar 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-03-07:blog/pydelhi-conf-2016.html</guid></item><item><title>Moz-Coffee v6 with Sara and Jochai</title><link>http://SanyamKhurana.com/blog/mozcoffee-v6-with-sara-jochai.html</link><description>&lt;p&gt;Well, this blog post would depict a very wonderful experience! This time, it's not just about MozCoffee v6, it would also depict the preparation phase for it.&lt;/p&gt;
+&lt;div class="section" id="preparation-phase"&gt;
+&lt;h2&gt;Preparation Phase&lt;/h2&gt;
+&lt;p&gt;So, one fine day, Anup (our community Lead) announces that we would have Mozilla Staff here in Delhi and we've to organize an event in a week. After sometime, Ajay announced that Sara Haghdoosti and  Jochai Ben-Avie would be here and we've just 5 days.&lt;/p&gt;
+&lt;p&gt;So, we had regular calls about everything, from logistics to how the event would be executed. We had to decide a venue, send invites to people, get their confirmation, plan for waiting list etc. And we had just 5 days. We delegated the work and each core-contributor of the community had shown such an enthusiasm to accomplish each and every task alloted to them.&lt;/p&gt;
+&lt;p&gt;We decided to make a presentation about our community so that we can release it on event day for everyone along with our website. We decided to have it on reveal JS.
+Pushpita and Yash were responsible for making content. Sonal, Kanika and Saurabh were responsible for putting them in the reveal slides.&lt;/p&gt;
+&lt;p&gt;I would like to mention that none of those mozpacers knew how revealJS works, but I'm happy that they came forward to not only learn it, but implement and execute the task so smoothly. I provided them with the initial set-up of reveal and took an online session where I explained them how reveal JS works &amp;amp; provided them some resources. I was really very happy that they took extra time from regular activities like college to learn reveal and make the slides.&lt;/p&gt;
+&lt;p&gt;Meanwhile we decided to release our community website in beta on this day. I remember, how me and Nikhil were pushing commits daily, co-ordinating with core-contributors to finish up their tasks.&lt;/p&gt;
+&lt;p&gt;Meanwhile, Ajay and Bhuvnesh, were looking for a venue, Saurabh made a form for the people and I shooted the mails to people for invites, confirmation and then later RSVP.
+Kanika made a poster for spreading the word about the event.&lt;/p&gt;
+&lt;p&gt;Despite this event being on Tuesday and given that we started to plan the event just 5 days before, we received an enormous response. We're so happy to see so many upcoming people interested in Open Source.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-event-day"&gt;
+&lt;h2&gt;The Event Day&lt;/h2&gt;
+&lt;p&gt;We had a long waiting list for the event, and finally was the event day. Me and Pushpita reached the venue early and started making arrangements. After sometime, Bhuvnesh, Nikhil, Kanika, Saurabh and Manraj were there.&lt;/p&gt;
+&lt;p&gt;We again delegated the responses and set-up a registration desk to guide people who were confirmed for the event.&lt;/p&gt;
+&lt;p&gt;And then, around 3:00 PM, Ajay arrived with Sara and Jochai from Mozilla and they were too excited to meet everyone. After a light refreshment, they moved on to the presentation area.&lt;/p&gt;
+&lt;img alt="Sara and Jochai" class="align-center" src="images/moz-coffee-v6_2.jpg" /&gt;
+&lt;p&gt;Ajay started with introduction to Mozilla and it's mission. What is Open Web, need for it, how Mozilla is helping in it. Then he told about the community, various communication channels, how people can contribute to Open Source and contribution pathways.&lt;/p&gt;
+&lt;p&gt;Next, we had WoMoz session where Pushpita explained about participation of women in Mozilla, importance of women empowerment and encouraged more women to come forward.&lt;/p&gt;
+&lt;p&gt;After this, our technical team came up on the stage. I explained everyone about the projects we're working on. Manraj told about the Community Manager app.&lt;/p&gt;
+&lt;img alt="MozPacers Tech Contributors" class="align-center" src="images/moz-coffee-v6_1.jpg" /&gt;
+&lt;p&gt;We released the beta version of our site, invited people to contribute by finding and patching bugs.&lt;/p&gt;
+&lt;img alt="MozPacers Tech Contributors" class="align-center" src="images/moz-coffee-v6_4.jpg" /&gt;
+&lt;p&gt;After that Sara and Jochai educated attendees about “Internet Privacy” , “advocacy” and also how India is playing major and significant role on “Web Advocacy and Openness”. We had a small exercise as told by Sara where everyone got up and we learnt about Web Advocacy and Internet Privacy.&lt;/p&gt;
+&lt;img alt="Sara and Jochai" class="align-center" src="images/moz-coffee-v6_3.jpg" /&gt;
+&lt;p&gt;After this, we had two separate help desks set-up for Technical and Non-Technical respectively. And here we released another project developed in just those 5 days: Moz-Connect (This would be expanded more). We collected details of everyone through &lt;a class="reference external" href="https://github.com/mozpacers/moz-connect"&gt;Moz-Connect&lt;/a&gt;, later we'll have an automated system set up to invite contributors (if they willingly selected to volunteer for Mozilla in the Moz-Connect) via mail.&lt;/p&gt;
+&lt;p&gt;Me, Nikhil and Manraj were there on Tech Desk and Kanika, Pushpita were there on the non-tech desks. Met a lot of people who inquired about how to contribute, some people specifically were interested in the tech we're using and asking why we chose them. We tried to answer their queries in the best possible way we could.&lt;/p&gt;
+&lt;p&gt;Haven't really told anyone till now that how much successful we were in this phase of Moz-Connect. So, I'll tell in this blog post! Once I reached back home and merged the database, then I saw the content filled in MozConnect, many people filled in the queries section that &amp;quot;there queries were already resolved on the help desks&amp;quot; and that made me really happy. (Excellent work there team! ;))&lt;/p&gt;
+&lt;p&gt;We had a photo session with everyone :)&lt;/p&gt;
+&lt;img alt="MozCofee v6 attendees" class="align-center" src="images/moz-coffee-v6_6.jpg" /&gt;
+&lt;p&gt;At around 5PM we had refreshments for everyone. Meanwhile, Sara, Jochai, Ajay and Bhuvnesh were discussing about the community and how we can help even outside the community.&lt;/p&gt;
+&lt;p&gt;In last few hours, all core-contributors had a talk with Sara and Jochai about problems we're facing, how we started, what are the motivations, what is the future road-map etc.&lt;/p&gt;
+&lt;img alt="Ajay, Sara and Jochai" class="align-center" src="images/moz-coffee-v6_5.jpg" /&gt;
+&lt;p&gt;Then we had another round of photo session and then left the venue.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 16 Feb 2016 20:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-02-16:blog/mozcoffee-v6-with-sara-jochai.html</guid><category>fsa</category><category>Mozilla</category><category>mozpacers</category></item><item><title>Patched first bug for mozilla-central</title><link>http://SanyamKhurana.com/blog/patched-first-bug-for-mozilla-central.html</link><description>&lt;p&gt;Well, everything seems difficult until you start!&lt;/p&gt;
+&lt;p&gt;How will I make a patch? Will I ever able to understand that code? Will
+I really able to do it?&lt;/p&gt;
+&lt;p&gt;Everyone has these questions in mind and various others, while
+struggling to contribute to a huge code-base like that of Mozilla. So,
+recently I started reading stuff from MDN (Mozilla Developer Network)
+and then with bugsahoy and bugzilla, started figuring out
+good-first-bugs.&lt;/p&gt;
+&lt;p&gt;The difficulty was, it uses such terms, I haven't even heard of! So, I
+was actually really afraid of commenting that I want to pick it up. But
+now, I was really frustrated with myself, and thought to give it a try
+to any bug, people would definitely help me, and I will figure a way
+out.&lt;/p&gt;
+&lt;p&gt;So, I reached &lt;a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1221494"&gt;this
+bug&lt;/a&gt; where
+enough of the instructions were already there, and it seemed like a very
+quick fix. This was a CSS bug in animation inspector of developer tools.&lt;/p&gt;
+&lt;p&gt;Having submitted a patch, I got review for my code and accordingly I did
+the changes, and on Feb 1, 2016. This patch got accepted :)&lt;/p&gt;
+&lt;p&gt;Now I'm working on another bug which is on JS in the animation inspector
+| Dev tools. It's almost done, and I hope I would submit one more patch
+soon.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Fri, 05 Feb 2016 13:41:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-02-05:blog/patched-first-bug-for-mozilla-central.html</guid></item><item><title>MozPacers at MSIT</title><link>http://SanyamKhurana.com/blog/mozpacers-at-msit.html</link><description>&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Our MozPacers (Mozilla Delhi) community conducted an event today at MSIT (Mahraja Surajmal Institute of Technology).&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;We planned various events for students and the itinerary is as follows:&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Intro to Mozilla, it's mission and Open Web - Delivered by Bhuvnesh and Manraj&lt;/div&gt;
+&lt;div class="line"&gt;Promoting Womoz and gathering more women contributors - By Ashu and Sonal&lt;/div&gt;
+&lt;div class="line"&gt;Learning version control with Git - By me; Sanyam&lt;/div&gt;
+&lt;div class="line"&gt;Webmaker tools - By Saurabh&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;So, I reached the venue at 11:30 AM. We made some arrangements and till
+the students gathered, it was already around 12:50 PM. Initial session
+was started by Bhuvnesh about intro to Mozilla, it's mission, privacy
+etc. Then Manraj shared about his experience in contributing to Mozilla
+and a little bit about his visit to Leadership summit.&lt;/p&gt;
+&lt;p&gt;In between we had quiz session on Mozilla, where we distributed swags
+for whoever comes up with the correct answer.&lt;/p&gt;
+&lt;p&gt;Then Sonal and Ashu encouraged more women contributors to come forward
+and enlightened others about their contribution in the community. They
+told about various pathways to contribute; it's not about just patching
+bugs, they told how they are doing documentation in the community.&lt;/p&gt;
+&lt;p&gt;Next session was taken by me about Intro to version control system,
+specifically Git. I told about basics of Git, some things about
+Mercurial (since that is what Mozilla is using).&lt;/p&gt;
+&lt;p&gt;Then Saurabh took session on Webmaker tools like Thimble, X-ray goggles
+etc. and encouraged students to learn.&lt;/p&gt;
+&lt;p&gt;Then we had a sort of open house session where we took in questions from
+people, and answered them. Bhuvnesh, Nikhil, Manraj, Saurabh and me
+answered their queries.&lt;/p&gt;
+&lt;p&gt;Lastly, I told about my exprience with Mozilla, how I'm about the land
+my first patch for Mozilla central, what all I learned, what's in it to
+contribute to FOSS etc. I shared about how I fiddled to contribute, why
+it is essential to ask questions etc. I told them about IRC and Mailing
+list guidelines, covering basics of Bugzilla. I hope this would help
+them :)&lt;/p&gt;
+&lt;p&gt;Many students seemed to be enthusiastic enough to join MozPacers and
+learn from the community, and I hope we will soon see more faces in the
+next MozCofee meetup.&lt;/p&gt;
+&lt;p&gt;Oh, yeah, need to now have a closer look at mails, I'm expecting MSIT
+people would ping us now for help :)&lt;/p&gt;
+&lt;p&gt;I'll update this post with pictures from the event soon :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sat, 30 Jan 2016 21:48:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-01-30:blog/mozpacers-at-msit.html</guid></item><item><title>Bootstrap Modal Scroll Bug on Chrome [Easy-Fix]</title><link>http://SanyamKhurana.com/blog/bootstrap-modal-scroll-bug-on-chrome-easy-fix.html</link><description>&lt;p&gt;As usual, I was contributing more to the PyDelhi Conference project and
+saw that the code of conduct was really occupying a large space and
+wasn't looking good. I contacted theskumar on IRC and we decided to make
+some changes in the FAQ as well as Code of Conduct section.&lt;/p&gt;
+&lt;p&gt;Quick enough I decided to have modals to be used for displaying the
+short and long version of code of conduct. I did it as well as the other
+task of modifying the FAQ section.&lt;/p&gt;
+&lt;p&gt;I told theskumar about it. Since it was around 2 AM, everyone was
+sleeping. Next day, I got a reply from theskumar that the modal was not
+scrolling on the mobile.&lt;/p&gt;
+&lt;p&gt;I tried quickly on my mobile and it worked. I asked him about the
+browser he was using, and he told me that it was Chrome. I tried that on
+firefox and it was working.&lt;/p&gt;
+&lt;p&gt;I then tried it on my desktop on both firefox and chrome. In firefox,
+both on mobile and desktop it was working fine, but in chrome, both on
+mobile and desktop, it was not scrolling.&lt;/p&gt;
+&lt;p&gt;I started searching, and got to the official bootstrap repo on github,
+where I found various issues, and this was a known bug on chrome.&lt;/p&gt;
+&lt;p&gt;I got to StackOverflow in search of alternatives, and then kept on
+applying it. But no success. Either the content of the body moves, or
+the whole page hanged.&lt;/p&gt;
+&lt;p&gt;I reached out Apoorva mam, and then she helped me. The solution was to
+have a scroll bar implemented in the modal keeping it's height fixed.&lt;/p&gt;
+&lt;p&gt;So, we just added this to CSS:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;.modal-body {&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;position: relative;&lt;/div&gt;
+&lt;div class="line"&gt;padding: 20px;&lt;/div&gt;
+&lt;div class="line"&gt;height: 200px;&lt;/div&gt;
+&lt;div class="line"&gt;overflow-y: scroll;&lt;/div&gt;
+&lt;div class="line"&gt;}&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;and it's working!&lt;/p&gt;
+&lt;p&gt;I hope this would help someone who is still figuring out about scrolling
+bug on chrome.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 13 Jan 2016 00:55:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-01-13:blog/bootstrap-modal-scroll-bug-on-chrome-easy-fix.html</guid></item><item><title>Authenticating And Getting Info From Explara API</title><link>http://SanyamKhurana.com/blog/authenticating-and-getting-info-from-explara-api.html</link><description>&lt;p&gt;PyDelhi is organizing a mini PyCon this year with the name PyDelhi Conf.
+And we all are having a great time working behind the scenes to make it
+a success. I'm contributing to building up the website for the confrence
+(conference.pydelhi.org).&lt;/p&gt;
+&lt;p&gt;So, there was this task of fetching the no. of tickets left for the
+conference from explara and displaying it on the website. I picked it up
+and had a look at Explara API. And Bingo! I noticed the tickets
+end-point, which would contain the remaining tickets in the JSON format.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;I got into reading about accessing api. There are two methods, one is for user access and another one is for app access.&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Since user access is good enough for the kind of work we're thinking to do, I decided to go by first method and generated the access token from my personal account and made a test event for testing purpose.&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;After several tries and errors, I was not able to authenticate the API.
+It was either giving me 401 or 403. Then after a day, I contacted
+Anuvrat &amp;amp; Saurabh on IRC. Also, I reached to Rishabh. Rishabh told me
+that he was able to authenticate for the app method which uses OAuth2.
+Then he tried for the user method and told me. And there I am.&lt;/p&gt;
+&lt;p&gt;Doing a blunder. The Authorization token in the header would be
+preceeded by 'Bearer' so the header would be:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Key: Authorization&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Value: Bearer &amp;lt;YOUR_API_KEY&amp;gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;And then voila, it was authorized. Soon to my surprise, it was giving me
+E007 which is a custom status code of explara which implies that eventId
+is incorrect. I just clicked on edit on my event and in the url I found
+something like&lt;/p&gt;
+&lt;p&gt;eid/116168&lt;/p&gt;
+&lt;p&gt;And I thought, yeah, that's the eventId I started passing it. But always
+I was getting E007. Rishabh was also trying but he was also not able to
+get the response 200.&lt;/p&gt;
+&lt;p&gt;At around 12.30 AM Rishabh told me that he's going to sleep, and would
+try tomorrow. But I decided to try more. I googled on how to find the
+eventId of explara event, but no concrete answer. I kept on trying, and
+then decided to have a look at other methods API is offering.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;There was an endpoint to get all events which require no parameters to be passed. I hit that end-point and there I was.&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;I got the event details as JSON and find the eventId of the event I created.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Now I took that eventId and hit the ticket end point to get the details, but there was always E007 error. I tried different methods to pass eventId parameter. I tried to pass it in a JSON body, but no success.&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Then I tried x-www-form-urlencoded and then the error code changed. I quickly searched, and got to know that I need to change the content-type of my request in the header.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;I changed the header and added:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Key: Content-Type&lt;/div&gt;
+&lt;div class="line"&gt;Value: application/x-www-form-urlencoded&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;and bingo! I got the ticket status&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Now I just wrote a simple flask script to issue the request and then display the tickets left in JSON format.&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;And here it is:&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://github.com/CuriousLearner/explara-ticket-status"&gt;https://github.com/CuriousLearner/explara-ticket-status&lt;/a&gt;
+|  Also forked to PyDelhi:
+&lt;a class="reference external" href="https://github.com/PyDelhi/explara-ticket-status"&gt;https://github.com/PyDelhi/explara-ticket-status&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;At 3:05 AM the task was completed, and I was pretty much happy about it.
+A good learning experience and I hope that someone would find it useful
+while working with explara api. Lack of examples caused more time on
+this than was really needed.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 13 Jan 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-01-13:blog/authenticating-and-getting-info-from-explara-api.html</guid></item><item><title>PyDelhi Birthday Bash!</title><link>http://SanyamKhurana.com/blog/pydelhi-birthday-bash.html</link><description>&lt;p&gt;And here it is! We just completed 1 year of regular meetups at PyDelhi.
+We organized various workshops, meet-ups, events etc. in the past one
+year.&lt;/p&gt;
+&lt;p&gt;We had the meet on 9th Jan, 2016. The venue was Fueled. We gathered
+there and started the introduction outside the office. After the
+introduction session, we got inside and we had a small presentation
+about PyDelhi delivered by Rishabh, Ashutosh and me, where we explained
+about PyDelhi, PyCon India, volunteering, how to contribute, various
+events by PyDelhi in 2015 etc.&lt;/p&gt;
+&lt;p&gt;Then we had a session where we explained how we used Python in 2015 in
+our projects. And there were many participants. Some projects were
+really good.&lt;/p&gt;
+&lt;p&gt;After this, we had the snacks and cake ready! After the party, most of
+the people formed groups and were discussing. There were a large group
+of students from Amity who just started programming and were looking for
+inspiration. Some people just came to me and asked for help. I guided
+them in the best possible way I could as per my exprience.&lt;/p&gt;
+&lt;p&gt;Soon after this, Satyaakam sir told that they would give inspiration and
+showed github account of student of PyChill who was in 8th standard. The
+repo was full of algos written in Python. He also showed the website
+that student made for PyChill. Again, I realized what Mr. Anuvrat told
+me, &amp;quot;Hum to Jhak maar rahe hai!&amp;quot;.&lt;/p&gt;
+&lt;p&gt;This was really inspiring for me as well and provided enough motivation
+to start working hard. After this, we had volunteers sitting around and
+completing various tasks for the PyDelhi Conference. We set up explara
+account, made up logo, pamphlets, resolved various issues on the repo,
+made list of people for reviewing the CFPs etc.&lt;/p&gt;
+&lt;p&gt;I had a discussion on what all needs to be done with theskumar and then
+left.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 13 Jan 2016 00:52:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-01-13:blog/pydelhi-birthday-bash.html</guid></item><item><title>How to clone a large repository using git</title><link>http://SanyamKhurana.com/blog/how-to-clone-a-large-repository-using-git.html</link><description>&lt;p&gt;So, I was trying to clone the official Mozilla gecko repo and it had
+around 455182 commits.&lt;/p&gt;
+&lt;p&gt;As usual I executed on my terminal:&lt;/p&gt;
+&lt;blockquote&gt;
+git clone &lt;a class="reference external" href="https://github.com/mozilla/gecko-dev"&gt;https://github.com/mozilla/gecko-dev&lt;/a&gt;&lt;/blockquote&gt;
+&lt;p&gt;Then it took whole night to get cloned. I was awake the whole night. At
+5:20 AM, it was around 90% received and then boom, it just crashed.&lt;/p&gt;
+&lt;p&gt;All the data downloaded of more than 1 GB was wasted.&lt;/p&gt;
+&lt;p&gt;Well, whatever happens, always happens for good. This provided me an
+awesome opportunity to learn how to easily clone large repos.&lt;/p&gt;
+&lt;p&gt;So, there are two ways around this.&lt;/p&gt;
+&lt;div class="section" id="do-a-shallow-clone"&gt;
+&lt;h2&gt;&lt;strong&gt;Do a shallow clone!&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Wait, what? What is a shallow clone?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Well, I mean clone the repo but not with all commits. Let's do it for
+just latest commit ie only one commit. Later once all the objects are
+extracted, we can deepen the clone.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;So, how do you do that in git?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;With the depth parameter as:&lt;/p&gt;
+&lt;blockquote&gt;
+git clone --depth=1 &lt;a class="reference external" href="https://github.com/mozilla/gecko-dev"&gt;https://github.com/mozilla/gecko-dev&lt;/a&gt;&lt;/blockquote&gt;
+&lt;p&gt;Here I've given depth of 1 commit, and suddenly the 1.5 GB repo became
+just around 258 MB to be downloaded.&lt;/p&gt;
+&lt;p&gt;If you still are stuck, and even this is difficult to clone because of
+unstable connection then prefer downloading a bundle, or explore &lt;a class="reference external" href="http://stackoverflow.com/questions/3954852/how-to-complete-a-git-clone-for-a-big-project-on-an-unstable-connection"&gt;more
+option via this SO
+Question&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Once you have shallow clone, you can deepen it.&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+git fetch --depth=100&lt;/blockquote&gt;
+&lt;p&gt;to fetch 100 commits&lt;/p&gt;
+&lt;p&gt;or if you want to get all commits then simply use:&lt;/p&gt;
+&lt;blockquote&gt;
+git fetch --unshallow&lt;/blockquote&gt;
+&lt;p&gt;and that would fetch all the commits and make your repo similar to what
+you do in the initial place like using git clone simply.&lt;/p&gt;
+&lt;p&gt;I hope this would help someone :)&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 28 Dec 2015 14:14:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-12-28:blog/how-to-clone-a-large-repository-using-git.html</guid></item><item><title>Learning from Anup's MozFest Experience</title><link>http://SanyamKhurana.com/blog/learning-from-anups-mozfest-experience.html</link><description>&lt;p&gt;(Image Courtesy: wiki.mozilla.org)&lt;/p&gt;
+&lt;p&gt;My journey in Mozilla has been quite awesome and interesting till now.
+I've come to learn a lot of things, met like-minded people, shared ideas
+with them, gave talks which helped a lot in improving upon my skills as
+an organizer, leader, speaker, programmer and what not! and I hope it
+was beneficial to the community as well. This week I also got my name in
+&lt;a class="reference external" href="https://www.mozilla.org/credits/"&gt;Mozilla about:credits&lt;/a&gt;, and that's
+just because of continuous support from the local community and guidance
+of Anup, Ajay and Bhuvnesh.&lt;/p&gt;
+&lt;p&gt;Anup, our community mentor, got a chance to attend MozFest 2015. Last
+Saturday, he took an online session on vidyo, where he enlightened us
+about his learning in MozFest. He told us about various session he
+attended and his participation in the program.&lt;/p&gt;
+&lt;p&gt;This post is about my thoughts and learning through Anup's online
+session about Leaders, Leadership and participation in the community.&lt;/p&gt;
+&lt;p&gt;Though I've been a Tech SIG Lead in my local community (MozPacers), but
+I think Leaders are not different from other community members. I
+believe everyone is a leader, and it is the participation of the
+community members which acts as a pillar to the community. Not a single
+person could be a leader and not a single person depicts leadership
+qualities that take a community too far.&lt;/p&gt;
+&lt;p&gt;In every community, I believe only participation by different members
+helps in progressing and accomplishing any task. Anup is very right when
+he says &amp;quot;Participation is the core of any program&amp;quot;. Everyone is a leader
+in the community and everyone makes decision which certainly affects
+every other member of the community. It is the power of these decisions
+collaboratively, which every community member make, that develop the
+whole community and lead it to the right direction.&lt;/p&gt;
+&lt;p&gt;Mentors are always there to guide the community members; but the
+distributed leadership where every member puts up his/her ideas reflects
+what truly leadership is. It is just about coming-forward and presenting
+one's views. When this distributed leadership through participation is
+collaborated, and everyone devotes something, learn from others; the
+whole group benefits and move forward together. This is what reflects
+the true meaning of participation and leadership.&lt;/p&gt;
+&lt;p&gt;In my local community too, I've learned quite a lot from my fellow
+Mozillians. We've collaborated on various stuff, whether it is
+Peer-to-Peer learning session, developing on projects for the community
+or just lending a helping hand in almost any task. It is this binding
+power (Participation) of team members which I've witnessed, has helped
+in growing up the community where people learn and are equally motivated
+to lead.&lt;/p&gt;
+&lt;p&gt;So, just to summarize my learning from Anup's session:&lt;/p&gt;
+&lt;blockquote&gt;
+Leadership is not a single trait that a single person possess, it is
+the collaborative effort of the whole group, where they participate,
+learn and grow together.&lt;/blockquote&gt;
+&lt;p&gt;I joined MozPacers when it was really in it's initial phase. Met Ajay,
+Anup and Bhuvnesh who told me that a website is to be needed for
+MozPacers, and that's how we made the initial wireframe in the first
+meet itself and my contributions started. If you want to know about my
+journey, then please read: &lt;a class="reference external" href="https://erSanyamKhurana.wordpress.com/2015/07/14/journey-to-being-a-mozillian/"&gt;My Journey to being a
+Mozillian&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="section" id="what-makes-me-an-effective-contributor"&gt;
+&lt;h2&gt;&lt;strong&gt;What makes me an effective contributor?&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Helped in revamping MozPacers, Mozilla Delhi Community.&lt;/li&gt;
+&lt;li&gt;Got &lt;a class="reference external" href="https://mozillians.org/en-US/u/CuriousLearner/"&gt;vouched&lt;/a&gt; and
+also got my name listed in &lt;a class="reference external" href="https://www.mozilla.org/credits/"&gt;Mozilla
+about:credits&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Spoke at Mozilla Dev Sprints on Git, git-flow etc.&lt;/li&gt;
+&lt;li&gt;Got to Jaipur Stumbling Trip to contribute to Mozilla Stumbler&lt;/li&gt;
+&lt;li&gt;Won Mozilla Stumbler v1.0 Delhi NCR with more than 50,000 reports
+submitted till that time.&lt;/li&gt;
+&lt;li&gt;Still contributing to Stumbler. Also reported issues on official
+repo.&lt;/li&gt;
+&lt;li&gt;Selected as Contributor of the Month (July 2015)&lt;/li&gt;
+&lt;li&gt;Presently Technical SIG Lead of mozpacers&lt;/li&gt;
+&lt;li&gt;Represented MozPacers at AngelHack where we developed FirefoxOS app
+NGO Man to help NGOs in efficiently managing their resources.&lt;/li&gt;
+&lt;li&gt;Contributed to MozPacers website (&lt;a class="reference external" href="http://www.mozpacers.org"&gt;http://www.mozpacers.org&lt;/a&gt;) ,
+slackbot and mass e-mail sender &amp;amp; other few projects.&lt;/li&gt;
+&lt;li&gt;Enlightened people about Contribution pathways and brought my friends
+in the community to contribute in Mozilla's mission.&lt;/li&gt;
+&lt;li&gt;As SIG Lead, I mentor new comers in the community and learn myself.&lt;/li&gt;
+&lt;li&gt;Got many of my friends including Nikhil, Vikram, Manraj, Akansh and
+others in getting started with contributions and being involved with
+MozPacers, and now they are now core-contributors of the community.
+Nikhil is now Tech SIG Lead.&lt;/li&gt;
+&lt;li&gt;Believes is FOSS's &amp;quot;Giving back to the community&amp;quot;.&lt;/li&gt;
+&lt;li&gt;Managing github organization of MozPacers; reviewing code and
+guidelines.&lt;/li&gt;
+&lt;li&gt;Created online infrastructure and set-up for MozPacers community.
+Setting up domain, official e-mails, website, bots etc.&lt;/li&gt;
+&lt;li&gt;Managing various communication channels of MozPacers viz Slack,
+trello etc.&lt;/li&gt;
+&lt;li&gt;Received another vouch from Ajay.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="how-mozpacers-is-an-effective-community"&gt;
+&lt;h2&gt;&lt;strong&gt;How MozPacers is an effective community?&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Contributed more than 19 lac (19,00,000) reports in Mozilla Stumbler.&lt;/li&gt;
+&lt;li&gt;Have shown up as the Most Active community in Northern India&lt;/li&gt;
+&lt;li&gt;Have volunteers from Punjab, Himachal Pradesh, Delhi, Haryana,
+Faridabad and other cities/states in Northern India.&lt;/li&gt;
+&lt;li&gt;Proven Track record of events like Mozilla MozCoffee taking place at
+least once every month. Along with other events like Dev Sprints,
+hackathons etc.&lt;/li&gt;
+&lt;li&gt;People are given chance to speak about their contributions and teach
+other people.&lt;/li&gt;
+&lt;li&gt;Diversity both in terms of geography and gender.&lt;/li&gt;
+&lt;li&gt;Strengthening the WoMoz.&lt;/li&gt;
+&lt;li&gt;On-going projects like Community Manager to help the other
+communities.&lt;/li&gt;
+&lt;li&gt;Lending a helping hand and collaborating with other communities.&lt;/li&gt;
+&lt;li&gt;A proper process to help newbies in getting-involved and providing 1
+on 1 mentoring sessions to them.&lt;/li&gt;
+&lt;li&gt;More people joining in every month.&lt;/li&gt;
+&lt;li&gt;MozCofee have more than 30+ people and in some events we get 50-60+
+people as well.&lt;/li&gt;
+&lt;li&gt;We have strength of 30+ Core-Contributors of the community.&lt;/li&gt;
+&lt;li&gt;A &lt;a class="reference external" href="https://wiki.mozilla.org/Mozilla_Delhi"&gt;proper organization
+structure&lt;/a&gt; involved to
+help in better tracking of contributors and giving them shoulder tap
+when needed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Now Anup would also take another session on his learning in specific
+programs he attended at MozFest. He would tell about the IceBerg Model
+and other things which I'm really looking forward to learn about.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 25 Nov 2015 11:20:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-11-25:blog/learning-from-anups-mozfest-experience.html</guid><category>FOSS</category><category>mozfest</category><category>Mozilla</category><category>mozpacers</category></item><item><title>FSA Community Engagement Meet-up</title><link>http://SanyamKhurana.com/blog/fsa-community-engagement-meet-up.html</link><description>&lt;p&gt;Ah, well, coudn't write about this, as I had my exams and project
+submissions. But yeah, here it is. #FSADreamTeam. This would be a quick
+post.&lt;/p&gt;
+&lt;p&gt;On November 14 and 15, we had people for FSA Community Engagement here
+in Delhi.&lt;/p&gt;
+&lt;p&gt;We had Santosh, Kritika and Tanay here in Delhi. Well, I had my exams
+and wasn't sure, if I should go, but then I went for both days.&lt;/p&gt;
+&lt;div class="section" id="day-0"&gt;
+&lt;h2&gt;DAY 0&lt;/h2&gt;
+&lt;p&gt;I reached the venue well before time and inquired Santosh about where
+we're meeting. I got to the place. We started our discussion about FSA
+program.&lt;/p&gt;
+&lt;p&gt;We discussed about what all is expected through FSA Program and how we
+can improve it. Also we started doing SWOT (Strength, Weakness,
+Opportunity, Threats) Analysis of FSA Program. Un-fortunately, due to
+exams, not enough people joined on Saturday. But as soon as we started
+tweeting, people from MozPacers community started collaborating online
+despite of exams.&lt;/p&gt;
+&lt;p&gt;After discussing on Strength and Weakness Analysis, we had our Lunch,
+and then we left.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-1"&gt;
+&lt;h2&gt;DAY 1&lt;/h2&gt;
+&lt;p&gt;On this day, we had many members joined in for discussion. Ajay, Anup,
+Bhuvnesh, Tanshul, Kunal, Pushpita also joined. From the previous day,
+we carried on SWOT Analysis. We had a discussion on FSA Program,
+opportunities which are expected and also how we can improve on it. Also
+we had discussion on collaborating with other communities and strengthen
+the Mozilla's mission.&lt;/p&gt;
+&lt;img alt="FSA community engagement" src="images/fsa-community-meetup-1.jpeg" /&gt;
+&lt;p&gt;After lunch, we presented our idea of Community Manager App, which
+MozPacers are planning to make in order to efficiently manage all the
+community statistics. We would first have a pilot run in our local
+community and then make it configurable for every community. That would
+help in efficiently managing contributions and recognizing contributions
+in every local community.&lt;/p&gt;
+&lt;img alt="FSA community engagement" src="images/fsa-community-meetup-2.jpeg" /&gt;
+&lt;p&gt;Everyone then said good-bye and we left the venue. I was happy to meet
+new people and learn from them.&lt;/p&gt;
+&lt;p&gt;All our discussions are mentioned here:
+&lt;a class="reference external" href="https://public.etherpad-mozilla.org/p/delhi"&gt;https://public.etherpad-mozilla.org/p/delhi&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 24 Nov 2015 20:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-11-24:blog/fsa-community-engagement-meet-up.html</guid><category>fsa</category><category>Mozilla</category><category>mozpacers</category></item><item><title>Mozilla Dev Sprint v3.0</title><link>http://SanyamKhurana.com/blog/mozilla-dev-sprint-v3-0.html</link><description>&lt;p&gt;Writing after a long time. Have been occupied by a lot of things and
+that's why the official site of Mozilla Delhi, mozpacers.org, (Yes, we
+got that domain a while ago) was never being ready for release.&lt;/p&gt;
+&lt;p&gt;The event section integration and stuff was causing a lot of problem.
+Nikhil was facing a lot of issues on front-end and there was not good
+communication online so that we both can together collaborate physically
+and complete it. That's why, we requested for a mini Dev Sprint, and
+here it was.&lt;/p&gt;
+&lt;img alt="Nikhil, me and Bhuvnesh" class="align-center" src="images/mozilla-dev-sprint-v3.jpg" /&gt;
+&lt;p&gt;Mozilla Dev Sprint v3.0 held at Cvent, Gurgaon on 18th Oct 2015. We both
+reached at 10:30 AM sharp, and met Bhuvnesh. We then got to the
+conference room which was where we were supposed to code.&lt;/p&gt;
+&lt;p&gt;So, we started. As expected, touching our own code after few months left
+us buzzard, and one hour was spent figuring out what needed to be done
+exactly. After that, Nikhil started to adjust for the overall styling
+for Events section and I was modifying the API as requested by Nikhil to
+accommodate for the details of a single event to be displayed.&lt;/p&gt;
+&lt;p&gt;Till 12:30 PM, I was able to figure out the changes to be made in the
+API. Then we both were decided about how exactly the page should look
+like for a single event. We came up with this wireframe and started
+working.&lt;/p&gt;
+&lt;img alt="Wireframe for displaying single events on Mozpacers.org" class="align-center" src="images/mozilla-dev-sprint-v3_1.jpg" /&gt;
+&lt;p&gt;We decided to fill our database with actual values. So, Bhuvnesh started
+collecting all the details and making JSON for it. I was reviewing the
+PR's already made on the repo and Nikhil was working on the front-end.&lt;/p&gt;
+&lt;p&gt;Soon, I realized Nikhil's fork was around 50 commits behind the main
+repo and now we were ready for merge conflicts.&lt;/p&gt;
+&lt;p&gt;Around 6:30 PM everything was functional and we were resolving merge
+conflicts.&lt;/p&gt;
+&lt;p&gt;We decided to make this functional site an alpha v0.1 release. Though
+most of the things are breaking, but at least the site is functional. :)
+We left Cvent at 7:30 PM.&lt;/p&gt;
+&lt;p&gt;Next day, we had a meeting with core-contributors about general
+instructions on PR and commits on github repo and if everyone comes
+forward we hope to complete the beta release by next Sunday.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 21 Oct 2015 16:38:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-10-21:blog/mozilla-dev-sprint-v3-0.html</guid><category>FOSS</category><category>Mozilla</category><category>Open Source</category></item><item><title>Mozilla Stumbling in Jaipur</title><link>http://SanyamKhurana.com/blog/mozilla-stumbling-in-jaipur.html</link><description>&lt;p&gt;I got to Jaipur Stumbling trip which was majorly sponsored by Mozilla.
+Here is a full detail about our journey. Our main motive was to collect
+at least 10k reports for the upcoming Mozilla Stumbler Project.&lt;/p&gt;
+&lt;div class="section" id="day-0"&gt;
+&lt;h2&gt;DAY 0&lt;/h2&gt;
+&lt;p&gt;Starting of my journey became complex as some last minute changes caused
+trouble for me to reach Kashmere Gate, from where we had to leave
+together for Jaipur. After some jiggling I was able to book Uber and
+left my house at 3:50 AM. Reached Kashmere Gate at 4:18 AM.&lt;/p&gt;
+&lt;p&gt;Found the Traveller, met people and we left around 4:35 from there. On
+the way picked up Vikram and then headed towards Gurgaon where Bhuvnesh
+and others were waiting. Well, and then suddenly our tire got punctured.
+Well normal people get dis-heartened, but MozPacers just utilized that
+time clicking selfies. One of them is here:&lt;/p&gt;
+&lt;img alt="Jaipur stumbling" class="align-center" src="images/mozilla-stumbling-jaipur_1.jpg" /&gt;
+&lt;p&gt;After the tire was changed, we moved on and reached Gurgaon at 6:30 AM,
+picked up Bhuvnesh and others and moved on our journey. We played some
+music on the go, decided on some movie to watch, but then every other
+person could be seen sleeping and no one was watching movie.&lt;/p&gt;
+&lt;p&gt;After waking up, we continued to play cards and a Game where everyone
+had to speak only in Hindi, no English words. We stopped at around 9:00
+AM in a nearby Dhaba, and grabbed some tea/coffe and snacks. We moved on
+and reached hotel Mansingh at 12:30 PM. Got one hour to freshen up.
+Then, we decided not to have lunch and go directly to visit forts since
+visitors were allowed only till 5 PM and we didn't have enough time.&lt;/p&gt;
+&lt;p&gt;We got to Jantar Mantar and got to see many instruments that helped
+tracking even the celestial objects. Also got to know that Jaipur was
+the first city that was built with a proper plan. We also got to
+Nahargarh Fort and enjoyed the awesome view. We also wen to Amer Fort.&lt;/p&gt;
+&lt;p&gt;At around 6:00 PM all of us were hungry, and stopped by a nearby shop
+for some snacks. We also got to look Jal Mahal and Hawa Mahal from
+outside. We got back to hotel and people got to their rooms to rest.&lt;/p&gt;
+&lt;p&gt;Tanshul and I decided to go for swimming. So, we got ready and went for
+swimming. Well, I forgot some strokes, seemed like I had some fear of
+water returned, but soon enough I was able to overcome that. Tried
+different strokes like freestyle, froggy etc. and practiced some basic
+stuff. Then we returned to our rooms.&lt;/p&gt;
+&lt;p&gt;I just got to bed, and then suddenly someone entered the room. It was
+Nikhil, telling that we have a meeting at the conference room and I've
+to hurry. I got to the place, and we had some discussion on the website
+project and also about involving new contributors. Since we had many new
+people with us, we told them what was going on in the community and
+status of various things we are planning. We then had dinner and decided
+to carry on the discussion about the website project in the room.&lt;/p&gt;
+&lt;p&gt;At 11:30 PM, we gathered in a common room, on a single bed and had that
+discussion. After that, Anoop &amp;amp; Ajay started telling stories of Ghost.
+Not to forget that this left some people in so much fear that they slept
+with keeping lights of their room on. :P&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-1"&gt;
+&lt;h2&gt;DAY 1&lt;/h2&gt;
+&lt;p&gt;Around 12:30 AM I got bored and left to sleep since it was more than
+full day I got to sleep. Later, Vikram came and then around 1 AM I got
+to sleep.&lt;/p&gt;
+&lt;p&gt;Around 4:30 AM I got up, and took a bath. At around 5:30 AM I was ready,
+got off the room and roamed in the lobby area for some time. No one was
+there :( At around 7:00 AM I got inside room, Vikram was sleeping so I
+though to roam outside only, I got outside but this time forgot to take
+the keys :P&lt;/p&gt;
+&lt;p&gt;I returned at around 7:30 AM and then rang the bell, Vikram got up to
+open the door and then got ready. We got out for breakfast and then
+decided to meet at 10:00 AM.&lt;/p&gt;
+&lt;p&gt;We then shooted community videos on Stumbling experience. Clicked some
+pictures in and around hotel and then left to visit City Palace.&lt;/p&gt;
+&lt;p&gt;Well, we got a guide (We called him MozGuide) there who helped us
+explored the place and we got to see various places where different
+movies like Jodha Akbar was shot.Here is a picture of MozPacers with
+MozGuide.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;img alt="Jaipur stumbling" class="align-center" src="images/mozilla-stumbling-jaipur_2.jpg" /&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;We left Jaipur at around 2:30 PM. The journey continued and suddenly
+something happened.&lt;/p&gt;
+&lt;p&gt;I was on the last seat as usual and looked back and realized that Diesel
+was leaking. We immediately stopped and got that the grip of tyre weared
+off. Now this caused us a major problem. We went back and forth to
+various shops on highway in search of a tyre, and then ultimately at
+around 6:30 PM we got to some good shop. After that we got to the
+traveller and continued to Delhi.&lt;/p&gt;
+&lt;p&gt;We reached Gurgaon at around 11:30 PM. Meanwhile we were playing
+different games like Truth &amp;amp; Dare. Me and Vikram got off near AIIMS and
+then returned to our homes. I reached around 1:00 AM&lt;/p&gt;
+&lt;p&gt;In between the journey we named everything pre-pending it with Moz like
+MozWater, MozChor, MozGuide, MozJail, MozFort et all. :)&lt;/p&gt;
+&lt;p&gt;Oh, well, did I forget to mention that I just got declared as the winner
+of Mozilla Stumbler v1.0 Delhi NCR? :)&lt;/p&gt;
+&lt;p&gt;Here is a picture while we were in Jaipur:&lt;/p&gt;
+&lt;img alt="Jaipur stumbling" class="align-center" src="images/mozilla-stumbling-jaipur_3.jpg" /&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 27 Jul 2015 00:21:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-07-27:blog/mozilla-stumbling-in-jaipur.html</guid><category>FOSS</category><category>Mozilla</category><category>Stumbler</category></item><item><title>Journey To Being a Mozillian</title><link>http://SanyamKhurana.com/blog/journey-to-being-a-mozillian.html</link><description>&lt;p&gt;Few months back, despite of all odds, I attended an event by Mozilla
+which was WebMaker event, where I along with my friend Vikram (I
+literally had to force him to attend, since the event was far away and
+we were tired on that day),  visited to know more about WebMaker Project
+and in a hope to start contributing by asking people around. There I met
+Anup Kumar Mishra and Ajay Kumar, (both being Mozilla Reps) where they
+were telling about WebMaker project.&lt;/p&gt;
+&lt;p&gt;At the time, I was struggling to get started to contribute to Mozilla
+and they told me to drop a mail, and they would help me. I did that
+immediately, and also got help from them.&lt;/p&gt;
+&lt;p&gt;I came to know that they're trying to re-build Mozilla Delhi community
+and want some active contributors.&lt;/p&gt;
+&lt;p&gt;I was interested and keep attending their MozCofee meet one after the
+another. Though didn't get enough time to document each event earlier
+due to my exams and then my prior commitments. By the way here is our
+recent picture :)&lt;/p&gt;
+&lt;img alt="MozPacers (Mozilla Delhi) group picture" class="align-center" src="images/mozilla_delhi_group.jpg" /&gt;
+&lt;p&gt;But I'll try to summarize all that in this post itself.&lt;/p&gt;
+&lt;p&gt;Mozilla Delhi started to categorize contributors in two categories, so
+as to ease the maintenance of work, as in:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;Technical Contributors, who are interested in patching bugs and in
+general contributing some Open Source Code&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Non-Technical Contributors, who promote Mozilla and it's various
+products. They'll manage all the events, arrangements and other
+managerial tasks.&lt;/p&gt;
+&lt;p&gt;Though these are not hard-followed in the sense, everyone is free to
+work in both categories, no bounds are there and that is awesome,
+isn't it? (Keep reading, if you want to join as contributor.)&lt;/p&gt;
+&lt;p&gt;Next, in order to establish and let people know about Mozilla Delhi,
+we decided to build a website representing Mozilla Delhi. For that,
+we gathered some more contributors as we needed front-end people,
+back-end people, UI/UX designers etc. I reached my developers friends
+and told about awesome opportunity to contribute. Thus I invited
+Nikhil Handa (as he's good in UI/UX), Manraj Singh (back-end and some
+front-end), Akansh Gulati (front-end) and some other people.
+Meanwhile, I was also being actively being pinged on facebook by
+people to know more about Mozilla Delhi and start contributions. I
+was trying my best to guide them further.&lt;/p&gt;
+&lt;p&gt;Meanwhile, we were planning things on slack (mozpacers.slack.com) and
+decided to have Dev Sprint v1.0 to decide upon the Website, finalize
+the wire-frame, distribute responsibilities, choosing tech stack for
+the creation of website, et all.&lt;/p&gt;
+&lt;p&gt;Dev Sprint v1.0 was planned to be at Zopper (the same company I'm
+doing internship at). Thanks to Co-Founder Surjendu Kuila for
+sponsoring Mozilla Delhi's DevSprint v1.0.&lt;/p&gt;
+&lt;p&gt;So, we gathered at Zopper and started discussion on the initial
+wire-frame and using whiteboard, we tried to gathered more
+requirements and listen to what everyone has to say. Different points
+were put forward by the community members regarding design,
+functionality and other non-functional requirements.&lt;/p&gt;
+&lt;p&gt;When majority of people agreed upon the design and details, we made a
+separate list of those tasks. Those who had some concerns about the
+design and functionality were explained the approach. After
+brainstorming and lot of discussions we mutually agreed upon a
+design.&lt;/p&gt;
+&lt;p&gt;We decided to go with SPA (Single Page Application) as per the
+initial wire-frame, and decided upon technologies to be used for the
+creation of the website.&lt;/p&gt;
+&lt;p&gt;All people were not comfortable with any one technology (as
+expected), but then everyone was happy to get an opportunity to learn
+and implement things. With this motive, we finalized the following
+tech stack:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Front-End: HTML, CSS, JS, JQuery, BootStrap + (some other front-end framework, if needed.)&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Back-End: REST API using Flask (micro web framework for Python), MongoDB for the database.&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;We also finalized using git to be our version control system in this project and made repo on github.&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Earlier, we were using a separate account on github, but then I recently got around the concept of Github Organizations, and I suggested that on our slack channel. People liked it, and we shifted from that account to an Organizational account, where we added contributors. You can visit us on Github (&lt;a class="reference external" href="http://www.Github.com/MozPacers"&gt;www.Github.com/MozPacers&lt;/a&gt;)&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;We also decided to use git-flow as it would help us in near future
+for better maintenance and everyone was suggested to make features
+and work on them. Community members mutually agreed on the official
+coding guidelines and structuring of code as per the language they're
+coding in. (For example, for Python PEP8 standards).&lt;/p&gt;
+&lt;p&gt;People started picking out different front-end sections and
+implementing them. Most of the front-end is now finished.&lt;/p&gt;
+&lt;p&gt;Meanwhile I picked up the back-end and implemented it. Though there
+is much more to be done as in integrations with the front-end and
+security constraints, I think we've learnt a lot along the way.&lt;/p&gt;
+&lt;p&gt;Hopefully in DevSprint v2.0 we'll finish the website project and make
+it live.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Are you in Delhi and want to contribute? Then join us at Dev Sprint
+v2.0. For more details, please follow the official &lt;a class="reference external" href="http://www.twitter.com/mozpacers"&gt;Mozilla Delhi
+channel on twitter&lt;/a&gt;.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 14 Jul 2015 15:27:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-07-14:blog/journey-to-being-a-mozillian.html</guid><category>FOSS</category><category>Mozilla</category></item><item><title>Just my inputs on how JMI Internship fair could be better!</title><link>http://SanyamKhurana.com/blog/just-my-inputs-on-how-jmi-internship-fair-could-be-better.html</link><description>&lt;p&gt;Hey guys,&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;First of all, thank you for providing everyone &amp;quot;opportunity&amp;quot; for internships.&lt;/div&gt;
+&lt;div class="line"&gt;Next, I realize, that all the volunteers were really hard working. But unfortunately, all the hard-work was actually not upto the mark just because they were actually doing redundant things and increasing their work.&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Here are some of the points I will mention here which would help you in
+conducting and managing events better in future that would be helpful
+for all of us.&lt;/p&gt;
+&lt;p&gt;First, your updates on the event page were in small updates, the
+information were updated bit by bit, which was actually troublesome
+since last minute updates are too bad to arrange for stuff.&lt;/p&gt;
+&lt;p&gt;Next, you allotted slots to people, while it was good approach, you made
+that in chronological order which means, which has a lower registration
+number (registered earlier) was allotted 3rd slot.&lt;/p&gt;
+&lt;p&gt;Next, when you collected all the details through Google Forms and had
+all that data in CSV then why you chose to make a physical form and made
+everyone fill that, that means registering again. ( I mean going for
+manual work) when you had everything in a system.&lt;/p&gt;
+&lt;p&gt;Next, going where the interview were held, there were really hardworking
+volunteers, but I'm surprised there was actually no one to tell which
+volunteer was actually managing what start-up interview. So people need
+to search for the person, which created a mess.&lt;/p&gt;
+&lt;p&gt;Next, once one volunteer has that form, I and certainly all were
+actually blocked, since they cannot actually go to other interview, and
+wait till his first interview is over.&lt;/p&gt;
+&lt;p&gt;This actually made the task rather really cumbersome and difficult.&lt;/p&gt;
+&lt;p&gt;On the other hand, start-ups closed the vacancies, just taking the
+candidates which comes first.&lt;/p&gt;
+&lt;p&gt;Well, it was really bad, you cannot assume that those who comes first to
+you are the best ones.&lt;/p&gt;
+&lt;p&gt;Anyways other candidates have to now change their options which was not
+good and then you were changing that in your CSVs.&lt;/p&gt;
+&lt;p&gt;Considering all these points, I hope you can actually improve upon it.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;My input:&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Once you had the data in CSV, then you should've just schedule interviews based on the reference number for particular start-up. All are doing B.Tech and a small python script may be was enough to that, isn't it?&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Of course, interviews could clash but then some adjustment could be done
+by volunteers and it could be corrected after waiting for some time till
+when the current interview gets over ;)&lt;/p&gt;
+&lt;p&gt;Next, start-ups should not be in a hurry, obviously they need the best
+ones, and they shouldn't close their vacancies.&lt;/p&gt;
+&lt;p&gt;I hope you keep on doing the good work and improve in future. Kudos to
+your efforts :D It was really great that JMI organized this ;) but a
+little more management and devotion of time by start-ups would have made
+this an indeed awesome thing.&lt;/p&gt;
+&lt;p&gt;PS: I posted it on my blog as the option for posting it on the event
+page was removed.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sat, 25 Apr 2015 21:21:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-04-25:blog/just-my-inputs-on-how-jmi-internship-fair-could-be-better.html</guid></item><item><title>Sieve of Eratosthenes - An efficient way to solve problems about Prime numbers</title><link>http://SanyamKhurana.com/blog/sieve-of-eratosthenes-an-efficient-way-to-solve-problems-about-prime-numbers.html</link><description>&lt;p&gt;Long ago, I think 2-3 years ago, I came to know about Project Euler
+Problems, I made an account, solved 1 or 2 problems, and then never
+tried them.&lt;/p&gt;
+&lt;p&gt;Now, I decided to give them a try again. I was solving Project Euler 10
+Problem which states that:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.&lt;/p&gt;
+&lt;p&gt;Find the sum of all the primes below two million.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Now, I wrote this Python code for the same. I know it's not optimized.
+Not at all. Why, you'll come to know shortly.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;http://paste.fedoraproject.org/191242/&lt;/span&gt;&lt;/tt&gt;&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;I tried to run this first for 10 to get an answer 17, I was happy. So, I changed it to 2 million and ran the code. It ran for some time, but no output, so I decided to keep printing the number on which it is executing at each step. I ran it again. After around 2 hours, I noticed it reached around 0.2 million.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;I knew that is terrible and it would not solve this way. So, I
+researched about the problem and came to know about &lt;strong&gt;Sieve of
+Eratosthenes&lt;/strong&gt;through this question on StackOverflow:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://stackoverflow.com/questions/9233408/project-euler-10-why-the-first-python-code-runs-much-faster-than-the-second-on"&gt;http://stackoverflow.com/questions/9233408/project-euler-10-why-the-first-python-code-runs-much-faster-than-the-second-on&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I jumped over to Wikipedia page and understood what this algorithm was
+actually all about, and I knew, my algo was taking time because it would
+evaluate a number to be prime or not for each and every number from 1 to
+2 million which is processor intensive and redundant.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;What does Sieve of Eratosthenes does?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;First it creates a list of numbers on which we want to carry some prime
+number operation for which we want to know if they are prime or not. It
+takes a number for example 2, calculate if it's prime, and then remove
+all the elements which are multiple of 2.&lt;/p&gt;
+&lt;p&gt;Then it jumps to next number, say 3, which is prime, and then removes
+all it's multiples.&lt;/p&gt;
+&lt;p&gt;While I was trying to do the calculation of whether a number is prime or
+not for each and every number till 2 million, this algo would calculate
+the prime number property for very low amount of numbers. Hence,
+efficient.&lt;/p&gt;
+&lt;p&gt;I have solved 15 problems on Project Euler till now :)&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;br /&gt;&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;img alt="image0" src="https://projecteuler.net/profile/CuriousLearner.png" /&gt;&lt;/div&gt;
+&lt;div class="line"&gt;&lt;br /&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Fri, 27 Feb 2015 13:33:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-02-27:blog/sieve-of-eratosthenes-an-efficient-way-to-solve-problems-about-prime-numbers.html</guid></item><item><title>Back to Work after 5th sem End Term Exams!</title><link>http://SanyamKhurana.com/blog/back-to-work-after-5th-sem-end-term-exams.html</link><description>&lt;p&gt;So, my 5th term end semester exams didn't went well enough! I was just
+frustrated about the subjects I was made to study. Even the computer
+related subjects are taught with an aim to make students just pass the
+exams. Cram it, give exam, pass it and you know it; without any
+practical implication, just cram them.&lt;/p&gt;
+&lt;p&gt;Yesterday, went really awful, I was full of frustration, trying to
+figure out what I'm into currently and what I really want to do. Well,
+choosing Engineering was my own decision. I chose it so as to learn
+something. Probably I'm learning, but I didn't want to learn this way.
+The problem is the focus of universities towards making students cram
+even the programming languages.&lt;/p&gt;
+&lt;p&gt;And I don't really understand their agenda. While I know the concepts
+are needed to be strong for any practical implication. But just focusing
+on a methodology where  they just make students 'cram' the concepts
+rather than understanding and then without any practical implication is
+like telling a policemen different ways to catch a thief but never
+giving him chance to do so, or better yet, not telling him who to catch.&lt;/p&gt;
+&lt;p&gt;Whatever the heck they're trying to do, now I'm not concerned with it.
+I've decided to squeeze out the most of the information they're giving
+me and then carry on to learn more and trying to apply the concepts for
+a better understanding.&lt;/p&gt;
+&lt;p&gt;Studying Java this semester was a tough task, my concepts were not clear
+till the very last, until I picked up my laptop and decided to write the
+code, even if it means I fail in theory exam.&lt;/p&gt;
+&lt;p&gt;And once I wrote it, tried things, then I started understanding it.
+Still a lot more to be practically implied, but I'm glad I tried it
+against the universities norms of just cramming things.&lt;/p&gt;
+&lt;p&gt;While I was highly frustrated, I just needed some inspiration and this
+video really helped me to recover and gain a stable mind.&lt;/p&gt;
+&lt;div style="margin-top:10px;"&gt;
+  &lt;iframe width="560" height="315" src="https://www.facebook.com/video.php?v=646658398797216&amp;set=vb.426895610773497&amp;type=2&amp;theater" frameborder="0" allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/div&gt;&lt;p&gt;Okay, so now as I've decided previously, I'll be conducting a HackerRank
+contest for all GGSIPU students, which is almost done and details are
+being finalized.&lt;/p&gt;
+&lt;p&gt;Next, I've decided to keep learning JS and Python and improve upon them.
+I really like to code in Python, I've not a solid idea why, but I simply
+like it.&lt;/p&gt;
+&lt;p&gt;And now, it's time to complete and publish posts on my blog
+TheGeekyWay.com which are saved as draft from the past 3 months. Also,
+need to carry on some other work I've committed to.&lt;/p&gt;
+&lt;p&gt;Finally, I've some time and I'll utilize it fully to learn and improve.
+Inspiration tank is re-fueled :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Thu, 08 Jan 2015 14:52:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-01-08:blog/back-to-work-after-5th-sem-end-term-exams.html</guid></item><item><title>Be Inspired! Keep working hard; Never give up!</title><link>http://SanyamKhurana.com/blog/be-inspired-keep-working-hard-never-give-up.html</link><description>&lt;p&gt;Well, I just turned on Facebook for a few minutes and interestingly
+found a link &amp;quot;&lt;a class="reference external" href="//www.quora.com/Is-it-too-late-to-start-programming-at-17-if-you-want-to-be-a-top-programmer"&gt;Is it too late to start programming at 17 if you want to
+be a top
+programmer?&lt;/a&gt;&amp;quot;
+pointing to a post on Quora! I read it.&lt;/p&gt;
+&lt;p&gt;And, that's something really awesome!&lt;/p&gt;
+&lt;p&gt;Believe me, it's very essential in life to keep working towards your
+goals, you should always keep on moving. We should always do things
+which motivate us! Do, what we actually love to do.&lt;/p&gt;
+&lt;img alt="Work Hard" class="align-center" src="images/work-hard.jpg" /&gt;
+&lt;p&gt;The first answer to this question is by Don Pinkus. He was an Engineer
+at Facebook and now working on his own project. You can read his &lt;a class="reference external" href="https://medium.com/&amp;#64;donpinkus/when-are-you-too-old-to-become-an-engineer-31db0fdca554"&gt;full
+story
+here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You know what? It doesn't matter if you're working hard, put in your
+hundred percent; but nothing seems to move at all. Hard work is never
+wasted. One day or the other, you'll surely see the results. But they
+would be reflected only when you 'put' in something.&lt;/p&gt;
+&lt;p&gt;Simply sitting back and relying on destiny to give you something isn't
+and shouldn't be an option. You would only yield results when you put in
+'efforts'.&lt;/p&gt;
+&lt;p&gt;Please read that timeline given by Don Pinkus, how he improved, how he
+worked upon his skills, how he never gave up and even resigned from his
+job at Facebook to work on his project! That's certainly we should all
+do! Follow our passion.&lt;/p&gt;
+&lt;p&gt;Giving up should never be an option. Certain things might work for you;
+certain might not. But it's very essential to keep on moving. And if you
+follow your passion, actually do what you love, trust me, there would be
+no looking back!&lt;/p&gt;
+&lt;p&gt;You would be always enjoying your work! Even 'master' was once a
+'beginner'. So, how he became master now?&lt;/p&gt;
+&lt;p&gt;Answer is quite simple, by keep on working and never giving up! We
+always have to start somewhere and at beginning we'll come up with
+really terrible things, really bad ideas, work which would be 'trash' to
+everyone else. But that's how you improve. Criticism should be always
+taken as a positive thing. It should be something to help you in shaping
+yourself. Improving upon yourself.&lt;/p&gt;
+&lt;p&gt;One thing to remember:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A College Degree is important but so is common sense. The world is
+full of Self-Taught Geniuses and Educated Fools.&lt;/p&gt;
+&lt;p&gt;-Michael Baisden&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In the end, there's no need to compare yourself with anyone, just try to
+be a better person than what you were yesterday. Keep working hard and
+never give up!&lt;/p&gt;
+&lt;p&gt;PS: For programmers, Don Pinkus have certain suggestions in his post,
+you can read it!&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sat, 29 Nov 2014 22:20:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2014-11-29:blog/be-inspired-keep-working-hard-never-give-up.html</guid><category>Inspiration</category></item><item><title>Time to wrap up the mess!</title><link>http://SanyamKhurana.com/blog/time-to-wrap-up-the-mess.html</link><description>&lt;p&gt;Finally got some time to write here. This one would be a really quick
+post. I have been really busy from past few months. A hurricane of work
+just kept me crunched every now and then.&lt;/p&gt;
+&lt;p&gt;Had to complete the summer training project report, write tutorial on my
+own blog, submit dgplug training work (last task), learning about
+bootstrap &amp;amp; complete some left freelancing work, then college work too.
+I was literally trying to work with all that in parallel. So everything
+seemed not to move at all. I apologize to everyone, trust me, I'm trying
+my best.&lt;/p&gt;
+&lt;p&gt;Then came exams; damn, I hate it, they don't really test knowledge.They
+are just there to know who has a damn 'Rattafication' skill. Anyways, my
+exams got over yesterday. People in my class were a free bird, but it
+isn't really an option for me at the moment.&lt;/p&gt;
+&lt;p&gt;I just came back home and then carried out all the left tasks. Complete
+two days work and finally I can see some output. My summer training
+project report is now complete! And, and, and my reaction is like:&lt;/p&gt;
+&lt;img alt="Summer Training Report completed in just 2 days" class="align-center" src="images/summer-training-report.png" /&gt;
+&lt;p&gt;I'm happy as to 'something' is better than nothing.&lt;/p&gt;
+&lt;p&gt;I'm just confused and crunched between a lot to do and at the moment
+internals are again over my head. A lot of work is pending and I've to
+complete it as soon as possible. A lot of college work too.&lt;/p&gt;
+&lt;p&gt;Time to work more aggressively and clear all the mess up! Plus, carry on
+my college studies as well.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 12 Nov 2014 00:11:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2014-11-12:blog/time-to-wrap-up-the-mess.html</guid></item><item><title>People: Why You NO Share Your Knowledge</title><link>http://SanyamKhurana.com/blog/people-why-you-no-share-your-knowledge.html</link><description>&lt;p&gt;People are so much reluctant to share their knowledge. Like seriously?&lt;/p&gt;
+&lt;blockquote&gt;
+The reasons they gave is, we spend money in getting it, why we
+should give it for free?&lt;/blockquote&gt;
+&lt;img alt="Why you NO share your knowledge?" class="align-center" src="images/why_you_no_share_your_knowledge.png" /&gt;
+&lt;p&gt;Well, can't believe why they do exist. If you don't want to share your
+so called &amp;quot;Paid knowledge&amp;quot; for free, then how do you expect that others
+teach you for free?&lt;/p&gt;
+&lt;p&gt;They spend tremendous hours just learning stuff they don't like, and
+then ultimately asking for money to teach something they probably don't
+know much good about.&lt;/p&gt;
+&lt;p&gt;So, the event happened today in my class, when my linux faculty asked
+suddenly from one person&lt;/p&gt;
+&lt;blockquote&gt;
+&amp;quot;What is Escape Sequence?&amp;quot;&lt;/blockquote&gt;
+&lt;p&gt;and everyone was like&lt;/p&gt;
+&lt;blockquote&gt;
+&amp;quot;Ye kya hota hai?&amp;quot; (What is that?)&lt;/blockquote&gt;
+&lt;p&gt;Suddenly people rushing here and there, and coming to me asking if I
+knew. So I told them, but then also they acted like dumb. :(&lt;/p&gt;
+&lt;p&gt;Next the faculty started explaining that no one knew even about C or
+C++, and then explained what is escape sequence. And I couldn't stop
+laughing. Like seriously? People in my class claim they know C/C++ or
+Java or even C# and they don't know what is escape sequence, still
+rushing out the stuff they should probably know and what they want is a
+&amp;quot;GOOD PAYING JOB&amp;quot;.&lt;/p&gt;
+&lt;p&gt;Well, I'm glad to tell, forget about a job, but first concentrate on
+clearing your concepts. I'm not saying that I know things better than
+you. I accept I'm still a noob, but at least I'm trying. I'm trying to
+learn things which I like.&lt;/p&gt;
+&lt;p&gt;If you ask people&lt;/p&gt;
+&lt;blockquote&gt;
+&amp;quot;Why did you take Computer Science?&amp;quot;&lt;/blockquote&gt;
+&lt;p&gt;rather than technical questions which most of them just mug up, the
+reactions you'll find are pretty much amazing.&lt;/p&gt;
+&lt;p&gt;You'll see some dazzled faces around. Thinking what should they answer,
+and that's the major issue here. People don't know why the heck they
+opted for something they really don't like, moreover that they need to
+have &lt;strong&gt;so much time&lt;/strong&gt; in just thinking about &amp;quot;Why they opted it?&amp;quot;.&lt;/p&gt;
+&lt;p&gt;I always find it funny. People aren't really interested in Computer
+Science, what they are really interested in is just getting a good job.
+I'm trying to believe they'll get a good job, but why would someone
+recruit a person who doesn't even know What he is doing in present,
+forget about their future plannings.&lt;/p&gt;
+&lt;p&gt;So, the incident that pushed me to post on this topic, happened sometime
+back in my class, when some students were offering to teach something to
+other for money. They were so proud that they knew it ! Feeling like a
+champ, they spent around 10k INR for that, so they asked other student
+to pay 10k to them and they'll teach him.&lt;/p&gt;
+&lt;p&gt;WOW ! So cool, isn't it? But I'm astonished, how those so proud people
+were not able to answer that simple question about escape sequence.&lt;/p&gt;
+&lt;p&gt;I'm not saying here that asking for money to give knowledge is bad. But
+as a student you should help your peers, right?&lt;/p&gt;
+&lt;p&gt;And if not, then let's say you fall into trouble and then say you rush
+to someone and he asks money from you, even think everyone in the world
+is asking money. Isn't that something really cruel? Isn't that something
+you should not do in the first place itself, thinking you haven't really
+achieved anything from that knowledge. What you know might be just half
+that you were taught.&lt;/p&gt;
+&lt;p&gt;Now, get out of your ego to try to recover your money spend. Rather then
+this, help people around you. You'll not only enjoy it, but it would
+ultimately help you to clear your own concepts !&lt;/p&gt;
+&lt;p&gt;Believe me, I don't know every damn thing, but when I try to clear
+doubts of others ( about stuff which I think I know),&amp;nbsp; in this process I
+might learn something important. Moreover it can happen, that I've
+picked up a bad practice or I have some wrong information, so others can
+correct that. It's like sharing your knowledge and getting it back ( A
+two-way process)&lt;/p&gt;
+&lt;p&gt;It's not about teaching for free, it's about learning for free.&lt;/p&gt;
+&lt;p&gt;Accept it, do it and feel the difference.&lt;/p&gt;
+&lt;p&gt;You're not professionals, first just focus on learning, it would help
+you in the long run.&lt;/p&gt;
+&lt;p&gt;PS: It's just your wish if you really want to take this &amp;quot;Free&amp;quot; advice or
+still think your idea is better :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 13 Aug 2014 17:17:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2014-08-13:blog/people-why-you-no-share-your-knowledge.html</guid></item><item><title>It's getting hectic day by day</title><link>http://SanyamKhurana.com/blog/its-getting-hectic-day-by-day.html</link><description>&lt;p&gt;Glad that I took some time, to write here. My schedule is getting hectic
+day by day. Only 4-5 hours sleep everyday. I'm tired, very tired but one
+thing is going to happen sure shot. I'd like to die trying rather than
+giving up :)&lt;/p&gt;
+&lt;p&gt;My day starts with getting up [STRIKEOUT:early] late in morning around
+7:45 AM and then preparing to [STRIKEOUT:go] rush to my college. It
+takes approx 2 hours in commuting in just one way. So, in my whole day I
+spend around 4 hours alone in traveling. Usual things happen in my
+college, mostly [STRIKEOUT:studying] kind of wasting my time :(&lt;/p&gt;
+&lt;p&gt;Though I liked that in this semester I would be studying really good
+subjects about the Core Computer Science, but all my excitement was
+drenched watching the pretty old syllabus. Never the less, I find some
+topics really interesting in College too. Those about Algorithms and
+DBMS are the best one out there. But I think Universities should focus
+more on practical approach rather than just teaching students how to
+[STRIKEOUT:learn]mug up things.&lt;/p&gt;
+&lt;p&gt;The real learning curve begins when I reach home from college. Time is
+really absurd and I reach around 7 PM in the evening or sometimes later
+than that. I was regular in attending the DGPLUG classes, but this
+schedule is seriously killing me. Never the less, I try to get on with
+the logs if the class was there, or else I tend to do other things like
+doing home task given in the previous class.&lt;/p&gt;
+&lt;p&gt;Then the research work about the articles I've to write begins. The
+Geeky Way is facing a hard time now just because I take too much time to
+update it, but I try to put up a good post (may be long) so as to
+contribute some value rather than just focusing in increasing the post
+count.&lt;/p&gt;
+&lt;p&gt;Then I take some time to do some freelancing work, I had already taken
+(Now wouldn't take anymore for sometime). Among all these things, I find
+myself standing awake in midnight. Usually, then I carry on with my
+other courseware and practicing the things I've learned in my training.&lt;/p&gt;
+&lt;p&gt;3 AM : Seriously?&lt;/p&gt;
+&lt;p&gt;Yes! It's generally 3 AM when I would sleep.&lt;/p&gt;
+&lt;p&gt;Though I usually don't find good resources to learn more, but when I do,
+I ensure to make the full use of it.&lt;/p&gt;
+&lt;p&gt;It's not about learning to defeat someone, get a job or something. I
+learn because I love to learn about that stuff, and I share my knowledge
+because it's meant to be shared.&lt;/p&gt;
+&lt;p&gt;PS: Everyone has got 24 hours in a day, how you make use of it, is what
+matters. If you tend to enjoy your whole day, and still wanting
+something extra achieved, you won't. Because there's no short-cut to
+success. You have to work hard for it. It's meant to be earned.&lt;/p&gt;
+&lt;p&gt;Now time to complete my home task for the training.&lt;/p&gt;
+&lt;p&gt;Good Bye!&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 12 Aug 2014 22:21:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2014-08-12:blog/its-getting-hectic-day-by-day.html</guid></item><item><title>How DGPLUG training is proving beneficial to me?</title><link>http://SanyamKhurana.com/blog/how-dgplug-training-is-proving-beneficial-to-me.html</link><description>&lt;p&gt;Well, at this time, most of you have guessed I'm going to talk about
+some sort of training, but what is exactly this &amp;quot;DGPLUG&amp;quot;? What is this
+training all about? Well, let me tell you my story.&lt;/p&gt;
+&lt;p&gt;So, it was when I was ultra-busy in my 4th semester exams, have no time
+to update even &lt;a class="reference external" href="http://www.TheGeekyWay.com"&gt;The Geeky Way&lt;/a&gt; (a blog I
+run to teach others what I know and to learn from others) , was
+searching some stuff, saw Facebook News feed for a moment and I think
+that was the best thing I've ever done with Facebook. I just came across
+a comment on a post by someone regarding learning Python. The person who
+commented was &amp;quot;IamSudip&amp;quot; whose comment read as follows:&lt;/p&gt;
+&lt;img alt="Facebook comment by iamsudip" class="align-center" src="images/iamsudip.png" /&gt;
+&lt;hr class="docutils" /&gt;
+&lt;p&gt;&lt;strong&gt;So, what does DGPLUG stands for?&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+DurGaPur Linux User Group.&lt;/blockquote&gt;
+&lt;hr class="docutils" /&gt;
+&lt;p&gt;Well, my semester exams just started on 27, so already had given one
+exam, when I saw this post, I dropped down my books :P and started
+browsing more about DGPLUG Training and thought to give it a try.&lt;/p&gt;
+&lt;p&gt;As soon as my exams finished, I was pretty excited about all the stuff
+that would be going to happen. But it was sort of too late after the
+last exam. But I didn't loose hope and patience.&lt;/p&gt;
+&lt;p&gt;Finally, I get through the initial setup to know about IRC (Internet
+Relay Chat) and registering a Nick.&lt;/p&gt;
+&lt;p&gt;So, first time I logged into IRC, didn't get anything what was it all
+about. Finally, just search some basic stuff and got to interact with
+some people.&lt;/p&gt;
+&lt;hr class="docutils" /&gt;
+&lt;p&gt;&amp;nbsp;&lt;strong&gt;June 29, 2014 - When it all started.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;So, I was online before the stipulated time, eagerly waiting for the
+training to be started.&lt;/p&gt;
+&lt;p&gt;Honestly, at first, I thought,&lt;/p&gt;
+&lt;blockquote&gt;
+&amp;quot;Seriously, how would anyone learn just through a sort of text based
+chat?&amp;quot;&lt;/blockquote&gt;
+&lt;p&gt;I mean there are Google Hangouts, and various other awesome stuff, which
+can be used to teach. Anyway, I started following what the mentors
+instructed. After just 2 classes, I was pretty much comfortable with IRC
+and other stuff they were teaching.&lt;/p&gt;
+&lt;hr class="docutils" /&gt;
+&lt;p&gt;&amp;nbsp;&lt;strong&gt;What I learned in this training till now?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Well, till this point of time, I've learned these these things:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;IRC etiquette&lt;/li&gt;
+&lt;li&gt;rST (re Structured text)&lt;/li&gt;
+&lt;li&gt;Linux FHS (File Hierarchy Standard)&lt;/li&gt;
+&lt;li&gt;Basic Shell commands&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To add to this, a recent class was all about &amp;quot;Blogging&amp;quot;. Well I blogged
+for several years as of now, so I thought what would be extra I would
+get to know about Blogging?&lt;/p&gt;
+&lt;p&gt;Well, it was a developer specific Blogging. How blogging is really
+helpful for a developer, not only to just track his own performance, but
+it provides him a log at the end which he can use and others also get
+benefited from his posts.&lt;/p&gt;
+&lt;p&gt;Well, not only this but reading others interact on IRC is always fun and
+come to know across many hidden developer stuff in this world. Hidden
+because, there was no one to instruct, to guide me, when I first started
+with computers.&lt;/p&gt;
+&lt;p&gt;Even whatever I've learned till today about Programming or Web
+Development is just because of my own research on Internet, so
+sometimes, I might have missed some important things, which may be of
+intermediate or advanced level.&lt;/p&gt;
+&lt;p&gt;Well, to all those, who really wants to learn something, rather than
+mugging up those Engineering Books, and are already frustrated like me
+with the Engineering Syllabus (which tends to teach just some theory
+without any practicality and real life experience), I would say go for
+this course.&lt;/p&gt;
+&lt;p&gt;One good habit, you'll learn is to READ. Yes, Read as much as possible,
+because reading would get you better at stuff, and make you learn more
+about the things you're interested in.&lt;/p&gt;
+&lt;p&gt;When I see back in time, I regret , that I didn't found this training
+earlier. Because, I could've been learned quite a lot till now. But I'm
+also thankful that I found this training. Just co-incidentally&amp;nbsp; I've
+landed up to something really good.&lt;/p&gt;
+&lt;hr class="docutils" /&gt;
+&lt;p&gt;Lastly, I thank to these people :&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Kushal Das&lt;/li&gt;
+&lt;li&gt;Armageddon&lt;/li&gt;
+&lt;li&gt;Sayan&lt;/li&gt;
+&lt;li&gt;rtnpro&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;and all other mentors and students too who are helping me to learn.
+Sorry if I missed some important name, I'm still trying to remember
+nicks :)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;strong&gt;*So, at last, this training is actually which we should call
+Training in true sense!*&lt;/strong&gt;&lt;/blockquote&gt;
+&lt;p&gt;Not like the other ones which many of us do just for sake of some
+Certificates which are good for nothing. It's not about getting a job in
+the end, because if you don't know stuff, you may be placed in a company
+but they would surely kick you out after a month or so. It's about
+learning. Learning what you're interested in. Period.&lt;/p&gt;
+&lt;p&gt;PS: Thanks all mentors and students, and special thanks to Sudip whose
+comment bought me here :)&lt;/p&gt;
+&lt;p&gt;Regards&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Sanyam Khurana&lt;/strong&gt;
+&lt;strong&gt;(CuriousLearner)&lt;/strong&gt;&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 14 Jul 2014 12:09:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2014-07-14:blog/how-dgplug-training-is-proving-beneficial-to-me.html</guid><category>dgplug</category><category>linux</category><category>python</category><category>training</category></item></channel></rss>

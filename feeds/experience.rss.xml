@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/experience.rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 07 May 2017 21:15:00 +0530</lastBuildDate><item><title>Multiple task executions on Celery ETA usage</title><link>http://SanyamKhurana.com/blog/celery-eta-broker-transport-options.html</link><description>&lt;p&gt;If you find yourself in a use-case which needs to schedule tasks with celery at given time intervals, then you must read this, before this small tweak causes a havoc to your business.&lt;/p&gt;
+&lt;p&gt;This behavior occurs when the ETA of a task is greater that the visibility time out set up on your celery app object. Let me explain the case that happened with me.&lt;/p&gt;
+&lt;p&gt;According to my use case I use to schedule several tasks at different times of the day. There was a task that ran as a cron by celery beat every day at 12 AM to schedule tasks at different times of the day.&lt;/p&gt;
+&lt;p&gt;I noticed although the main task worked at 12 AM everyday and used to schedule the sub tasks, some of the sub tasks were triggered multiple times.&lt;/p&gt;
+&lt;p&gt;I was not able to find how was this even happening, until I came across this post: &lt;a class="reference external" href="http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks"&gt;http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;So, I updated my celery_config using the celery app object like:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;celery&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;conf&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="c"&gt;# This config was overridden to prevent execution of tasks multiple&lt;/span&gt;
+    &lt;span class="c"&gt;# times in case ETA is greater than visibility timeout.&lt;/span&gt;
+    &lt;span class="c"&gt;# http://giovanni.bajo.it/post/46859364245/celery-and-scheduled-tasks&lt;/span&gt;
+    &lt;span class="n"&gt;BROKER_TRANSPORT_OPTIONS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="s"&gt;&amp;#39;visibility_timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;86400&lt;/span&gt;
+    &lt;span class="p"&gt;},&lt;/span&gt;  &lt;span class="c"&gt;# 1 day&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The comments depict exactly the issue and the link to blog post so anyone who is new to the project could know why this snippet was added.&lt;/p&gt;
+&lt;p&gt;I've just compiled it here so that it may help someone who faces similar issue and might be scratching their head, wondering if they made a logical error in their code.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 07 May 2017 21:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-05-07:blog/celery-eta-broker-transport-options.html</guid><category>celery</category><category>python</category></item><item><title>Mercurial commands list for contributing to Mozilla</title><link>http://SanyamKhurana.com/blog/mozilla-mercurial-commands.html</link><description>&lt;p&gt;Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that most people still prefer git over mercurial and use &lt;a class="reference external" href="https://github.com/glandium/git-cinnabar"&gt;git-cinnabar&lt;/a&gt; as a bridge to do all version control stuff in git and then prepare mercurial ready patches.&lt;/p&gt;
+&lt;p&gt;Although this approach is quite good and people like me who are more familiar with git should do it this way. But, I wanted to get acquainted with Mercurial as a version control tool and tried to do it the hard way (Most of the time my mentors were not able to help me since they used git and I used Mercurial). Mercurial works on basis of changesets. In this blog post, I'm keeping notes of various common commands that would help me and anyone navigate their way using mercurial.&lt;/p&gt;
+&lt;p&gt;These notes assume that you've basic familarity with various terminologies used in DVCS such as git. I've also mentioned analogies to how both version control systems work. (Something that took me time to figure out).&lt;/p&gt;
+&lt;div class="section" id="mercurial-commands"&gt;
+&lt;h2&gt;Mercurial Commands&lt;/h2&gt;
+&lt;p&gt;Mercurial works on basis of changesets. Here are the common commands that you can use throughout Mozilla's projects:&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Pull changes from remote repository to local&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;No! This is not same as &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt;! Read out the next command to understand the analogy.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg pull
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Always update to the tip of repo&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg update
+&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; : This is different from &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt;. &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt; essentially does &lt;tt class="docutils literal"&gt;git fetch&lt;/tt&gt; i.e. fetch remote changes to local and then do &lt;tt class="docutils literal"&gt;git merge&lt;/tt&gt; which updates the local copy of your code.&lt;/p&gt;
+&lt;p&gt;So, &lt;tt class="docutils literal"&gt;git pull&lt;/tt&gt; = &lt;tt class="docutils literal"&gt;git fetch&lt;/tt&gt; + &lt;tt class="docutils literal"&gt;git merge&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;But in case of mercurial, &lt;tt class="docutils literal"&gt;hg pull&lt;/tt&gt; just fetches remote changes to local. It does not however update your working copy. If you want to update your local copy, then you should do &lt;tt class="docutils literal"&gt;hg update&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Update to specific revision of the repo&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;Here we update to revision 0 with &lt;cite&gt;-r&lt;/cite&gt; option. &lt;cite&gt;r&lt;/cite&gt; stands for &lt;cite&gt;revision&lt;/cite&gt;.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg update -r 0
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;See file a.txt at revision 0&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg cat -r &lt;span class="m"&gt;0&lt;/span&gt; a.txt
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;See difference from revision 0 to 1 in file a.txt&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg diff -r 0:1 a.txt
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg outgoing: What all changes are waiting to be pushed next&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg outgoing
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg incoming: Changes that are waiting to be brought in to your local from remote repository&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;You can see if there are changes on the remote and see their diff with respect to your working copy.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg incoming
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Difference between rollback and revert&lt;/tt&gt;&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+If not committed &lt;span class="k"&gt;then&lt;/span&gt;:
+    hg revert
+&lt;span class="k"&gt;else&lt;/span&gt;:
+    hg rollback
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;hg backout: To backout a changeset that has been added to tree. Analogous to git revert.&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;In essence, what it does is, it looks at the changeset, figures out the opposite, and does that to your current working directory.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg backout -r &lt;span class="m"&gt;2&lt;/span&gt; --merge
+&lt;/pre&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Limit the logs you see&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;By default hg log streams from tip till end. While working on large projects such as that of Mozilla with more than million commits, it is messy to let it just stream while you just wanted to see latest commits.&lt;/p&gt;
+&lt;p&gt;With -l option you define how many changesets you want to see. That's for displaying first 3 commits.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+hg log -l 3
+&lt;/pre&gt;
+&lt;p&gt;I hope this shall help people who have familarity with git and are playing around with mercurial.&lt;/p&gt;
+&lt;p&gt;I'll be updating this post with more commands soon. If you think there is some important command that is not here, please mention that in comments and I'll add it here.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 07 May 2017 21:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-05-07:blog/mozilla-mercurial-commands.html</guid><category>mozilla</category><category>remo</category><category>mozilla-rep</category></item><item><title>Dockerizing application that use AWS: Lessons learnt</title><link>http://SanyamKhurana.com/blog/docker-aws-clock-drift.html</link><description>&lt;p&gt;I was recently working on containerizing the data pipeline I wrote as part of my work at Zopper. This pipeline uses &lt;cite&gt;Boto3&lt;/cite&gt; to connect to Amazon SQS and SNS. While containerizing this pipeline, I managed to run 2 services that power the backward flow of the pipeline in 2 different containers while the forward flow pipeline was breaking because of some issue. I decided to look into it the next day. As usual my Mac got in sleep mode.&lt;/p&gt;
+&lt;p&gt;The very next day, I did &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;docker-compose&lt;/span&gt; up&lt;/tt&gt;, I was expecting that 2 containers would run and I would start debugging the issue with the forward flow pipeline service; and it wasn't that easy.&lt;/p&gt;
+&lt;p&gt;As soon as the 2 containers were spawned, they were destroyed. After inspecting the logs, I realized I was getting an error while connecting to Amazon services as:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+Amazon SQS SignatureDoesNotMatch: An error occurred &lt;span class="o"&gt;(&lt;/span&gt;SignatureDoesNotMatch&lt;span class="o"&gt;)&lt;/span&gt;
+when calling the GetQueueUrl operation: Signature expired&lt;span class="o"&gt;)&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;
+&lt;p&gt;I immediately tried to verify the AWS keys for expiry, but they were correctly working. The services would run separately on a host correctly. So, I realized it has something to do with Docker.&lt;/p&gt;
+&lt;p&gt;This would happen if you're using any of the Amazon's servies and here is the how I came to know about the problem: I tried to manually run the container and then exec a shell in it; to know the date. I was astonished to see that my container was running at a time lag of around one day.&lt;/p&gt;
+&lt;p&gt;Amazon allows only a time discrepancy of 15 mins than the actual time. So, the solution to this problem is either match the time of the host to the container while running it. &lt;strong&gt;But this can be a problem if the host's time is not correct&lt;/strong&gt;. So, you cannot &lt;strong&gt;always&lt;/strong&gt; guarantee that it would work on all your Dev, Stage and Prod environments.&lt;/p&gt;
+&lt;p&gt;So, I set the TZ variable for running the container, and kept Time Zone as &lt;tt class="docutils literal"&gt;Asia/Kolkata&lt;/tt&gt; inside the &lt;tt class="docutils literal"&gt;Dockerfile&lt;/tt&gt; like:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+ENV &lt;span class="nv"&gt;TZ&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/&lt;span class="nv"&gt;$TZ&lt;/span&gt; /etc/localtime &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;echo&lt;/span&gt; &lt;span class="nv"&gt;$TZ&lt;/span&gt; &amp;gt; /etc/timezone
+&lt;/pre&gt;
+&lt;p&gt;This shall ensure that correct time zone reaches the container.&lt;/p&gt;
+&lt;p&gt;I was pretty close to the solution, but not in the 15 mins discrepancy window that Amazon allows. So, another issue was &lt;a class="reference external" href="https://en.wikipedia.org/wiki/Clock_drift"&gt;clock drift&lt;/a&gt;. I immediately realized that my Mac was on sleep mode all the time. So, it was clearly &lt;tt class="docutils literal"&gt;Clock drift&lt;/tt&gt;. I restarted it and then everything was in place.&lt;/p&gt;
+&lt;p&gt;So, if you're using containers for services that use any Amazon service, ensure to set the Time Zone information explicitly. Let me know if you faced this kind of issue and how you solved it.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 04 Apr 2017 12:43:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-04-04:blog/docker-aws-clock-drift.html</guid></item><item><title>Event Report - PyCon Pune 2017</title><link>http://SanyamKhurana.com/blog/pycon-pune-2017.html</link><description>&lt;p&gt;After PyCon India &amp;amp; PyDelhiConf; here comes another lovely Python Conference in India -- PyCon Pune. It was first year of the conference in 2017 and I feel really delighted for getting a chance to attend it. The conference was on 16th and 17th Feb followed by 2 days of Dev-Sprint on 18th and 19th Feb. It was a very brave decision to have conference on weekdays, and I was astonished to see so many people at the conference.&lt;/p&gt;
+&lt;p&gt;Unlike other two Python Conferences, this conference was on single track (which made my life sorted for being a volunteer). Following is about my journey to PyCon Pune.&lt;/p&gt;
+&lt;img alt="A group photograph with everyone" class="align-center" src="images/pycon-pune-2017-1.jpg" /&gt;
+&lt;div class="section" id="day-0"&gt;
+&lt;h2&gt;DAY 0&lt;/h2&gt;
+&lt;p&gt;The journey started on Feb 15th 2017 in the morning. I boarded the flight at 5:00 AM and landed at 7:00 AM in Pune. This day was the day before the PyCon Pune Conference would actually begin. We had a lot to do on this day. I'd like to thank Chandan and Sayan for accomodating me at their place. We had a lot of friends crashing in which made the remaining days epic and full of fun.&lt;/p&gt;
+&lt;p&gt;Sayan and Chandan left at 10:00 AM for Reserved Bit. Me and Subho reached there at 12:00 PM and found a bunch of folks hacking on various stuff. I met Nick Coghlan (Core-Contributor CPython), Honza (Core-Contributor- Django Project). Farhan was hacking with Siddhesh to set up the video recording software (OBS) on various machines. Finally, after a lot of hassle it worked on Linux.&lt;/p&gt;
+&lt;p&gt;A lot happened on 15th. From helping with badges to wondering with Kushal and Amol for getting various stuff done, the day went by very quickly. In night we reached Amanora Fern, Pune; the venue where the conference was scheduled. The venue was totally fabulous and I was awestruck. I helped in setting up video equipments along with Farhan, Siddhesh and Abdul. See the happiness, after making it work :)&lt;/p&gt;
+&lt;img alt="Sanyam &amp;amp; Farhaan feeling happy" class="align-center" src="images/pycon-pune-2017-2.jpeg" /&gt;
+&lt;p&gt;Later I helped a little with setting up the PSF + Pyladies Pune booth. We then went to dinner &amp;amp; returned at home at 12:00 AM.&lt;/p&gt;
+&lt;p&gt;I slept at 12:30 AM; was really tired. A lot had already happened over 24 hours. I was deprived of sleep. Amit was supposed to come to Pune at 5:00 AM in the morning and told me that he would call. Although my phone tried to scream a lot, but I didn't wake up :P&lt;/p&gt;
+&lt;p&gt;Later Subho waked me up at 5:00 AM -- and then again I had just 4 hour 30 min sleep in the last 47 hours.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-1"&gt;
+&lt;h2&gt;DAY 1&lt;/h2&gt;
+&lt;p&gt;We prepared to go to venue at 7:00 AM since we were handling registrations. Kushal came to give us a ride to the Conference venue in his car. We got to DC, Pune to get some meals for the Volunteers. I noticed Kushal wore the Conf t-shirt with an awesome quote by Brett Cannon (core-developer of CPython). I tweeted that, which got a lot of attention:&lt;/p&gt;
+&lt;img alt="Kushal wearing the official PyCon Pune t-shirt" class="align-center" src="images/pycon-pune-2017-3.jpg" /&gt;
+&lt;p&gt;Most of my day went running around (but not too much when compared to PyCon India since there was single track at PyCon Pune; which I personally liked very much). Also, this is how I look when deprived of sleep.&lt;/p&gt;
+&lt;img alt="Homo-sapien bot deprived of sleep and feeling high on first day" class="align-center" src="images/pycon-pune-2017-4.png" /&gt;
+&lt;p&gt;The conference kicked-off with Keynote by Honza (Core-developer to Django project) on his OSS Life. Next talk was by Anand Chitipothu on writing Beautiful Code, which helped me in learning more about writing good code with Python.&lt;/p&gt;
+&lt;p&gt;Later in the day we had a Keynote by John Hawley, our very own Perl guy declared as a Python Programmer. One thing I liked very much during all the days was to be with John (Whatever happens in the conference, I would hear his famous dialogue &amp;quot;Kushal is to be blamed for that!&amp;quot; :P).&lt;/p&gt;
+&lt;p&gt;Me and Amit had a dinner with him in Delhi before the conference. Here is a picture of that day:&lt;/p&gt;
+&lt;img alt="Amit, John and Sanyam while dropping John back to the Hotel" class="align-center" src="images/pycon-pune-2017-5.jpg" /&gt;
+&lt;p&gt;In evening, there was an awesome session by Praveen Patil (our very own Physics teacher), who showed us how Python can be used in classroom to teach various concepts to kids (and also why some teachers are criminals, because they're not able to explain something with ease).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-2"&gt;
+&lt;h2&gt;DAY 2&lt;/h2&gt;
+&lt;p&gt;The second day began again with Kushal picking us up, but this time to Reserved Bit. We both (Amit and me) got to Reserved Bit and helped in packing up t-shirts and then loading them in the cars. We then left for the venue with T-shirts.&lt;/p&gt;
+&lt;p&gt;The first keynote was by Katie, followed by Stephen Turbull and then by Nick Coghlan who is core-developer of CPython.&lt;/p&gt;
+&lt;p&gt;There was also a community talks session where me and Amit talked about PyDelhi, ILUG-D and LinuxChix India. I'll update the link of the video once it is uploaded.&lt;/p&gt;
+&lt;p&gt;The whole day was absolutely amazing. After the conference, we all went for the dinner.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-3"&gt;
+&lt;h2&gt;DAY 3&lt;/h2&gt;
+&lt;p&gt;Dev Sprints -- Me and Amit were desperately waiting for this day. We decided to walk to the venue.&lt;/p&gt;
+&lt;img alt="On our way to Red Hat office, Pune" class="align-center" src="images/pycon-pune-2017-6.jpg" /&gt;
+&lt;p&gt;On previous day, we decided to put our best effort to contribute to CPython taking help from Nick. Our goal was to do at least one patch in the two day devsprint. Yes, we both have Impostor Syndrome.&lt;/p&gt;
+&lt;p&gt;We reached Red Hat office at 10:00 AM in the morning. Nick was right there helping a few folks with CPython. The desk was pretty much occupied, so I decided to sit on the staircase nearby Nick. He was telling various things about how to set up the project etc. Me and Amit had CPython already set up, so we helped other folks.&lt;/p&gt;
+&lt;p&gt;Then we tried to understand how the issue tracker works for Python bugs. We aimed at searching some easy fixes, but most of them looked a lot aliented. So, we decided to first take up some documentation and related fixes.&lt;/p&gt;
+&lt;p&gt;Took me 1.30 hour to scrutinize the issue I wanted to work in. With help on Nick I was able to figure out the changes needed in str.index() docstring (Yes, in the C code ;)).&lt;/p&gt;
+&lt;p&gt;This was a really quick fix, and I couldn't believe that I've just opened up a PR on CPython repository. I checked with Amit and realized that we both opened our first PR at almost same point of time. The day went by and I opened a total of 4 PRs to the CPython repository. Amit did 2 fixes.&lt;/p&gt;
+&lt;p&gt;In the night we roamed at DC (Destination Center, Pune). It was just superb. For the second day of dev-sprint, we decided to do contribution to Django project and understand the workflow of the entire development cycle of Django. Reaching back home, I tried to find some bugs on the django project to work on. There was no documentation fixes; and all easy marked fixes were already assigned; and were being worked on. So, I tried to search for other bugs, but it was a no success. So, we decided to ask Honza and see if we could find something to work on. Else we would try to do some code-contributions to CPython repo.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="day-4"&gt;
+&lt;h2&gt;DAY 4&lt;/h2&gt;
+&lt;p&gt;We reached the Red Hat office at 10:00 AM next day. Again we were late, there were a bunch of folks sitting with Nick trying to get patches in CPython.&lt;/p&gt;
+&lt;p&gt;We couldn't find Honza and took a seat nearby Nick to start working on finding some bug that require some code contributions. I found a bug related to the &lt;cite&gt;help&lt;/cite&gt; module which had various cases to be handled. It was already having two patches and wasn't updated from long. I asked Nick, if I could take it, and he responded affirmatively.&lt;/p&gt;
+&lt;p&gt;I tried to look at the patches, but at that moment I couldn't understand exactly what was being done. I decided to write it from scratch and cover every use case that is being spilled over many comments in the bug.&lt;/p&gt;
+&lt;p&gt;Once I made it work for one of the use case, the earlier patches started to make sense. I showed it to Nick via IRC and then he replied on the bug documenting what all cases are to be covered. I read more code changes and it worked for every use case. I showed it to Nick.&lt;/p&gt;
+&lt;p&gt;He told me that he won't merge it because although this is one of the approach to solve this problem, he would further like to discuss with other core-contributors to this in entirely different fashion, such as introducing an &lt;cite&gt;__help__&lt;/cite&gt; magic method. He told that I should submit a PR upstream so that would be a good starting point to get this landed.&lt;/p&gt;
+&lt;p&gt;And this is how it was another PR to CPython from PyCon Pune sprints. Now I tried to look over what other people were doing in the devsprints. I met a lot of people and yet again found out most of them know me by the name &lt;cite&gt;CuriousLearner&lt;/cite&gt;. But this conference was special, people tried to address me by my real name. As usual all of them pronounced it wrong and then told me that CuriousLearner is a lot easier :)&lt;/p&gt;
+&lt;p&gt;In afternoon, I was reading the core-contributors guide and found a documentation bug and asked Nick if I should report it. And now I had 5 PRs + 1 bug report to CPython repository over the span of 1.5 days. Here is a picture of us working on CPython :)&lt;/p&gt;
+&lt;img alt="Folks hacking on CPython" class="align-center" src="images/pycon-pune-2017-7.jpg" /&gt;
+&lt;p&gt;None of the PRs are merged yet; since each one of us is waiting for the CLA (Contributor License Agreement) to be approved by PSF; which would probably be done only on Monday.&lt;/p&gt;
+&lt;p&gt;In afternoon, we had a panel discussion with all the keynote speakers on &amp;quot;How one should learn to program?&amp;quot;. After that, we played some billiard, spent some time with John in the hardware room and then clicked some photos together.&lt;/p&gt;
+&lt;p&gt;Here is a picture I had with Nick after two amazing days of learning in dev-sprints:&lt;/p&gt;
+&lt;img alt="Sanyam Khurana with Nick Coghlan" class="align-center" src="images/pycon-pune-2017-8.jpg" /&gt;
+&lt;p&gt;Amit and me left the venue at 6:45 PM bidding everyone good bye -- until next time.&lt;/p&gt;
+&lt;p&gt;This has been the most awesome Python event I've ever attended. Now I'm wait eagerly to work over the PRs to get them merged upstream and of course looking forward to PyCon Pune 2018.&lt;/p&gt;
+&lt;p&gt;I would also like to congratulate every volunteer to put in so much effort to make this a huge success.&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 19 Feb 2017 10:07:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-02-19:blog/pycon-pune-2017.html</guid></item><item><title>How to test your Ansible Deployment with Vagrant</title><link>http://SanyamKhurana.com/blog/ansible-deployment-vagrant.html</link><description>&lt;p&gt;When you start writing Ansible for automating your deployment, one common problem is about testing if it does work as you intend to do it. Some people prefer to do it directly on a server. But then it has all sorts of problems associated (for example when the no. of servers to be provisioned/deployed grows) and I clearly don't like the idea to test Ansible on servers directly. So, I chose the option to use virtual machines using Vagrant.&lt;/p&gt;
+&lt;p&gt;With Vagrant you could test complex setups like (say) having 4 machines behind a load balancer (just to start with). I've tried to both provision as well as deployment using Ansible + Vagrant. In this post, I'll be quickly covering about testing deployment using Ansible + Vagrant.&lt;/p&gt;
+&lt;p&gt;In your directory you run Vagrant init; that would provide you a Vagrantfile to start up your virtual machine. Here is a basic configuration that would enable you to boot up an ubuntu machine with a static ip which you could use later to put in your ansible host file.&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+Vagrant.configure&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;2&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt; &lt;span class="p"&gt;|&lt;/span&gt;config&lt;span class="p"&gt;|&lt;/span&gt;
+  config.vm.box &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ubuntu/trusty64&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;private_network&amp;quot;&lt;/span&gt;, ip: &lt;span class="s2"&gt;&amp;quot;10.0.0.10&amp;quot;&lt;/span&gt;
+  config.vm.network &lt;span class="s2"&gt;&amp;quot;forwarded_port&amp;quot;&lt;/span&gt;, guest: 22, host: 22
+end
+&lt;/pre&gt;
+&lt;p&gt;Now you can boot up your virtual machine using &lt;tt class="docutils literal"&gt;`vagrant up`&lt;/tt&gt; and try to login using &lt;tt class="docutils literal"&gt;`vagrant ssh`&lt;/tt&gt;. After ssh-ing into your virtual server; you can do &lt;cite&gt;ifconfig&lt;/cite&gt; to verify that the IP of the server is &lt;cite&gt;10.0.0.10&lt;/cite&gt;.&lt;/p&gt;
+&lt;p&gt;In your inventory file you can now mention the IP of the host to &lt;tt class="docutils literal"&gt;`10.0.0.10`&lt;/tt&gt;, exactly what we mentioned in the Vagrant file.&lt;/p&gt;
+&lt;p&gt;Your ansible.cfg file can be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+&lt;span class="o"&gt;[&lt;/span&gt;defaults&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;inventory&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ./virtualhosts
+&lt;span class="nv"&gt;private_key_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; /path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+&lt;span class="nv"&gt;remote_user&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; vagrant
+&lt;span class="nv"&gt;host_key_checking&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; False
+&lt;/pre&gt;
+&lt;p&gt;and we'll refer the hosts as virtualhosts, so your &lt;tt class="docutils literal"&gt;virtualhosts&lt;/tt&gt; inventory file would be like this:&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+project_web &lt;span class="nv"&gt;ansible_ssh_host&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;10.0.0.10 &lt;span class="nv"&gt;ansible_ssh_port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;22&lt;/span&gt; &lt;span class="nv"&gt;ansible_ssh_user&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;vagrant &lt;span class="nv"&gt;ansible_ssh_private_key_file&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+
+&lt;span class="o"&gt;[&lt;/span&gt;project&lt;span class="o"&gt;]&lt;/span&gt;
+project_web
+
+&lt;span class="o"&gt;[&lt;/span&gt;project:vars&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;span class="nv"&gt;repo_remote&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;origin
+&lt;span class="nv"&gt;repo_branch&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;master
+&lt;span class="nv"&gt;DEPLOYMENT_TYPE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;DEV
+&lt;/pre&gt;
+&lt;p&gt;Replace the &lt;tt class="docutils literal"&gt;ansible_ssh_private_key_file&lt;/tt&gt; with a valid path from your &lt;tt class="docutils literal"&gt;.vagrant&lt;/tt&gt; directory.&lt;/p&gt;
+&lt;p&gt;Now try running your Ansible with&lt;/p&gt;
+&lt;pre class="code bash literal-block"&gt;
+ansible-playbook -i virtualhosts playbook.yml
+&lt;/pre&gt;
+&lt;p&gt;And it's done, with your &lt;tt class="docutils literal"&gt;ansible.cfg&lt;/tt&gt;, the private ssh key would be correctly chosen for authentication and the &lt;tt class="docutils literal"&gt;playbook&lt;/tt&gt; would run by user &lt;tt class="docutils literal"&gt;vagrant&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;One can model more complex setups with lot of servers and load balancer to mimic actual deployment on servers.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 28 Dec 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-12-28:blog/ansible-deployment-vagrant.html</guid></item><item><title>Moved to a static blog</title><link>http://SanyamKhurana.com/blog/moving-to-static-blog.html</link><description>&lt;p&gt;Starting from today, my blog is now entirely shifted from &lt;a class="reference external" href="http://ersanyamkhurana.wordpress.com"&gt;ersanyamkhurana.wordpress.com&lt;/a&gt; to &lt;a class="reference external" href="http://www.sanyamkhurana.com/blog"&gt;sanyamkhurana.com/blog&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I already liked the idea of static blog and setting up blog for &lt;a class="reference external" href="http://pydelhi.org/blog"&gt;PyDelhi&lt;/a&gt; and &lt;a class="reference external" href="http://mozpacers.org/blog"&gt;Mozilla Delhi&lt;/a&gt; made me realized that I should too shift on using a static blog. It's so much fun to do this, just simple text editing in rST or MD and it's done.&lt;/p&gt;
+&lt;p&gt;The journey seems promising and interesting. This blog is now on Pelican which runs on Python :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 15 Mar 2016 01:46:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-03-15:blog/moving-to-static-blog.html</guid></item><item><title>Bootstrap Modal Scroll Bug on Chrome [Easy-Fix]</title><link>http://SanyamKhurana.com/blog/bootstrap-modal-scroll-bug-on-chrome-easy-fix.html</link><description>&lt;p&gt;As usual, I was contributing more to the PyDelhi Conference project and
+saw that the code of conduct was really occupying a large space and
+wasn't looking good. I contacted theskumar on IRC and we decided to make
+some changes in the FAQ as well as Code of Conduct section.&lt;/p&gt;
+&lt;p&gt;Quick enough I decided to have modals to be used for displaying the
+short and long version of code of conduct. I did it as well as the other
+task of modifying the FAQ section.&lt;/p&gt;
+&lt;p&gt;I told theskumar about it. Since it was around 2 AM, everyone was
+sleeping. Next day, I got a reply from theskumar that the modal was not
+scrolling on the mobile.&lt;/p&gt;
+&lt;p&gt;I tried quickly on my mobile and it worked. I asked him about the
+browser he was using, and he told me that it was Chrome. I tried that on
+firefox and it was working.&lt;/p&gt;
+&lt;p&gt;I then tried it on my desktop on both firefox and chrome. In firefox,
+both on mobile and desktop it was working fine, but in chrome, both on
+mobile and desktop, it was not scrolling.&lt;/p&gt;
+&lt;p&gt;I started searching, and got to the official bootstrap repo on github,
+where I found various issues, and this was a known bug on chrome.&lt;/p&gt;
+&lt;p&gt;I got to StackOverflow in search of alternatives, and then kept on
+applying it. But no success. Either the content of the body moves, or
+the whole page hanged.&lt;/p&gt;
+&lt;p&gt;I reached out Apoorva mam, and then she helped me. The solution was to
+have a scroll bar implemented in the modal keeping it's height fixed.&lt;/p&gt;
+&lt;p&gt;So, we just added this to CSS:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;.modal-body {&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;position: relative;&lt;/div&gt;
+&lt;div class="line"&gt;padding: 20px;&lt;/div&gt;
+&lt;div class="line"&gt;height: 200px;&lt;/div&gt;
+&lt;div class="line"&gt;overflow-y: scroll;&lt;/div&gt;
+&lt;div class="line"&gt;}&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;and it's working!&lt;/p&gt;
+&lt;p&gt;I hope this would help someone who is still figuring out about scrolling
+bug on chrome.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 13 Jan 2016 00:55:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-01-13:blog/bootstrap-modal-scroll-bug-on-chrome-easy-fix.html</guid></item><item><title>Authenticating And Getting Info From Explara API</title><link>http://SanyamKhurana.com/blog/authenticating-and-getting-info-from-explara-api.html</link><description>&lt;p&gt;PyDelhi is organizing a mini PyCon this year with the name PyDelhi Conf.
+And we all are having a great time working behind the scenes to make it
+a success. I'm contributing to building up the website for the confrence
+(conference.pydelhi.org).&lt;/p&gt;
+&lt;p&gt;So, there was this task of fetching the no. of tickets left for the
+conference from explara and displaying it on the website. I picked it up
+and had a look at Explara API. And Bingo! I noticed the tickets
+end-point, which would contain the remaining tickets in the JSON format.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;I got into reading about accessing api. There are two methods, one is for user access and another one is for app access.&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Since user access is good enough for the kind of work we're thinking to do, I decided to go by first method and generated the access token from my personal account and made a test event for testing purpose.&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;After several tries and errors, I was not able to authenticate the API.
+It was either giving me 401 or 403. Then after a day, I contacted
+Anuvrat &amp;amp; Saurabh on IRC. Also, I reached to Rishabh. Rishabh told me
+that he was able to authenticate for the app method which uses OAuth2.
+Then he tried for the user method and told me. And there I am.&lt;/p&gt;
+&lt;p&gt;Doing a blunder. The Authorization token in the header would be
+preceeded by 'Bearer' so the header would be:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Key: Authorization&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Value: Bearer &amp;lt;YOUR_API_KEY&amp;gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;And then voila, it was authorized. Soon to my surprise, it was giving me
+E007 which is a custom status code of explara which implies that eventId
+is incorrect. I just clicked on edit on my event and in the url I found
+something like&lt;/p&gt;
+&lt;p&gt;eid/116168&lt;/p&gt;
+&lt;p&gt;And I thought, yeah, that's the eventId I started passing it. But always
+I was getting E007. Rishabh was also trying but he was also not able to
+get the response 200.&lt;/p&gt;
+&lt;p&gt;At around 12.30 AM Rishabh told me that he's going to sleep, and would
+try tomorrow. But I decided to try more. I googled on how to find the
+eventId of explara event, but no concrete answer. I kept on trying, and
+then decided to have a look at other methods API is offering.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;There was an endpoint to get all events which require no parameters to be passed. I hit that end-point and there I was.&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;I got the event details as JSON and find the eventId of the event I created.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Now I took that eventId and hit the ticket end point to get the details, but there was always E007 error. I tried different methods to pass eventId parameter. I tried to pass it in a JSON body, but no success.&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Then I tried x-www-form-urlencoded and then the error code changed. I quickly searched, and got to know that I need to change the content-type of my request in the header.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;I changed the header and added:&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Key: Content-Type&lt;/div&gt;
+&lt;div class="line"&gt;Value: application/x-www-form-urlencoded&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;and bingo! I got the ticket status&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;Now I just wrote a simple flask script to issue the request and then display the tickets left in JSON format.&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;And here it is:&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://github.com/CuriousLearner/explara-ticket-status"&gt;https://github.com/CuriousLearner/explara-ticket-status&lt;/a&gt;
+|  Also forked to PyDelhi:
+&lt;a class="reference external" href="https://github.com/PyDelhi/explara-ticket-status"&gt;https://github.com/PyDelhi/explara-ticket-status&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;At 3:05 AM the task was completed, and I was pretty much happy about it.
+A good learning experience and I hope that someone would find it useful
+while working with explara api. Lack of examples caused more time on
+this than was really needed.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Wed, 13 Jan 2016 00:53:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2016-01-13:blog/authenticating-and-getting-info-from-explara-api.html</guid></item><item><title>How to clone a large repository using git</title><link>http://SanyamKhurana.com/blog/how-to-clone-a-large-repository-using-git.html</link><description>&lt;p&gt;So, I was trying to clone the official Mozilla gecko repo and it had
+around 455182 commits.&lt;/p&gt;
+&lt;p&gt;As usual I executed on my terminal:&lt;/p&gt;
+&lt;blockquote&gt;
+git clone &lt;a class="reference external" href="https://github.com/mozilla/gecko-dev"&gt;https://github.com/mozilla/gecko-dev&lt;/a&gt;&lt;/blockquote&gt;
+&lt;p&gt;Then it took whole night to get cloned. I was awake the whole night. At
+5:20 AM, it was around 90% received and then boom, it just crashed.&lt;/p&gt;
+&lt;p&gt;All the data downloaded of more than 1 GB was wasted.&lt;/p&gt;
+&lt;p&gt;Well, whatever happens, always happens for good. This provided me an
+awesome opportunity to learn how to easily clone large repos.&lt;/p&gt;
+&lt;p&gt;So, there are two ways around this.&lt;/p&gt;
+&lt;div class="section" id="do-a-shallow-clone"&gt;
+&lt;h2&gt;&lt;strong&gt;Do a shallow clone!&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Wait, what? What is a shallow clone?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Well, I mean clone the repo but not with all commits. Let's do it for
+just latest commit ie only one commit. Later once all the objects are
+extracted, we can deepen the clone.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;So, how do you do that in git?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;With the depth parameter as:&lt;/p&gt;
+&lt;blockquote&gt;
+git clone --depth=1 &lt;a class="reference external" href="https://github.com/mozilla/gecko-dev"&gt;https://github.com/mozilla/gecko-dev&lt;/a&gt;&lt;/blockquote&gt;
+&lt;p&gt;Here I've given depth of 1 commit, and suddenly the 1.5 GB repo became
+just around 258 MB to be downloaded.&lt;/p&gt;
+&lt;p&gt;If you still are stuck, and even this is difficult to clone because of
+unstable connection then prefer downloading a bundle, or explore &lt;a class="reference external" href="http://stackoverflow.com/questions/3954852/how-to-complete-a-git-clone-for-a-big-project-on-an-unstable-connection"&gt;more
+option via this SO
+Question&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Once you have shallow clone, you can deepen it.&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+git fetch --depth=100&lt;/blockquote&gt;
+&lt;p&gt;to fetch 100 commits&lt;/p&gt;
+&lt;p&gt;or if you want to get all commits then simply use:&lt;/p&gt;
+&lt;blockquote&gt;
+git fetch --unshallow&lt;/blockquote&gt;
+&lt;p&gt;and that would fetch all the commits and make your repo similar to what
+you do in the initial place like using git clone simply.&lt;/p&gt;
+&lt;p&gt;I hope this would help someone :)&lt;/p&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 28 Dec 2015 14:14:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-12-28:blog/how-to-clone-a-large-repository-using-git.html</guid></item><item><title>Sieve of Eratosthenes - An efficient way to solve problems about Prime numbers</title><link>http://SanyamKhurana.com/blog/sieve-of-eratosthenes-an-efficient-way-to-solve-problems-about-prime-numbers.html</link><description>&lt;p&gt;Long ago, I think 2-3 years ago, I came to know about Project Euler
+Problems, I made an account, solved 1 or 2 problems, and then never
+tried them.&lt;/p&gt;
+&lt;p&gt;Now, I decided to give them a try again. I was solving Project Euler 10
+Problem which states that:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The sum of the primes below 10 is 2 + 3 + 5 + 7 = 17.&lt;/p&gt;
+&lt;p&gt;Find the sum of all the primes below two million.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Now, I wrote this Python code for the same. I know it's not optimized.
+Not at all. Why, you'll come to know shortly.&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;http://paste.fedoraproject.org/191242/&lt;/span&gt;&lt;/tt&gt;&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;I tried to run this first for 10 to get an answer 17, I was happy. So, I changed it to 2 million and ran the code. It ran for some time, but no output, so I decided to keep printing the number on which it is executing at each step. I ran it again. After around 2 hours, I noticed it reached around 0.2 million.&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;I knew that is terrible and it would not solve this way. So, I
+researched about the problem and came to know about &lt;strong&gt;Sieve of
+Eratosthenes&lt;/strong&gt;through this question on StackOverflow:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://stackoverflow.com/questions/9233408/project-euler-10-why-the-first-python-code-runs-much-faster-than-the-second-on"&gt;http://stackoverflow.com/questions/9233408/project-euler-10-why-the-first-python-code-runs-much-faster-than-the-second-on&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I jumped over to Wikipedia page and understood what this algorithm was
+actually all about, and I knew, my algo was taking time because it would
+evaluate a number to be prime or not for each and every number from 1 to
+2 million which is processor intensive and redundant.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;What does Sieve of Eratosthenes does?&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;First it creates a list of numbers on which we want to carry some prime
+number operation for which we want to know if they are prime or not. It
+takes a number for example 2, calculate if it's prime, and then remove
+all the elements which are multiple of 2.&lt;/p&gt;
+&lt;p&gt;Then it jumps to next number, say 3, which is prime, and then removes
+all it's multiples.&lt;/p&gt;
+&lt;p&gt;While I was trying to do the calculation of whether a number is prime or
+not for each and every number till 2 million, this algo would calculate
+the prime number property for very low amount of numbers. Hence,
+efficient.&lt;/p&gt;
+&lt;p&gt;I have solved 15 problems on Project Euler till now :)&lt;/p&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;br /&gt;&lt;/div&gt;
+&lt;div class="line-block"&gt;
+&lt;div class="line"&gt;&lt;img alt="image0" src="https://projecteuler.net/profile/CuriousLearner.png" /&gt;&lt;/div&gt;
+&lt;div class="line"&gt;&lt;br /&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Fri, 27 Feb 2015 13:33:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2015-02-27:blog/sieve-of-eratosthenes-an-efficient-way-to-solve-problems-about-prime-numbers.html</guid></item></channel></rss>
