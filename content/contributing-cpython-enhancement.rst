@@ -6,7 +6,7 @@ Contributing enhancement patch to CPython
 :slug: contributing-cpython-enhancement
 :tags: foss, python, cpython
 
-I started contributing to `CPython <https://github.com/python/cpython>`_ this year from `PyCon Pune sprints </pycon-pune-2017.html>`_. That was one of the best PyCon I've ever attended. Since then, I've spent some time in going through documentation, core dev-guide and now I'm still reading about internals of the Python programming language.
+I started contributing to `CPython <https://github.com/python/cpython>`_ this year from `PyCon Pune sprints </blog/pycon-pune-2017.html>`_. That was one of the best PyCon I've ever attended. Since then, I've spent some time in going through documentation, core dev-guide and now I'm still reading about internals of the Python programming language.
 
 I recently contributed an enhancement patch to Python 3.7 which might be back-ported to Python 3.6. Let's understand the scenario and the enhancement:
 
