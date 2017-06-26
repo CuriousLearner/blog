@@ -6,21 +6,21 @@ Why you should contribute to Open Source
 :slug: why-contribute-to-foss
 :tags: foss, remo
 
-My first step with FOSS was `during summer of 2014 </blog/how-dgplug-training-is-proving-beneficial-to-me.html>`_, where I got introduced to `DGPLUG <http://dgplug.org>`_ (Durgapur Linux Users Group). Every year, they conduct a training over IRC covering a wide range of topics. Since then, I've been contributing in different projects, primarily to `Mozilla\'s Gecko Engine <https://github.com/mozilla/gecko-dev>`_. Recently I also started `contributing to CPython <https://github.com/python/cpython/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3ACuriousLearner>`_.
+My first step with FOSS was `during summer of 2014 </blog/how-dgplug-training-is-proving-beneficial-to-me.html>`_, where I got introduced to `DGPLUG <http://dgplug.org>`_ (Durgapur Linux Users Group). Every year, they conduct a training over IRC covering a wide range of topics. Since then, I've been contributing to different projects, primarily to `Mozilla\'s Gecko Engine <https://github.com/mozilla/gecko-dev>`_. Recently I also started `contributing to CPython <https://github.com/python/cpython/pulls?utf8=%E2%9C%93&q=is%3Apr%20author%3ACuriousLearner>`_.
 
-Over `these few years journey as CuriousLearner <https://github.com/CuriousLearner/>`_ , I've been fortunate enough to collaborate with some of the best engineers, learned a lot of skills & gained some nice perspective on different technologies by just contributing to Open Source. I owe my learning to them.
+Over `these few years journey as CuriousLearner <https://github.com/CuriousLearner/>`_, I've been fortunate enough to collaborate with some of the best engineers, learned a lot of skills & gained some nice perspective on different technologies by just contributing to Open Source. I owe my learning to them.
 
-I've been always asked this question by my friends, colleagues and strangers whom I often run into in local meet-ups and conferences.
+I've been always asked this question by my friends, colleagues, and strangers whom I often run into in local meet-ups and conferences.
 
   - Why should I contribute to Open Source
   - What's in it for me
 
-So, I thought I would cover this topic from perspective of a student as well as perspective of a working professional.
+So, I thought I would cover this topic from the perspective of a student as well as the perspective of a working professional.
 
 Learn new skills
 ----------------
 
-When I say skills, I'm not referring to just coding skills, or learning yet another framework. There are tons of skills to be learned. These include coding, debugging, testing, writing docs, collaboration, participating in meetings etc. In FOSS, you won't just learn technical skills, but soft skills as well. That means you'll learn how to communicate effectively over different mediums and making sense to other people who might be from different backgrounds.
+When I say skills, I'm not referring to just coding skills or learning yet another framework. There are tons of skills to be learned. These include coding, debugging, testing, writing docs, collaboration, participating in meetings etc. In FOSS, you won't just learn technical skills, but soft skills as well. That means you'll learn how to communicate effectively over different mediums and making sense to other people who might be from different backgrounds.
 
 I've seen many engineers are hesitant when it comes to communication. They can think and write really nice code, but when it comes to explaining themselves, they lack the communication skills, which is vital to be a better professional.
 
@@ -32,7 +32,7 @@ It's not always about learning a new tech that you heard about. It's important t
 Meet like-minded people
 -----------------------
 
-Many organizations do stand-up / all-hands meetings where everyone comes together and explains what are they're working on, what they plan to do next and if they face any blocker. So, students, there is high possibility that when you graduate, you'll do this in your organization :) You'll meet a lot of people having similar interests and you'll learn a lot of things just by hanging out with them (most of the time on IRC).
+Many organizations do stand-up / all-hands meetings where everyone comes together and explains what are they're working on, what they plan to do next and if they face any blocker. So, students, there is a high possibility that when you graduate, you'll do this in your organization :) You'll meet a lot of people having similar interests and you'll learn a lot of things just by hanging out with them (most of the time on IRC).
 
 Learn people skills
 -------------------
@@ -48,7 +48,7 @@ When I say read, I mean you'll read the documentation, development guide and mos
 
 Always remember that code is meant to be read more times than it is written. When you contribute to any FOSS project, one of the important skill you add to your skill-set is to make your brain make sense out of the code that may look gibberish to many people.
 
-This is a very important skill. Once you're in a company, you'll be given responsibility of maintaining huge code base and constantly adding features to it. There won't be someone who would spoon-feed you by explaining what every line of code means.
+This is a very important skill. Once you're in a company, you'll be given the responsibility of maintaining huge code base and constantly adding features to it. There won't be someone who would spoon-feed you by explaining what every line of code means.
 
 I've seen many people struggling hard in their jobs to figure out what a particular piece of code does. But if you've already worked with humongous code bases, this shall be a cake-walk for you. You would already know how to scrutinize bugs, debug errors and most importantly already taught your brain to think and `READ`.
 
@@ -67,9 +67,9 @@ While it is important to get your code reviewed, it is much more important to re
 It feels great to make (small) changes
 --------------------------------------
 
-You don't necessarily need to work on big features in a project or become a life-long contributor. Contribute to a project that you use on daily-basis (like `Mozilla Firefox <https://whatcanidoformozilla.org/>`_) and I promise you that it would be gratifying when you see the whole world rely on the small code changes you did.
+You don't necessarily need to work on big features in a project or become a life-long contributor. Contribute to a project that you use on daily basis (like `Mozilla Firefox <https://whatcanidoformozilla.org/>`_) and I promise you that it would be gratifying when you see the whole world rely on the small code changes you did.
 
-A small change in the documentation means, you might save someone countless hours of debugging and scratching their head on how to use a particular piece of code. Always remember, documentation bugs are not something inferior; you'll learn a lot in writing documentation, right from the tools such as Sphinx and rST to expanding your domain knowledge about the project.
+A small change in the documentation means you might save someone countless hours of debugging and scratching their head on how to use a particular piece of code. Always remember, documentation bugs are not something inferior; you'll learn a lot in writing documentation, right from the tools such as Sphinx and rST to expanding your domain knowledge about the project.
 
 
 Building your reputation (& career) along the way
