@@ -29,7 +29,7 @@ AUTHOR_FEED_RSS = None
 SOCIAL = (
     ('twitter', 'https://twitter.com/ErSanyamKhurana'),
     ('github', 'https://github.com/CuriousLearner'),
-    ('facebook','https://facebook.com/sanyam.khurana96'),
+    ('facebook','https://facebook.com/CuriousLearner'),
     ('envelope','mailto:sanyam@sanyamkhurana.com')
 )
 
