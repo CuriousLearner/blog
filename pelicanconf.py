@@ -30,7 +30,8 @@ SOCIAL = (
     ('twitter', 'https://twitter.com/ErSanyamKhurana'),
     ('github', 'https://github.com/CuriousLearner'),
     ('facebook','https://facebook.com/CuriousLearner'),
-    ('envelope','mailto:sanyam@sanyamkhurana.com')
+    ('envelope','mailto:sanyam@sanyamkhurana.com'),
+    ('feed', 'http://www.sanyamkhurana.com/blog/feeds/all.rss.xml')
 )
 
 # STATIC_PATHS = ['images', 'extra/CNAME']
