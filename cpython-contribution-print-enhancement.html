@@ -9,7 +9,7 @@
         <meta name="author" content="Sanyam Khurana">
 
 
-        <title>Finally Mozilla Dev Tools Bug patched</title>
+        <title>The cycle of creating bugs and patching them</title>
 
             <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
             <link href="feeds/feeds/foss.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
@@ -37,20 +37,23 @@
 
 
 
-        <meta name="description" content="Alright, finally it's done. I patched the Mozilla Dev Tools bug. with help of my mentor Patrick Brosset (pbro). He was the one who ...">
+        <meta name="description" content="I write patches, which creates more bugs; then I go and patch them again. The cycle continues... If you've been following up my recent ...">
 
         <meta name="author" content="Sanyam Khurana">
 
+        <meta name="tags" content="foss">
+        <meta name="tags" content="python">
+        <meta name="tags" content="cpython">
 
 	                <meta property="og:locale" content="">
 		<meta property="og:site_name" content="Sanyam Khurana">
 
 	<meta property="og:type" content="article">
             <meta property="article:author" content="Sanyam Khurana" >
-	<meta property="og:url" content="http://SanyamKhurana.com/blog/mozilla-dev-tool-bug.html">
-	<meta property="og:title" content="Finally Mozilla Dev Tools Bug patched">
-	<meta property="article:published_time" content="2016-03-08 00:53:00+05:30">
-            <meta property="og:description" content="Alright, finally it's done. I patched the Mozilla Dev Tools bug. with help of my mentor Patrick Brosset (pbro). He was the one who ...">
+	<meta property="og:url" content="http://SanyamKhurana.com/blog/cpython-contribution-print-enhancement.html">
+	<meta property="og:title" content="The cycle of creating bugs and patching them">
+	<meta property="article:published_time" content="2017-12-15 20:34:00+05:30">
+            <meta property="og:description" content="I write patches, which creates more bugs; then I go and patch them again. The cycle continues... If you've been following up my recent ...">
 
             <meta property="og:image" content="http://SanyamKhurana.com/blog/theme/images/post-bg.jpg">
 </head>
@@ -90,10 +93,10 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
-                        <h1>Finally Mozilla Dev Tools Bug patched</h1>
+                        <h1>The cycle of creating bugs and patching them</h1>
                         <span class="meta">Posted by
                                 <a href="http://SanyamKhurana.com/blog/author/sanyam-khurana.html">Sanyam Khurana</a>
-                             on Tue 08 March 2016
+                             on Fri 15 December 2017
                         </span>
                         
                     </div>
@@ -108,13 +111,30 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p>Alright, finally it's done. I patched the <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1222937">Mozilla Dev Tools bug</a>. with help of my mentor Patrick Brosset (pbro). He was the one who helped me with getting started to land my first patch in Mozilla-Central. He is indeed very helpful and I'm greatful to him for being my mentor. We had regular chat on irc and he helped me in explaining various aspects about this bug, how the files are inter-linked and of course, with my silly doubts.</p>
-<p>So, this bug was essentially spreaded over many files, unlike the very first bug I solved. While I wrote the patch in around 2 days for this, it was stuck due the test I had to write. One after another, storm of exams and other things crushed me so hard that I was not able to write the test for it. But then, I decided to do it and started studying the test file, contacted pbro on irc and took help and there I was with this bug patched.</p>
-<p>pbro also gives me detailed code-review about every patch I write and it helps me a lot in improving my coding skills. I've learned about coding-standards and some really good practices in CSS and JS.</p>
-<p>Now, I'm gonna pick up some more bugs and learn along the way.</p>
+        <p>I write patches, which creates more bugs; then I go and patch them again. The cycle continues...</p>
+<p>If you've been following up my recent contributions on the CPython code-base, sometime back I added an enhancement patch to the code-base which presents the user a suggestion on the correct syntax hint for calling built-in <tt class="docutils literal">print</tt> function in Python 3.6 &amp; 3.7 if it is used as an old style <tt class="docutils literal">print</tt> statement.</p>
+<p>Recently a <a class="reference external" href="https://bugs.python.org/issue32028">bug was filed</a> for that new feature. I am more than excited to hear this news (because people have already started using the feature I added to Python programming language :))</p>
+<blockquote>
+When the following code is executed by Python 3.6.3 inside of a <tt class="docutils literal">.py</tt> file:</blockquote>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">f</span><span class="p">():</span>
+    <span class="k">print</span> <span class="s">&#39;</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="mi">2</span>
+
+
+<span class="p">,</span> <span class="n">then</span> <span class="n">Python</span> <span class="n">gives</span> <span class="n">the</span> <span class="n">following</span> <span class="n">error</span> <span class="n">message</span><span class="p">:</span>
+</pre></div>
+<div class="highlight"><pre><span class="ne">SyntaxError</span><span class="p">:</span> <span class="n">Missing</span> <span class="n">parentheses</span> <span class="ow">in</span> <span class="n">call</span> <span class="n">to</span> <span class="s">&#39;print&#39;</span><span class="o">.</span> <span class="n">Did</span> <span class="n">you</span> <span class="n">mean</span> <span class="k">print</span><span class="p">(</span><span class="nb">int</span> <span class="s">&#39;</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span><span class="err">?</span>
+</pre></div>
+<p>So, the issue with the earlier patch was this as Nick suggested:</p>
+<blockquote>
+Given the symptoms (stripping 4 spaces + &quot;pr&quot; from the start of the line, leaving &quot;int &quot; behind), it looks like we're not stripping the leading whitespace when determining the text to include in the suggested print() call.</blockquote>
+<p>When I got some time to work on this, it took me just 5 mins to re-patch it for the first version of the patch. (That is the fastest I've done in any bug in CPython, probably because the earlier patch was written by me.)</p>
+<p>So, after review, we also did a bit of refactoring to that patch. It was already approved a few weeks ago but still waiting to be merged. Here is the <a class="reference external" href="https://github.com/python/cpython/pull/4688/files">updated patch</a> if you want to see.</p>
 
     </article>
 
+        <div class="tags">
+            <p>tags: <a href="http://SanyamKhurana.com/blog/tag/foss.html">foss</a>, <a href="http://SanyamKhurana.com/blog/tag/python.html">python</a>, <a href="http://SanyamKhurana.com/blog/tag/cpython.html">cpython</a>, </p>
+        </div>
 
 <hr>
 <div class="sharing">
@@ -126,8 +146,8 @@
             <div id="disqus_thread"></div>
             <script type="text/javascript">
                 var disqus_shortname = 'curiouslearner';
-                var disqus_identifier = 'mozilla-dev-tool-bug.html';
-                var disqus_url = 'http://SanyamKhurana.com/blog/mozilla-dev-tool-bug.html';
+                var disqus_identifier = 'cpython-contribution-print-enhancement.html';
+                var disqus_url = 'http://SanyamKhurana.com/blog/cpython-contribution-print-enhancement.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//curiouslearner.disqus.com/embed.js';

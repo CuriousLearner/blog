@@ -9,7 +9,7 @@
         <meta name="author" content="Sanyam Khurana">
 
 
-        <title>Finally Mozilla Dev Tools Bug patched</title>
+        <title>Fixing the print redirection suggestion in Python 3.7</title>
 
             <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
             <link href="feeds/feeds/foss.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
@@ -37,20 +37,23 @@
 
 
 
-        <meta name="description" content="Alright, finally it's done. I patched the Mozilla Dev Tools bug. with help of my mentor Patrick Brosset (pbro). He was the one who ...">
+        <meta name="description" content="If you've been following my contributions to CPython, I recently contributed an enhancement patch to Python 3.7 about producing correct ...">
 
         <meta name="author" content="Sanyam Khurana">
 
+        <meta name="tags" content="foss">
+        <meta name="tags" content="python">
+        <meta name="tags" content="cpython">
 
 	                <meta property="og:locale" content="">
 		<meta property="og:site_name" content="Sanyam Khurana">
 
 	<meta property="og:type" content="article">
             <meta property="article:author" content="Sanyam Khurana" >
-	<meta property="og:url" content="http://SanyamKhurana.com/blog/mozilla-dev-tool-bug.html">
-	<meta property="og:title" content="Finally Mozilla Dev Tools Bug patched">
-	<meta property="article:published_time" content="2016-03-08 00:53:00+05:30">
-            <meta property="og:description" content="Alright, finally it's done. I patched the Mozilla Dev Tools bug. with help of my mentor Patrick Brosset (pbro). He was the one who ...">
+	<meta property="og:url" content="http://SanyamKhurana.com/blog/cpython-print-redirection-syntax-suggestion.html">
+	<meta property="og:title" content="Fixing the print redirection suggestion in Python 3.7">
+	<meta property="article:published_time" content="2017-08-20 20:34:00+05:30">
+            <meta property="og:description" content="If you've been following my contributions to CPython, I recently contributed an enhancement patch to Python 3.7 about producing correct ...">
 
             <meta property="og:image" content="http://SanyamKhurana.com/blog/theme/images/post-bg.jpg">
 </head>
@@ -90,10 +93,10 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
-                        <h1>Finally Mozilla Dev Tools Bug patched</h1>
+                        <h1>Fixing the print redirection suggestion in Python 3.7</h1>
                         <span class="meta">Posted by
                                 <a href="http://SanyamKhurana.com/blog/author/sanyam-khurana.html">Sanyam Khurana</a>
-                             on Tue 08 March 2016
+                             on Sun 20 August 2017
                         </span>
                         
                     </div>
@@ -108,13 +111,34 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p>Alright, finally it's done. I patched the <a class="reference external" href="https://bugzilla.mozilla.org/show_bug.cgi?id=1222937">Mozilla Dev Tools bug</a>. with help of my mentor Patrick Brosset (pbro). He was the one who helped me with getting started to land my first patch in Mozilla-Central. He is indeed very helpful and I'm greatful to him for being my mentor. We had regular chat on irc and he helped me in explaining various aspects about this bug, how the files are inter-linked and of course, with my silly doubts.</p>
-<p>So, this bug was essentially spreaded over many files, unlike the very first bug I solved. While I wrote the patch in around 2 days for this, it was stuck due the test I had to write. One after another, storm of exams and other things crushed me so hard that I was not able to write the test for it. But then, I decided to do it and started studying the test file, contacted pbro on irc and took help and there I was with this bug patched.</p>
-<p>pbro also gives me detailed code-review about every patch I write and it helps me a lot in improving my coding skills. I've learned about coding-standards and some really good practices in CSS and JS.</p>
-<p>Now, I'm gonna pick up some more bugs and learn along the way.</p>
+        <p>If you've been following my contributions to CPython, I recently contributed an enhancement patch to <cite>Python 3.7</cite> about <a class="reference external" href="contributing-cpython-enhancement.html">producing correct suggestion for built-in print function in Python 3 if the old print 2 statement style is used</a>.</p>
+<p>The patch also got back-ported to <cite>Python 3.6</cite> and is now available to you folks :) Continuing the development on this new suggestion hint, the next target was to produce the correct hint if anyone uses the old Python 2 redirection syntax like:</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;message&quot;</span>
+</pre></div>
+<p>Here we're trying to redirect the &quot;message&quot; string on the <tt class="docutils literal">Standard Error</tt> stream in Python.</p>
+<p>The current error thrown is a <tt class="docutils literal">TypeError</tt> like:</p>
+<div class="highlight"><pre><span class="ne">TypeError</span><span class="p">:</span> <span class="n">unsupported</span> <span class="n">operand</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="o">&gt;&gt;</span><span class="p">:</span> <span class="s">&#39;builtin_function_or_method&#39;</span> <span class="ow">and</span> <span class="s">&#39;_io.TextIOWrapper&#39;</span><span class="o">.</span>
+</pre></div>
+<p>We also wanted to display the correct syntax in Python 3 like:</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="s">&quot;message&quot;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+</pre></div>
+<p>When I was working on the patch, we realized that till the time the check is made to throw the <tt class="docutils literal">TypeError</tt> inside the interpreter, we don't have the relevant information about data passed with the print statement available. So, we decided to throw a generic suggestion which would be a constant expression not depending upon the input from the user.  But it would be good enough to suggest some meaningful modification the user could do to fix the error.  We ended up with the following suggestion hint:</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;message&quot;</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="n">unsupported</span> <span class="n">operand</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="o">&gt;&gt;</span><span class="p">:</span> <span class="s">&#39;builtin_function_or_method&#39;</span> <span class="ow">and</span> <span class="s">&#39;_io.TextIOWrapper&#39;</span><span class="o">.</span> <span class="n">Did</span> <span class="n">you</span> <span class="n">mean</span> <span class="s">&quot;print(&lt;message&gt;, file=&lt;output_stream&gt;)&quot;</span><span class="err">?</span>
+</pre></div>
+<p>Also included some test cases to verify the new feature. <a class="reference external" href="https://github.com/python/cpython/commit/5e2eb35bbed3e84079165e576cdb50ef36e13493">Here is the full patch</a> if you want to see. The meaning of each of the methods used can be easily found from the official documentation.</p>
+<p>I hope to write about my learning in more detail and also explain about different parts of the programming language in one of the future post.</p>
 
     </article>
 
+        <div class="tags">
+            <p>tags: <a href="http://SanyamKhurana.com/blog/tag/foss.html">foss</a>, <a href="http://SanyamKhurana.com/blog/tag/python.html">python</a>, <a href="http://SanyamKhurana.com/blog/tag/cpython.html">cpython</a>, </p>
+        </div>
 
 <hr>
 <div class="sharing">
@@ -126,8 +150,8 @@
             <div id="disqus_thread"></div>
             <script type="text/javascript">
                 var disqus_shortname = 'curiouslearner';
-                var disqus_identifier = 'mozilla-dev-tool-bug.html';
-                var disqus_url = 'http://SanyamKhurana.com/blog/mozilla-dev-tool-bug.html';
+                var disqus_identifier = 'cpython-print-redirection-syntax-suggestion.html';
+                var disqus_url = 'http://SanyamKhurana.com/blog/cpython-print-redirection-syntax-suggestion.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//curiouslearner.disqus.com/embed.js';

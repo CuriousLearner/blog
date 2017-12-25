@@ -9,7 +9,7 @@
         <meta name="author" content="Sanyam Khurana">
 
 
-        <title>Event Report - PyDelhi Conf 2017</title>
+        <title>Improving class instantiation error message logic in Python 3.7</title>
 
             <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
             <link href="feeds/feeds/foss.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
@@ -37,22 +37,23 @@
 
 
 
-        <meta name="description" content="This was second year of PyDelhi Conf! It was a two day event organized at IIM-Lucknow, Noida Campus from March 18, 2017 to March 19, ...">
+        <meta name="description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix ...">
 
         <meta name="author" content="Sanyam Khurana">
 
-        <meta name="tags" content="mozilla">
         <meta name="tags" content="foss">
+        <meta name="tags" content="python">
+        <meta name="tags" content="cpython">
 
 	                <meta property="og:locale" content="">
 		<meta property="og:site_name" content="Sanyam Khurana">
 
 	<meta property="og:type" content="article">
             <meta property="article:author" content="Sanyam Khurana" >
-	<meta property="og:url" content="http://SanyamKhurana.com/blog/pydelhi-conf-2017.html">
-	<meta property="og:title" content="Event Report - PyDelhi Conf 2017">
-	<meta property="article:published_time" content="2017-04-03 15:50:00+05:30">
-            <meta property="og:description" content="This was second year of PyDelhi Conf! It was a two day event organized at IIM-Lucknow, Noida Campus from March 18, 2017 to March 19, ...">
+	<meta property="og:url" content="http://SanyamKhurana.com/blog/cpython-improve-error-message-logic-for-class-instantiation.html">
+	<meta property="og:title" content="Improving class instantiation error message logic in Python 3.7">
+	<meta property="article:published_time" content="2017-12-11 20:34:00+05:30">
+            <meta property="og:description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix ...">
 
             <meta property="og:image" content="http://SanyamKhurana.com/blog/theme/images/post-bg.jpg">
 </head>
@@ -92,10 +93,10 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="post-heading">
-                        <h1>Event Report - PyDelhi Conf 2017</h1>
+                        <h1>Improving class instantiation error message logic in Python 3.7</h1>
                         <span class="meta">Posted by
                                 <a href="http://SanyamKhurana.com/blog/author/sanyam-khurana.html">Sanyam Khurana</a>
-                             on Mon 03 April 2017
+                             on Mon 11 December 2017
                         </span>
                         
                     </div>
@@ -110,20 +111,56 @@
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
     <!-- Post Content -->
     <article>
-        <p>This was second year of PyDelhi Conf! It was a two day event organized at IIM-Lucknow, Noida Campus from March 18, 2017 to March 19, 2017.</p>
-<p>The two day event covered various talks and workshops along with dev-sprints to help newbies to contribute to various Open Source projects.</p>
-<p>I also presented a talk at PyDelhi Conf on <em>&quot;Building High Performance systems using Django&quot;</em>. The slides of the talk are available <a class="reference external" href="http://SanyamKhurana.com/presentations/django-optimizations">here</a>.</p>
-<p>The major attraction in the event were a lot of panel discussions. One of the discussion was on increasing women participation in Open Source and appreciate the efforts of female contributors in computing.</p>
-<p>Another panel discussion was on &quot;OSS communities in Delhi: How we can possibly collaborate together&quot;; where there were many Open Source contributors present from various communities.</p>
-<p>Here is a group photo of all volunteers for PyDelhiConf:</p>
-<img alt="Group Photo of volunteers for PyDelhi Conf" class="align-center" src="images/pydelhi-conf-2017-1.jpg" />
-<p>You can find all the photos of the event on <a class="reference external" href="https://www.flickr.com/photos/theskumar/sets/72157679909955640/">Flickr</a>.</p>
-<p>I'd like to congratulate every volunteer to come forward and help in conducting the conference. We're waiting excitingly to host PyCon India 2017 in Delhi!</p>
+        <p>Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix a typo in the doc, believe me, you've actually helped a lot of developers and companies all over the world. Your (small) changes matters a lot. They make huge impact in FOSS world :)</p>
+<p>While browsing through bugs on <a class="reference external" href="https://bugs.python.org">bugs.python.org</a> , I found a bug reported by a teacher who requested to enhance the error message logic as he described in one of the blog posts on his blog on <a class="reference external" href="https://blog.lerner.co.il/favorite-terrible-python-error-message/">Favorite Terrible Python Error Message</a>. The <tt class="docutils literal">object_new</tt> and <tt class="docutils literal">object_init</tt> currently have &quot;object&quot; hardcoded in the error messages they raise for excess parameters. It is thus difficult for anyone facing that error to know what is going on.</p>
+<p>Nick explained really well about the <a class="reference external" href="https://bugs.python.org/issue31506#msg302439">comment in the bug</a> which I'm stating here:</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">C</span><span class="p">:</span> <span class="k">pass</span>
+<span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">C</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
+
+
+<span class="n">This</span> <span class="n">hardcoding</span> <span class="n">makes</span> <span class="n">sense</span> <span class="k">for</span> <span class="n">the</span> <span class="n">case</span> <span class="n">where</span> <span class="n">that</span> <span class="n">particular</span> <span class="n">method</span> <span class="n">has</span> <span class="n">been</span> <span class="n">overridden</span><span class="p">,</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">interpreter</span> <span class="ow">is</span> <span class="n">reporting</span> <span class="n">an</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">subclass</span><span class="s">&#39;s call up to the base class, rather than in the call to create an instance of the subclass:</span>
+</pre></div>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">D</span><span class="p">:</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="o">...</span>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">D</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">3</span><span class="p">,</span> <span class="ow">in</span> <span class="n">__init__</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
+
+
+<span class="n">However</span><span class="p">,</span> <span class="n">it</span><span class="s">&#39;s misleading in the case where object_new is reporting an error because it knows object_init hasn&#39;</span><span class="n">t</span> <span class="n">been</span> <span class="n">overridden</span> <span class="p">(</span><span class="ow">or</span> <span class="n">vice</span><span class="o">-</span><span class="n">versa</span><span class="p">),</span> <span class="ow">and</span> <span class="n">hence</span> <span class="n">won</span><span class="s">&#39;t correctly accept any additional arguments: in those cases, it would be far more useful to report &quot;type-&gt;tp_name&quot; in the error message, rather than hardcoding &quot;object&quot;.</span>
+</pre></div>
+<p>I thus started working on the patch to detect the cases when <tt class="docutils literal">excess_args</tt> are supplied and show the correct error message.</p>
+<blockquote>
+<p>Now the error messages in <cite>object.__new__</cite> and <cite>object.__init__</cite> aim
+to point the user more directly at the name of the class being instantiated
+in cases where they <em>haven't</em> been overridden (on the assumption that
+the actual problem is a missing <cite>__new__</cite> or <cite>__init__</cite> definition in the
+class body).</p>
+<p>When they <em>have</em> been overridden, the errors still report themselves as
+coming from the object, on the assumption that the problem is with the call
+up to the base class in the method implementation, rather than with the
+way the constructor is being called.</p>
+</blockquote>
+<p>If you're interested, you can see the whole <a class="reference external" href="https://github.com/python/cpython/commit/780acc89bccf9999332d334a27887684cc942eb6">patch here</a>.
+I hope this patch would help all those kids and all the new and old folks playing with Python to learn about how objects are created and instantiated. It always feels great to make (small) changes. Helping in improving Python one patch at a time :)</p>
 
     </article>
 
         <div class="tags">
-            <p>tags: <a href="http://SanyamKhurana.com/blog/tag/mozilla.html">mozilla</a>, <a href="http://SanyamKhurana.com/blog/tag/foss.html">foss</a>, </p>
+            <p>tags: <a href="http://SanyamKhurana.com/blog/tag/foss.html">foss</a>, <a href="http://SanyamKhurana.com/blog/tag/python.html">python</a>, <a href="http://SanyamKhurana.com/blog/tag/cpython.html">cpython</a>, </p>
         </div>
 
 <hr>
@@ -136,8 +173,8 @@
             <div id="disqus_thread"></div>
             <script type="text/javascript">
                 var disqus_shortname = 'curiouslearner';
-                var disqus_identifier = 'pydelhi-conf-2017.html';
-                var disqus_url = 'http://SanyamKhurana.com/blog/pydelhi-conf-2017.html';
+                var disqus_identifier = 'cpython-improve-error-message-logic-for-class-instantiation.html';
+                var disqus_url = 'http://SanyamKhurana.com/blog/cpython-improve-error-message-logic-for-class-instantiation.html';
                 (function() {
                     var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
                     dsq.src = '//curiouslearner.disqus.com/embed.js';
