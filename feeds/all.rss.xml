@@ -1,5 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Wed, 20 Dec 2017 20:34:00 +0530</lastBuildDate><item><title>Promoted to bug-triager for CPython</title><link>http://SanyamKhurana.com/blog/cpython-promotion.html</link><description>&lt;p&gt;This is huge! I couldn't believe when I just woke up next to this mail:&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 31 Dec 2017 12:55:00 +0530</lastBuildDate><item><title>9 essential questions I asked myself at the end of year 2017</title><link>http://SanyamKhurana.com/blog/essential-questions-i-asked-myself-in-2017-end.html</link><description>&lt;p&gt;I read an article on &lt;a class="reference external" href="https://medium.com/personal-growth/9-essential-questions-everyone-should-ask-themselves-at-the-end-of-the-year-63f5d845f955"&gt;medium about 9 Essential Questions Everyone Should Ask
+Themselves At The End of The Year&lt;/a&gt;. This motivated
+me to ask myself these questions.&lt;/p&gt;
+&lt;p&gt;Yes, indeed the end of December put me in a reflective mood to decipher how
+the year 2017 was for me. My learnings from these 12 months would definitely
+help me in pointing to a direction to improve myself.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;If you had to describe these previous 12 months, in a sentence, what would that sentence be?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;No matter where you stand today; perseverance is something that can get you anything.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Ask &lt;span class="pre"&gt;yourself — which&lt;/span&gt; one event, big or small, is something that you will still talk about in 5 years?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;My contributions in CPython were recognized; I got &lt;cite&gt;Developer&lt;/cite&gt; role on
+&lt;a class="reference external" href="http://bugs.python.org"&gt;bugs.python.org&lt;/a&gt;. Community trusted me with such
+privileges and that is something really special :)&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;What successes, accomplishments, wins, great news and compliments happened this year? How did you feel? What single achievement are you most proud of? Moreover, why?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;It was contributing (small) changes to improve the Python programming language.
+The &lt;a class="reference external" href="cpython-promotion.html"&gt;best news I got was indeed of getting promoted to bug triager for CPython&lt;/a&gt;. It feels absolutely mesmerizing. A huge part of the
+folks who code in Python are already using features that I developed.&lt;/p&gt;
+&lt;p&gt;It feels so encouraging when someone &lt;a class="reference external" href="cpython-contribution-print-enhancement.html"&gt;reports a bug on my feature&lt;/a&gt;. More than that,
+there was a flaw in it's working, what gives me happiness is that they were using it.&lt;/p&gt;
+&lt;p&gt;It is the feeling to &lt;a class="reference external" href="cpython-improve-error-message-logic-for-class-instantiation.html"&gt;help people&lt;/a&gt; all over the world.&lt;/p&gt;
+&lt;p&gt;Besides that, I am helping a few students to learn to program and contribute to
+Open Source. That makes me immensely happy.&lt;/p&gt;
+&lt;p&gt;And last but not the least, I learned to play a few songs on Guitar :)&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Did something prevent you, or you used the “Excuse Card” too much?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;Yes, indeed. Although it is important to be persistent and work with perseverance,
+it is also important to know what should be done and where to really apply our efforts.&lt;/p&gt;
+&lt;p&gt;I remember this just corresponds to what I learned in Physics about directional
+cosines for Force. You need to apply force, but somewhere and somehow ensuring
+that the angle is small; that would have the maximum impact on your persistent force.&lt;/p&gt;
+&lt;p&gt;So, while applying effort is important, it is much more important to apply it in
+the right direction. Not applying the force in the right direction made it real
+hard to move on stuff.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Which of your personal virtues or qualities turned out to be the most helpful this year?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;I learned that it is important to prioritize things. It is important to
+&lt;a class="reference external" href="https://www.youtube.com/watch?v=gCswMsONkwY"&gt;Get things done&lt;/a&gt;.
+We just need to do small tasks in a simple manner; the big things will take care of themselves.&lt;/p&gt;
+&lt;p&gt;Being persistent with stuff was most helpful to me in this year.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;Who was your number one &lt;span class="pre"&gt;go-to&lt;/span&gt; person that you could always rely on?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;There are a lot of people that helped me in various things. The list is really
+long and might bloat up this blog post. So, I'll keep it off for another day.&lt;/p&gt;
+&lt;p&gt;But I'm grateful to a lot of folks, who helped me in different phases of my life.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;What Was The Most Common Mental State This Year?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;It was indeed a roller-coaster ride. It was full of ups and downs; sometimes
+several times a month. With many important learnings, life happened.&lt;/p&gt;
+&lt;p&gt;Sylvester Stallone, in his role of Rocky Balboa, had an amazing speech:&lt;/p&gt;
+&lt;blockquote&gt;
+Let me tell you something you already know. The world ain’t all sunshine and rainbows. It is a very mean and nasty place, and I do not care how tough you are it will beat you to your knees and keep you there permanently if you let it. You, me, or nobody is gonna hit as hard as life. However, it ain’t about how hard ya hit. It is about how hard you can get hit and keep moving forward. How much you can take and keep moving forward. That is how winning is done!”&lt;/blockquote&gt;
+&lt;p&gt;I felt euphoric with only helping others. May it be helping students to learn &amp;amp;
+contributing to FOSS or just helping folks with my work in Open Source. All of
+it triggers curiosity, excitement, and enthusiasm.&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;What’s The Difference Between You on January 1st of 2017 vs You Right Now?&lt;/tt&gt;&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;tt class="docutils literal"&gt;If you were to write a short biography about yourself right now, what would you say?&lt;/tt&gt;&lt;/li&gt;
+&lt;li&gt;&lt;tt class="docutils literal"&gt;How would you describe yourself? What the best thing about you?&lt;/tt&gt;&lt;/li&gt;
+&lt;li&gt;&lt;tt class="docutils literal"&gt;How about one year ago? What are the main differences?&lt;/tt&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I learned to appreciate the things I've right now. It is the best I could've got.
+There is much more to accomplish; for which I'll keep working.&lt;/p&gt;
+&lt;p&gt;I completely respect and appreciate the things I've faced. It made me stronger,
+wiser &amp;amp; more confident.&lt;/p&gt;
+&lt;p&gt;I appreciate every single thing. Every single person that I know :)&lt;/p&gt;
+&lt;p&gt;&lt;tt class="docutils literal"&gt;What Are You Grateful For?&lt;/tt&gt;&lt;/p&gt;
+&lt;p&gt;I am grateful to someone who made me realized that I wasn't good enough. That
+triggered enough fire which fueled enough motivation to keep me going throughout
+the years. Year after year, it never ends, just continues...&lt;/p&gt;
+&lt;p&gt;Alright, this marks the end of the post. Overall, the year was full of excitement,
+learnings, new friends, few vacations and what not :)&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 31 Dec 2017 12:55:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-12-31:blog/essential-questions-i-asked-myself-in-2017-end.html</guid><category>personal</category></item><item><title>Promoted to bug-triager for CPython</title><link>http://SanyamKhurana.com/blog/cpython-promotion.html</link><description>&lt;p&gt;This is huge! I couldn't believe when I just woke up next to this mail:&lt;/p&gt;
 &lt;img alt="Sanyam Khurana has been promoted" src="images/cpython_bug_triage.jpg" /&gt;
 &lt;p&gt;Yes, I got promoted to &lt;tt class="docutils literal"&gt;Developer&lt;/tt&gt; role on &lt;a class="reference external" href="http://bugs.python.org"&gt;bugs.python.org&lt;/a&gt;, which along with other privileges, provides access to close bugs. But with great powers, comes great responsibilities. Closing bugs means that the information is lost forever. So, utmost care is to be taken and reported on why a bug is closed (which might even involve writing code/scripts that prove it :)).&lt;/p&gt;
 &lt;p&gt;Victor Stinner is mentoring me and a few other folks who have been promoted to learn more about contributing to CPython code base. I've been reading the dev-guide and understanding the entire process to be followed.&lt;/p&gt;
