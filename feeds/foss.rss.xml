@@ -1,5 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/foss.rss.xml" rel="self"></atom:link><lastBuildDate>Wed, 20 Dec 2017 20:34:00 +0530</lastBuildDate><item><title>Promoted to bug-triager for CPython</title><link>http://SanyamKhurana.com/blog/cpython-promotion.html</link><description>&lt;p&gt;This is huge! I couldn't believe when I just woke up next to this mail:&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/foss.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 23 Jan 2018 20:15:00 +0530</lastBuildDate><item><title>Web Extensions, Womoz &amp; Privacy</title><link>http://SanyamKhurana.com/blog/mozcoffe-2017-end.html</link><description>&lt;p&gt;A Saturday well spent teaching students about Open Source, Add-ons and Privacy.&lt;/p&gt;
+&lt;p&gt;We had an activity at Indira Gandhi Delhi Technical University for Women (IGDTUW)
+for Addons, WoMoz and Privacy.&lt;/p&gt;
+&lt;p&gt;The session started with Trishul giving a talk on getting started with Add-ons.
+He explained about Web Extensions and how they are useful. He also depicted some
+of the extensions built by the community. He explained the use of &lt;tt class="docutils literal"&gt;manifest&lt;/tt&gt;
+file and then students started making simple add-ons on their own. The
+&lt;a class="reference external" href="https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Your_first_WebExtension"&gt;borderify&lt;/a&gt;
+Web Extension was chosen to teach students. Me, Trishul and Shivam helped them
+whenever they were stuck.&lt;/p&gt;
+&lt;img alt="Web Extension session" src="images/moz-addons.jpg" /&gt;
+&lt;p&gt;The next session was took by Faye on Women in Mozilla and how we can improve the
+no of women contributors in the community.&lt;/p&gt;
+&lt;img alt="Faye engaging participants" src="images/moz-addons-faye.jpg" /&gt;
+&lt;p&gt;The third session was took by me where I discussed about &lt;cite&gt;What is FOSS&lt;/cite&gt; and why
+people should contribute to FOSS. We then discussed on various pathways one can
+start contributing. We also discussed on finding bugs through BugZilla and Bugsahoy
+for Mozilla.&lt;/p&gt;
+&lt;p&gt;Then Shashikanth discussed about importance of Privacy issues.&lt;/p&gt;
+&lt;p&gt;We ended the event with a capture of all enthusiastic faces in the meetup:&lt;/p&gt;
+&lt;img alt="Group photo after Mozilla Web Extension session" src="images/moz-addons-group.jpg" /&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 23 Jan 2018 20:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2018-01-23:blog/mozcoffe-2017-end.html</guid><category>mozilla</category><category>remo</category></item><item><title>Moz-Fedora Day</title><link>http://SanyamKhurana.com/blog/moz-fedora-day.html</link><description>&lt;p&gt;We recently organized Moz-Fedora Day, a one day event on promoting FOSS through
+Mozilla &amp;amp; Fedora at Investopad, Hauz Khas, Delhi on Jan 13, 2018. The aim was
+to depict the usage of packaging &amp;amp; building one of the Mozilla's project using Fedora.&lt;/p&gt;
+&lt;img alt="Sanyam explaining about Mozilla &amp;amp; it's mission" src="images/moz-fedora-day-4.jpg" /&gt;
+&lt;p&gt;The core event focused on making the participants automate the build of any of
+the Mozilla's open source project of their choice. The aim is to influence
+people to switch to Linux as a build environment (We used Fedora for this)
+and introduce the basics of the version control system (Mercurial in case of Mozilla).
+The event will also introduce to Vagrant for running standardized virtual
+machines for build environments.&lt;/p&gt;
+&lt;img alt="Sanyam engaging participants on Moz-Fedora Day" src="images/moz-fedora-day-3.jpg" /&gt;
+&lt;p&gt;The session began with Saurabh representing a bit about Fedora and other Linux
+Distributions. I discussed about Mozilla, it's mission and different projects.
+We then decided to package &lt;a class="reference external" href="https://servo.org/"&gt;Servo&lt;/a&gt; in Fedora and guided
+folks through the steps to build the system. We used simple Vagrant setup to
+package Servo project with Fedora.&lt;/p&gt;
+&lt;img alt="Sanyam explaining about build systems" src="images/moz-fedora-day-2.jpg" /&gt;
+&lt;p&gt;At the end of the event, we had a small discussion on how one can find bugs
+through Bugzilla &amp;amp; Bugsahoy. The presentation can be found here:
+&lt;a class="reference external" href="http://www.sanyamkhurana.com/presentations/foss/"&gt;http://www.sanyamkhurana.com/presentations/foss/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We also distributed some swags to folks who were able to make builds successfully.&lt;/p&gt;
+&lt;img alt="Swag Distribution" src="images/moz-fedora-day-1.jpg" /&gt;
+&lt;p&gt;Most of this was a hands-on session and I saw new faces who were truly excited to
+learn about these things. A Saturday well spent, spreading the love of Open Source.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 14 Jan 2018 20:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2018-01-14:blog/moz-fedora-day.html</guid><category>mozilla</category><category>remo</category></item><item><title>Ending the year with MozCoffee</title><link>http://SanyamKhurana.com/blog/mozcoffee-2017-end.html</link><description>&lt;p&gt;We had &lt;tt class="docutils literal"&gt;MozCoffee Delhi&lt;/tt&gt; on last Saturday, Dec 23, 2017. We had a lot of Rep
+Attendees this time with other Mozillians. What would have been a better way to
+end an year than the MozCoffee. From past various months, the activities in
+Mozilla Delhi came to a stand still. But then we had MozCoffee planned in less
+than a week. Thanks to my new mentor Trishul for arranging MozCoffee at Chaayos,
+Connaught Place, New Delhi on 23rd December, 2017.&lt;/p&gt;
+&lt;p&gt;We gathered up at the venue in the evening and met a lot of new and old people.
+We had Trishul, Faye, Sanyam, Tanzeel, Dvyik, Rajiv, Saurabh, Pushpita, Shivam, Tushar at the meetup.&lt;/p&gt;
+&lt;p&gt;The discussion started with Trishul explaining about his experience in All Hands Austin.
+He told about various projects that have been identified by Mozilla as the major
+areas of contributions. We discussed about both tech &amp;amp; non-tech contributions
+in various areas.&lt;/p&gt;
+&lt;p&gt;Near the end of the event, Trishul also helped me in explaining about addons.
+Since I've previous experience with JS, it was pretty easy to pick that stuff up.&lt;/p&gt;
+&lt;p&gt;Finally, we had an amazing photograph which would now become a memory for all of us.&lt;/p&gt;
+&lt;img alt="MozCoffee" src="images/mozcoffee-2017-end-1.jpg" /&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 24 Dec 2017 20:34:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-12-24:blog/mozcoffee-2017-end.html</guid><category>remo</category><category>mozilla</category></item><item><title>Promoted to bug-triager for CPython</title><link>http://SanyamKhurana.com/blog/cpython-promotion.html</link><description>&lt;p&gt;This is huge! I couldn't believe when I just woke up next to this mail:&lt;/p&gt;
 &lt;img alt="Sanyam Khurana has been promoted" src="images/cpython_bug_triage.jpg" /&gt;
 &lt;p&gt;Yes, I got promoted to &lt;tt class="docutils literal"&gt;Developer&lt;/tt&gt; role on &lt;a class="reference external" href="http://bugs.python.org"&gt;bugs.python.org&lt;/a&gt;, which along with other privileges, provides access to close bugs. But with great powers, comes great responsibilities. Closing bugs means that the information is lost forever. So, utmost care is to be taken and reported on why a bug is closed (which might even involve writing code/scripts that prove it :)).&lt;/p&gt;
 &lt;p&gt;Victor Stinner is mentoring me and a few other folks who have been promoted to learn more about contributing to CPython code base. I've been reading the dev-guide and understanding the entire process to be followed.&lt;/p&gt;
