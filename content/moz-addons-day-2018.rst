@@ -4,7 +4,7 @@ Web Extensions, Womoz & Privacy
 :author: Sanyam Khurana
 :category: FOSS
 :tags: mozilla, remo
-:slug: mozcoffe-2017-end
+:slug: web-extensions-womoz-privacy
 
 A Saturday well spent teaching students about Open Source, Add-ons and Privacy.
 
