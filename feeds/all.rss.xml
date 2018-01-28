@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 23 Jan 2018 20:15:00 +0530</lastBuildDate><item><title>Web Extensions, Womoz &amp; Privacy</title><link>http://SanyamKhurana.com/blog/mozcoffe-2017-end.html</link><description>&lt;p&gt;A Saturday well spent teaching students about Open Source, Add-ons and Privacy.&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>http://SanyamKhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 23 Jan 2018 20:15:00 +0530</lastBuildDate><item><title>Web Extensions, Womoz &amp; Privacy</title><link>http://SanyamKhurana.com/blog/web-extensions-womoz-privacy.html</link><description>&lt;p&gt;A Saturday well spent teaching students about Open Source, Add-ons and Privacy.&lt;/p&gt;
 &lt;p&gt;We had an activity at Indira Gandhi Delhi Technical University for Women (IGDTUW)
 for Addons, WoMoz and Privacy.&lt;/p&gt;
 &lt;p&gt;The session started with Trishul giving a talk on getting started with Add-ons.
@@ -20,7 +20,7 @@ for Mozilla.&lt;/p&gt;
 &lt;p&gt;Then Shashikanth discussed about importance of Privacy issues.&lt;/p&gt;
 &lt;p&gt;We ended the event with a capture of all enthusiastic faces in the meetup:&lt;/p&gt;
 &lt;img alt="Group photo after Mozilla Web Extension session" src="images/moz-addons-group.jpg" /&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 23 Jan 2018 20:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2018-01-23:blog/mozcoffe-2017-end.html</guid><category>mozilla</category><category>remo</category></item><item><title>Moz-Fedora Day</title><link>http://SanyamKhurana.com/blog/moz-fedora-day.html</link><description>&lt;p&gt;We recently organized Moz-Fedora Day, a one day event on promoting FOSS through
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Tue, 23 Jan 2018 20:15:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2018-01-23:blog/web-extensions-womoz-privacy.html</guid><category>mozilla</category><category>remo</category></item><item><title>Moz-Fedora Day</title><link>http://SanyamKhurana.com/blog/moz-fedora-day.html</link><description>&lt;p&gt;We recently organized Moz-Fedora Day, a one day event on promoting FOSS through
 Mozilla &amp;amp; Fedora at Investopad, Hauz Khas, Delhi on Jan 13, 2018. The aim was
 to depict the usage of packaging &amp;amp; building one of the Mozilla's project using Fedora.&lt;/p&gt;
 &lt;img alt="Sanyam explaining about Mozilla &amp;amp; it's mission" src="images/moz-fedora-day-4.jpg" /&gt;
