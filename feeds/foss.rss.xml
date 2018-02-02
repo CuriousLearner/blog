@@ -58,8 +58,9 @@ areas of contributions. We discussed about both tech &amp;amp; non-tech contribu
 in various areas.&lt;/p&gt;
 &lt;p&gt;Near the end of the event, Trishul also helped me in explaining about addons.
 Since I've previous experience with JS, it was pretty easy to pick that stuff up.&lt;/p&gt;
-&lt;p&gt;Finally, we had an amazing photograph which would now become a memory for all of us.&lt;/p&gt;
+&lt;p&gt;Finally, we had some amazing photographs which would now become a memory for all of us.&lt;/p&gt;
 &lt;img alt="MozCoffee" src="images/mozcoffee-2017-end-1.jpg" /&gt;
+&lt;img alt="MozCoffee" src="images/mozcoffee-2017-end-2.jpg" /&gt;
 </description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Sun, 24 Dec 2017 20:34:00 +0530</pubDate><guid>tag:SanyamKhurana.com,2017-12-24:blog/mozcoffee-2017-end.html</guid><category>remo</category><category>mozilla</category></item><item><title>Promoted to bug-triager for CPython</title><link>http://SanyamKhurana.com/blog/cpython-promotion.html</link><description>&lt;p&gt;This is huge! I couldn't believe when I just woke up next to this mail:&lt;/p&gt;
 &lt;img alt="Sanyam Khurana has been promoted" src="images/cpython_bug_triage.jpg" /&gt;
 &lt;p&gt;Yes, I got promoted to &lt;tt class="docutils literal"&gt;Developer&lt;/tt&gt; role on &lt;a class="reference external" href="http://bugs.python.org"&gt;bugs.python.org&lt;/a&gt;, which along with other privileges, provides access to close bugs. But with great powers, comes great responsibilities. Closing bugs means that the information is lost forever. So, utmost care is to be taken and reported on why a bug is closed (which might even involve writing code/scripts that prove it :)).&lt;/p&gt;
