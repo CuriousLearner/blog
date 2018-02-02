@@ -24,8 +24,10 @@ in various areas.
 Near the end of the event, Trishul also helped me in explaining about addons.
 Since I've previous experience with JS, it was pretty easy to pick that stuff up.
 
-Finally, we had an amazing photograph which would now become a memory for all of us.
+Finally, we had some amazing photographs which would now become a memory for all of us.
 
 .. image:: images/mozcoffee-2017-end-1.jpg
     :alt: MozCoffee
 
+.. image:: images/mozcoffee-2017-end-2.jpg
+    :alt: MozCoffee
