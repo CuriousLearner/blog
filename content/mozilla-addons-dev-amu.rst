@@ -46,7 +46,7 @@ Since all of us are devs, we were able to quickly resolve queries of students. O
 
 A lot of them then created addons on their own and modified their previously created borderify addon to do more stuff. I've tried to `collect some of them here <https://gist.github.com/CuriousLearner/1a4b08dbf642be8e4dfeb9544c9ab4c9>`_. For a more verbose list you can visit Twitter and search tweets tagging me (`@ErSanyamKhurana <http://twitter.com/ErSanyamKhurana>`_ with `#MozAMU <https://twitter.com/search?q=%23MozAMU>`_.
 
-Imaginations ran wild and one of the attendee created an addon that replaces the world ``Google`` with ``Mozilla`` on every web page. You can see `his hack here <https://github.com/husainhz7/GoogleMozilla/>`_
+Imaginations ran wild and one of the attendee created an addon that replaces the word ``Google`` with ``Mozilla`` on every web page. You can see `his hack here <https://github.com/husainhz7/GoogleMozilla/>`_
 
 To make the session more interesting we gave add-ons stickers to anyone who answers the question about what we were just telling them. A lot of folks praised and tweeted about the addons they were generating. We were able to generate **10,000+ impressions with more than 4,000+ accounts reached on Twitter for #MozAMU**.
 
