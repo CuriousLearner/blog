@@ -12,7 +12,7 @@ It all started with PyCon India. I met a few students of Aligarh Muslim Universi
     :align: center
     :alt: PyCon India Open Spaces on how to nurture FOSS communities in college
 
-Later, these folks were excited and invited me as a speaker at their college. A lot of planning happened for the event and we were in daily touch almost daily for different things. We planned the event one and a half month in advance. Finally, on 24th Feb 2018, we decided to have a full-day event around FOSS at Aligarh Muslim University.
+Later, these folks were excited and invited me as a speaker at their college. A lot of planning happened for the event and we were in touch almost daily for different things. We planned the event one and a half month in advance. Finally, on 24th Feb 2018, we decided to have a full-day event around FOSS at Aligarh Muslim University.
 
 We left from Delhi at around 6:30 AM in the morning. We then halted at a cafe known as `Break Point` around Aligarh to have breakfast. We reached the university at around 10:20 AM.
 
