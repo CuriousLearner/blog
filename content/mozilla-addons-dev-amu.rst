@@ -44,7 +44,7 @@ Then Shashank (`@realslimshanky <http://github.com/realslimshanky>`_) took over 
 
 Since all of us are devs, we were able to quickly resolve queries of students. One of the most important things I noticed is that often people misspell either the name of their manifest file or some key in their manifest people resulting their add-on to not load during the debugging phase.
 
-A lot of them then created addons on their own and modified their previously created borderify addon to do more stuff. I've tried to `collect some of them here <https://gist.github.com/CuriousLearner/1a4b08dbf642be8e4dfeb9544c9ab4c9>`_. For a more verbose list you can visit Twitter and search tweets tagging me (`@ErSanyamKhurana <http://twitter.com/ErSanyamKhurana>`_ with `#MozAMU <https://twitter.com/search?q=%23MozAMU&src=typd>`.
+A lot of them then created addons on their own and modified their previously created borderify addon to do more stuff. I've tried to `collect some of them here <https://gist.github.com/CuriousLearner/1a4b08dbf642be8e4dfeb9544c9ab4c9>`_. For a more verbose list you can visit Twitter and search tweets tagging me (`@ErSanyamKhurana <http://twitter.com/ErSanyamKhurana>`_ with `#MozAMU <https://twitter.com/search?q=%23MozAMU>`_.
 
 Imaginations ran wild and one of the attendee created an addon that replaces the world ``Google`` with ``Mozilla`` on every web page. You can see `his hack here <https://github.com/husainhz7/GoogleMozilla/>`_
 
