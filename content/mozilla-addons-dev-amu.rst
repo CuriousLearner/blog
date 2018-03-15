@@ -4,7 +4,7 @@ MozAMU: Mozilla Addons Development at AMU
 :author: Sanyam Khurana
 :category: FOSS
 :slug: mozilla-addons-dev-amu
-:tags: foss, remo
+:tags: foss, remo, mozilla
 
 It all started with PyCon India. I met a few students of Aligarh Muslim University who were trying to teach about FOSS in their college. A few them were already contributing to `Coala <https://github.com/coala/coala>`_. We talked a bit and they were discussing problems they were facing to run that community. I already started a Mozilla community at my college in the earlier days. Since I brought up a lot of folks from my college community in the event, we together discussed *How to nurture FOSS communities in college* as part of PyCon India Open Spaces. Here is a glimpse of the same:
 
