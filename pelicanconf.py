@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'Sanyam Khurana'
 SITENAME = u'Sanyam Khurana'
-SITEURL = 'http://sanyamkhurana.com/blog'
+SITEURL = 'https://sanyamkhurana.com/blog'
 
 PATH = 'content'
 
@@ -29,9 +29,9 @@ AUTHOR_FEED_RSS = None
 SOCIAL = (
     ('twitter', 'https://twitter.com/ErSanyamKhurana'),
     ('github', 'https://github.com/CuriousLearner'),
-    ('facebook','https://facebook.com/CuriousLearner'),
-    ('envelope','mailto:sanyam@sanyamkhurana.com'),
-    ('feed', 'http://www.sanyamkhurana.com/blog/feeds/all.rss.xml')
+    ('facebook', 'https://facebook.com/CuriousLearner'),
+    ('envelope', 'mailto:sanyam@sanyamkhurana.com'),
+    ('feed', 'https://www.sanyamkhurana.com/blog/feeds/all.rss.xml')
 )
 
 # STATIC_PATHS = ['images', 'extra/CNAME']
@@ -41,7 +41,7 @@ SOCIAL = (
 DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+RELATIVE_URLS = True
 
 THEME = 'theme/clean-blog'
 SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
@@ -49,5 +49,3 @@ SITESUBTITLE = 'Curious Learner | FOSS Contributor | Passionate Geek'
 # MENUITEMS = (
 #     ('FOSS','blog/category/foss.html'),
 # )
-
-RELATIVE_URLS = True
