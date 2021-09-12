@@ -5,14 +5,12 @@
             <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="Sanyam Khurana">
 
 
         <title>Improving class instantiation error message logic in Python 3.7</title>
 
             <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
-            <link href="feeds/feeds/foss.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
+            <link href="feeds/feeds/{slug}.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
         <!-- Bootstrap Core CSS -->
         <link href="https://www.sanyamkhurana.com/blog/theme/css/bootstrap.min.css" rel="stylesheet">
 
@@ -24,7 +22,7 @@
 
 
         <!-- Custom Fonts -->
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
@@ -37,7 +35,7 @@
 
 
 
-        <meta name="description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix ...">
+        <meta name="description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix...">
 
         <meta name="author" content="Sanyam Khurana">
 
@@ -49,16 +47,23 @@
 		<meta property="og:site_name" content="Sanyam Khurana">
 
 	<meta property="og:type" content="article">
-            <meta property="article:author" content="Sanyam Khurana" >
+            <meta property="article:author" content="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">
 	<meta property="og:url" content="https://www.sanyamkhurana.com/blog/cpython-improve-error-message-logic-for-class-instantiation.html">
 	<meta property="og:title" content="Improving class instantiation error message logic in Python 3.7">
 	<meta property="article:published_time" content="2017-12-11 20:34:00+05:30">
-            <meta property="og:description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix ...">
+            <meta property="og:description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix...">
 
             <meta property="og:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@ErSanyamKhurana">
+        <meta name="twitter:title" content="Improving class instantiation error message logic in Python 3.7">
+
+            <meta name="twitter:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+
+            <meta name="twitter:description" content="Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix...">
 </head>
 
-<body>
+<body class="article-cpython-improve-error-message-logic-for-class-instantiation">
 
     <!-- Navigation -->
     <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
@@ -114,33 +119,33 @@
         <p>Many folks ask me why I contribute to CPython. I think it is a special feeling which cannot be expressed in words. Even if you just fix a typo in the doc, believe me, you've actually helped a lot of developers and companies all over the world. Your (small) changes matters a lot. They make huge impact in FOSS world :)</p>
 <p>While browsing through bugs on <a class="reference external" href="https://bugs.python.org">bugs.python.org</a> , I found a bug reported by a teacher who requested to enhance the error message logic as he described in one of the blog posts on his blog on <a class="reference external" href="https://blog.lerner.co.il/favorite-terrible-python-error-message/">Favorite Terrible Python Error Message</a>. The <tt class="docutils literal">object_new</tt> and <tt class="docutils literal">object_init</tt> currently have &quot;object&quot; hardcoded in the error messages they raise for excess parameters. It is thus difficult for anyone facing that error to know what is going on.</p>
 <p>Nick explained really well about the <a class="reference external" href="https://bugs.python.org/issue31506#msg302439">comment in the bug</a> which I'm stating here:</p>
-<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">C</span><span class="p">:</span> <span class="k">pass</span>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">C</span><span class="p">:</span> <span class="k">pass</span>
 <span class="o">...</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">C</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">c</span> <span class="o">=</span> <span class="n">C</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
 
 
-<span class="n">This</span> <span class="n">hardcoding</span> <span class="n">makes</span> <span class="n">sense</span> <span class="k">for</span> <span class="n">the</span> <span class="n">case</span> <span class="n">where</span> <span class="n">that</span> <span class="n">particular</span> <span class="n">method</span> <span class="n">has</span> <span class="n">been</span> <span class="n">overridden</span><span class="p">,</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">interpreter</span> <span class="ow">is</span> <span class="n">reporting</span> <span class="n">an</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">subclass</span><span class="s">&#39;s call up to the base class, rather than in the call to create an instance of the subclass:</span>
+<span class="n">This</span> <span class="n">hardcoding</span> <span class="n">makes</span> <span class="n">sense</span> <span class="k">for</span> <span class="n">the</span> <span class="n">case</span> <span class="n">where</span> <span class="n">that</span> <span class="n">particular</span> <span class="n">method</span> <span class="n">has</span> <span class="n">been</span> <span class="n">overridden</span><span class="p">,</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">interpreter</span> <span class="ow">is</span> <span class="n">reporting</span> <span class="n">an</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">subclass</span><span class="s1">&#39;s call up to the base class, rather than in the call to create an instance of the subclass:</span>
 </pre></div>
-<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">D</span><span class="p">:</span>
-<span class="o">...</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="o">...</span>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="k">class</span> <span class="nc">D</span><span class="p">:</span>
+<span class="o">...</span>     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="o">...</span>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 <span class="o">...</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">D</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
-  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-  <span class="n">File</span> <span class="s">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">3</span><span class="p">,</span> <span class="ow">in</span> <span class="n">__init__</span>
-<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;stdin&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">3</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__init__</span>
+<span class="ne">TypeError</span><span class="p">:</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span> <span class="n">takes</span> <span class="n">no</span> <span class="n">parameters</span>
 
 
-<span class="n">However</span><span class="p">,</span> <span class="n">it</span><span class="s">&#39;s misleading in the case where object_new is reporting an error because it knows object_init hasn&#39;</span><span class="n">t</span> <span class="n">been</span> <span class="n">overridden</span> <span class="p">(</span><span class="ow">or</span> <span class="n">vice</span><span class="o">-</span><span class="n">versa</span><span class="p">),</span> <span class="ow">and</span> <span class="n">hence</span> <span class="n">won</span><span class="s">&#39;t correctly accept any additional arguments: in those cases, it would be far more useful to report &quot;type-&gt;tp_name&quot; in the error message, rather than hardcoding &quot;object&quot;.</span>
+<span class="n">However</span><span class="p">,</span> <span class="n">it</span><span class="s1">&#39;s misleading in the case where object_new is reporting an error because it knows object_init hasn&#39;</span><span class="n">t</span> <span class="n">been</span> <span class="n">overridden</span> <span class="p">(</span><span class="ow">or</span> <span class="n">vice</span><span class="o">-</span><span class="n">versa</span><span class="p">),</span> <span class="ow">and</span> <span class="n">hence</span> <span class="n">won</span><span class="s1">&#39;t correctly accept any additional arguments: in those cases, it would be far more useful to report &quot;type-&gt;tp_name&quot; in the error message, rather than hardcoding &quot;object&quot;.</span>
 </pre></div>
 <p>I thus started working on the patch to detect the cases when <tt class="docutils literal">excess_args</tt> are supplied and show the correct error message.</p>
 <blockquote>
@@ -160,12 +165,9 @@ I hope this patch would help all those kids and all the new and old folks playin
     </article>
 
         <div class="tags">
-            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/foss.html">foss</a>, <a href="https://www.sanyamkhurana.com/blog/tag/python.html">python</a>, <a href="https://www.sanyamkhurana.com/blog/tag/cpython.html">cpython</a>, </p>
+            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/foss.html">foss</a>, <a href="https://www.sanyamkhurana.com/blog/tag/python.html">python</a>, <a href="https://www.sanyamkhurana.com/blog/tag/cpython.html">cpython</a></p>
         </div>
 
-<hr>
-<div class="sharing">
-</div>
     <hr>
 
         <div class="comments">
@@ -238,14 +240,14 @@ I hope this patch would help all those kids and all the new and old folks playin
                     </ul>
 <p class="copyright text-muted">
     Blog powered by <a href="http://getpelican.com">Pelican</a>,
-    which takes great advantage of <a href="http://python.org">Python</a>.
+    which takes great advantage of <a href="http://python.org">Python</a>. <br />        &copy;  Sanyam Khurana
 </p>                </div>
             </div>
         </div>
     </footer>
 
     <!-- jQuery -->
-    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.js"></script>
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="https://www.sanyamkhurana.com/blog/theme/js/bootstrap.min.js"></script>
@@ -253,16 +255,15 @@ I hope this patch would help all those kids and all the new and old folks playin
         <!-- Custom Theme JavaScript -->
         <script src="https://www.sanyamkhurana.com/blog/theme/js/clean-blog.min.js"></script>
 
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-61049901-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-61049901-1', 'auto');
+    ga('send', 'pageview');
+</script>
 <script type="text/javascript">
     var disqus_shortname = 'curiouslearner';
     (function () {

@@ -5,14 +5,12 @@
             <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="Sanyam Khurana">
 
 
         <title>Mercurial commands list for contributing to Mozilla</title>
 
             <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
-            <link href="feeds/feeds/experience.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
+            <link href="feeds/feeds/{slug}.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
         <!-- Bootstrap Core CSS -->
         <link href="https://www.sanyamkhurana.com/blog/theme/css/bootstrap.min.css" rel="stylesheet">
 
@@ -24,7 +22,7 @@
 
 
         <!-- Custom Fonts -->
-        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
@@ -37,7 +35,7 @@
 
 
 
-        <meta name="description" content="Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that ...">
+        <meta name="description" content="Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that...">
 
         <meta name="author" content="Sanyam Khurana">
 
@@ -49,16 +47,23 @@
 		<meta property="og:site_name" content="Sanyam Khurana">
 
 	<meta property="og:type" content="article">
-            <meta property="article:author" content="Sanyam Khurana" >
+            <meta property="article:author" content="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">
 	<meta property="og:url" content="https://www.sanyamkhurana.com/blog/mozilla-mercurial-commands.html">
 	<meta property="og:title" content="Mercurial commands list for contributing to Mozilla">
 	<meta property="article:published_time" content="2017-05-07 21:15:00+05:30">
-            <meta property="og:description" content="Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that ...">
+            <meta property="og:description" content="Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that...">
 
             <meta property="og:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@ErSanyamKhurana">
+        <meta name="twitter:title" content="Mercurial commands list for contributing to Mozilla">
+
+            <meta name="twitter:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+
+            <meta name="twitter:description" content="Most of the Mozilla's project uses Mercurial as a version control tool. I've worked in different projects of Mozilla and I found that...">
 </head>
 
-<body>
+<body class="article-mozilla-mercurial-commands">
 
     <!-- Navigation -->
     <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
@@ -132,7 +137,7 @@ hg update
 <p><tt class="docutils literal">Update to specific revision of the repo</tt></p>
 <p>Here we update to revision 0 with <cite>-r</cite> option. <cite>r</cite> stands for <cite>revision</cite>.</p>
 <pre class="code bash literal-block">
-hg update -r 0
+hg update -r <span class="m">0</span>
 </pre>
 <p><tt class="docutils literal">See file a.txt at revision 0</tt></p>
 <pre class="code bash literal-block">
@@ -140,7 +145,7 @@ hg cat -r <span class="m">0</span> a.txt
 </pre>
 <p><tt class="docutils literal">See difference from revision 0 to 1 in file a.txt</tt></p>
 <pre class="code bash literal-block">
-hg diff -r 0:1 a.txt
+hg diff -r <span class="m">0</span>:1 a.txt
 </pre>
 <p><tt class="docutils literal">hg outgoing: What all changes are waiting to be pushed next</tt></p>
 <pre class="code bash literal-block">
@@ -167,7 +172,7 @@ hg backout -r <span class="m">2</span> --merge
 <p>By default hg log streams from tip till end. While working on large projects such as that of Mozilla with more than million commits, it is messy to let it just stream while you just wanted to see latest commits.</p>
 <p>With -l option you define how many changesets you want to see. That's for displaying first 3 commits.</p>
 <pre class="code bash literal-block">
-hg log -l 3
+hg log -l <span class="m">3</span>
 </pre>
 <p>I hope this shall help people who have familarity with git and are playing around with mercurial.</p>
 <p>I'll be updating this post with more commands soon. If you think there is some important command that is not here, please mention that in comments and I'll add it here.</p>
@@ -176,12 +181,9 @@ hg log -l 3
     </article>
 
         <div class="tags">
-            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/mozilla.html">mozilla</a>, <a href="https://www.sanyamkhurana.com/blog/tag/remo.html">remo</a>, <a href="https://www.sanyamkhurana.com/blog/tag/mozilla-rep.html">mozilla-rep</a>, </p>
+            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/mozilla.html">mozilla</a>, <a href="https://www.sanyamkhurana.com/blog/tag/remo.html">remo</a>, <a href="https://www.sanyamkhurana.com/blog/tag/mozilla-rep.html">mozilla-rep</a></p>
         </div>
 
-<hr>
-<div class="sharing">
-</div>
     <hr>
 
         <div class="comments">
@@ -254,14 +256,14 @@ hg log -l 3
                     </ul>
 <p class="copyright text-muted">
     Blog powered by <a href="http://getpelican.com">Pelican</a>,
-    which takes great advantage of <a href="http://python.org">Python</a>.
+    which takes great advantage of <a href="http://python.org">Python</a>. <br />        &copy;  Sanyam Khurana
 </p>                </div>
             </div>
         </div>
     </footer>
 
     <!-- jQuery -->
-    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.js"></script>
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="https://www.sanyamkhurana.com/blog/theme/js/bootstrap.min.js"></script>
@@ -269,16 +271,15 @@ hg log -l 3
         <!-- Custom Theme JavaScript -->
         <script src="https://www.sanyamkhurana.com/blog/theme/js/clean-blog.min.js"></script>
 
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-61049901-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-61049901-1', 'auto');
+    ga('send', 'pageview');
+</script>
 <script type="text/javascript">
     var disqus_shortname = 'curiouslearner';
     (function () {

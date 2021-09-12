@@ -1,25 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sanyam Khurana</title><link>https://www.sanyamkhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><atom:link href="feeds/feeds/learning.rss.xml" rel="self"></atom:link><lastBuildDate>Mon, 03 Oct 2016 12:27:00 +0530</lastBuildDate><item><title>Learning Django REST Framework</title><link>https://www.sanyamkhurana.com/blog/drf-concepts.html</link><description>&lt;p&gt;I'm currently reading the documentation of Django REST Framework; and in this post I'll mention few terms I've encountered and quick summary of what is it about so that I can refer to this later.&lt;/p&gt;
-&lt;p&gt;Note: I'm making these with reference to mostly JSON data format for ease of understanding. But your RESTful API may support other data formats.&lt;/p&gt;
-&lt;div class="section" id="django-rest-framework"&gt;
-&lt;h2&gt;Django REST Framework&lt;/h2&gt;
-&lt;/div&gt;
-&lt;div class="section" id="serialization"&gt;
-&lt;h2&gt;Serialization&lt;/h2&gt;
-&lt;p&gt;It is the process of converting complex data type (Objects) to primitive data type (&lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;) so that it can be passed as &lt;tt class="docutils literal"&gt;JSON&lt;/tt&gt;. Notice that it is not about converting object to &lt;tt class="docutils literal"&gt;JSON&lt;/tt&gt; format, but objects to a primitive data type such as &lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="section" id="renderers"&gt;
-&lt;h2&gt;Renderers&lt;/h2&gt;
-&lt;p&gt;Once you have the primitive data type (&lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;), it is the responsibility of renderer to dump it as &lt;tt class="docutils literal"&gt;JSON&lt;/tt&gt; to the client. ( or in whatever data format the client wants data which is depicted by &lt;tt class="docutils literal"&gt;Accept&lt;/tt&gt; header). It is intermediate representation of template &amp;amp; contenxt; and converts final byte stream that is served to the client.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="section" id="parsers"&gt;
-&lt;h2&gt;Parsers&lt;/h2&gt;
-&lt;p&gt;When you receive a request on your API, the parser converts the &lt;tt class="docutils literal"&gt;request.data&lt;/tt&gt; into primitive data type (such as &lt;tt class="docutils literal"&gt;dict&lt;/tt&gt;/&lt;tt class="docutils literal"&gt;list&lt;/tt&gt;) which then can be deserialized as an object. The content that your API permits is depicted by &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;Content-Type&lt;/span&gt;&lt;/tt&gt; header and then appropriate Parser class can be used.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class="section" id="content-negotiation"&gt;
-&lt;h2&gt;Content Negotiation&lt;/h2&gt;
-&lt;p&gt;It is the process of selecting the best representation format depending on the Rederers available in your API. This phase is partly client driven; and partly server-driven.
-The renderer is selected based on client's &lt;tt class="docutils literal"&gt;Accept&lt;/tt&gt; header and also by the priority order in which Renderers are available in your API.&lt;/p&gt;
-&lt;p&gt;I'll update this post later with more important things :)&lt;/p&gt;
-&lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 03 Oct 2016 12:27:00 +0530</pubDate><guid>tag:www.sanyamkhurana.com,2016-10-03:blog/drf-concepts.html</guid><category>django</category><category>python</category><category>drf</category></item></channel></rss>
+<rss version="2.0"><channel><title>Sanyam Khurana - learning</title><link>https://www.sanyamkhurana.com/blog/</link><description>Curious Learner | FOSS Contributor | Passionate Geek</description><lastBuildDate>Mon, 03 Oct 2016 12:27:00 +0530</lastBuildDate><item><title>Learning Django REST Framework</title><link>https://www.sanyamkhurana.com/blog/drf-concepts.html</link><description>&lt;p&gt;I'm currently reading the documentation of Django REST Framework; and in this post I'll mention few terms I've encountered and quick summary of what is it about so that I can refer to this later.&lt;/p&gt;
+&lt;p&gt;Note: I'm making these with reference to mostly JSON data format for ease of understanding …&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Sanyam Khurana</dc:creator><pubDate>Mon, 03 Oct 2016 12:27:00 +0530</pubDate><guid isPermaLink="false">tag:www.sanyamkhurana.com,2016-10-03:/blog/drf-concepts.html</guid><category>learning</category><category>django</category><category>python</category><category>drf</category></item></channel></rss>

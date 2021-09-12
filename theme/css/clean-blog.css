@@ -7,7 +7,7 @@
 body {
   font-family: 'Open Sans', 'Lora','Times New Roman',serif;
   font-size: 18px;
-  font-weight: 300;
+  font-weight: 500;
   color: #404040;
 }
 
@@ -28,11 +28,11 @@ h6 {
   font-weight: 800;
 }
 a {
-  color: #404040;
+  color: #0085a1;
 }
 a:hover,
 a:focus {
-  color: #0085a1;
+  color: #0057a2;
 }
 a img:hover,
 a img:focus {
@@ -44,6 +44,7 @@ blockquote {
 }
 pre {
   background-color: transparent;
+  font-size: 16px;
 }
 hr.small {
   max-width: 100px;
@@ -402,4 +403,8 @@ img::-moz-selection {
 }
 body {
   webkit-tap-highlight-color: #0085a1;
+}
+.article-summary {
+  padding-top:10px;
+  padding-bottom: 10px;
 }
