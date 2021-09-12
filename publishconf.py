@@ -15,7 +15,7 @@ RELATIVE_URLS = False
 
 FEED_DOMAIN = 'feeds'
 FEED_ALL_RSS = 'feeds/all.rss.xml'
-CATEGORY_FEED_RSS = 'feeds/%s.rss.xml'
+CATEGORY_FEED_RSS = 'feeds/{slug}.rss.xml'
 
 DELETE_OUTPUT_DIRECTORY = True
 
