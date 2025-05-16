@@ -46,7 +46,7 @@ I had this moment when everything went south. Having COVID and battling with one
 
 The results came in, and it was all done. I graduated with all A grades. This wasn't easy. It took grit, persistence, perseverance, blood, tears, loneliness, doubts, fear, efforts, but I'm glad I did it.
 
-These courses are very demanding (from anywhere 12 hr/week to 60 hr/week). Some of them like Machine Learning are one of the most demanding courses. I'll write a review of these courses in some other post.
+These courses are very demanding (from anywhere 12 hr/week to 60 hr/week). Some of them like Machine Learning are one of the most demanding courses. I'll write a `review of these courses in some other post <georgia-tech-masters.html>`_.
 
 But yeah, for now, this is it. This is what I've been up to.
 
