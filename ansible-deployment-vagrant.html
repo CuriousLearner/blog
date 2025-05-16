@@ -117,38 +117,38 @@
 <p>With Vagrant you could test complex setups like (say) having 4 machines behind a load balancer (just to start with). I've tried to both provision as well as deployment using Ansible + Vagrant. In this post, I'll be quickly covering about testing deployment using Ansible + Vagrant.</p>
 <p>In your directory you run Vagrant init; that would provide you a Vagrantfile to start up your virtual machine. Here is a basic configuration that would enable you to boot up an ubuntu machine with a static ip which you could use later to put in your ansible host file.</p>
 <pre class="code bash literal-block">
-Vagrant.configure<span class="o">(</span><span class="s2">&quot;2&quot;</span><span class="o">)</span> <span class="k">do</span> <span class="p">|</span>config<span class="p">|</span>
-  config.vm.box <span class="o">=</span> <span class="s2">&quot;ubuntu/trusty64&quot;</span>
-  config.vm.network <span class="s2">&quot;private_network&quot;</span>, ip: <span class="s2">&quot;10.0.0.10&quot;</span>
-  config.vm.network <span class="s2">&quot;forwarded_port&quot;</span>, guest: <span class="m">22</span>, host: <span class="m">22</span>
-end
+Vagrant.configure<span class="o">(</span><span class="s2">&quot;2&quot;</span><span class="o">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="p">|</span>config<span class="p">|</span><span class="w">
+  </span>config.vm.box<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;ubuntu/trusty64&quot;</span><span class="w">
+  </span>config.vm.network<span class="w"> </span><span class="s2">&quot;private_network&quot;</span>,<span class="w"> </span>ip:<span class="w"> </span><span class="s2">&quot;10.0.0.10&quot;</span><span class="w">
+  </span>config.vm.network<span class="w"> </span><span class="s2">&quot;forwarded_port&quot;</span>,<span class="w"> </span>guest:<span class="w"> </span><span class="m">22</span>,<span class="w"> </span>host:<span class="w"> </span><span class="m">22</span><span class="w">
+</span>end
 </pre>
 <p>Now you can boot up your virtual machine using <tt class="docutils literal">`vagrant up`</tt> and try to login using <tt class="docutils literal">`vagrant ssh`</tt>. After ssh-ing into your virtual server; you can do <cite>ifconfig</cite> to verify that the IP of the server is <cite>10.0.0.10</cite>.</p>
 <p>In your inventory file you can now mention the IP of the host to <tt class="docutils literal">`10.0.0.10`</tt>, exactly what we mentioned in the Vagrant file.</p>
 <p>Your ansible.cfg file can be like this:</p>
 <pre class="code bash literal-block">
-<span class="o">[</span>defaults<span class="o">]</span>
-<span class="nv">inventory</span> <span class="o">=</span> ./virtualhosts
-<span class="nv">private_key_file</span> <span class="o">=</span> /path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
-<span class="nv">remote_user</span> <span class="o">=</span> vagrant
-<span class="nv">host_key_checking</span> <span class="o">=</span> False
+<span class="o">[</span>defaults<span class="o">]</span><span class="w">
+</span><span class="nv">inventory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>./virtualhosts<span class="w">
+</span><span class="nv">private_key_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key<span class="w">
+</span><span class="nv">remote_user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>vagrant<span class="w">
+</span><span class="nv">host_key_checking</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>False
 </pre>
 <p>and we'll refer the hosts as virtualhosts, so your <tt class="docutils literal">virtualhosts</tt> inventory file would be like this:</p>
 <pre class="code bash literal-block">
-project_web <span class="nv">ansible_ssh_host</span><span class="o">=</span><span class="m">10</span>.0.0.10 <span class="nv">ansible_ssh_port</span><span class="o">=</span><span class="m">22</span> <span class="nv">ansible_ssh_user</span><span class="o">=</span>vagrant <span class="nv">ansible_ssh_private_key_file</span><span class="o">=</span>/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key
+project_web<span class="w"> </span><span class="nv">ansible_ssh_host</span><span class="o">=</span><span class="m">10</span>.0.0.10<span class="w"> </span><span class="nv">ansible_ssh_port</span><span class="o">=</span><span class="m">22</span><span class="w"> </span><span class="nv">ansible_ssh_user</span><span class="o">=</span>vagrant<span class="w"> </span><span class="nv">ansible_ssh_private_key_file</span><span class="o">=</span>/path/to/project/deployment/.vagrant/machines/default/virtualbox/private_key<span class="w">
 
-<span class="o">[</span>project<span class="o">]</span>
-project_web
+</span><span class="o">[</span>project<span class="o">]</span><span class="w">
+</span>project_web<span class="w">
 
-<span class="o">[</span>project:vars<span class="o">]</span>
-<span class="nv">repo_remote</span><span class="o">=</span>origin
-<span class="nv">repo_branch</span><span class="o">=</span>master
-<span class="nv">DEPLOYMENT_TYPE</span><span class="o">=</span>DEV
+</span><span class="o">[</span>project:vars<span class="o">]</span><span class="w">
+</span><span class="nv">repo_remote</span><span class="o">=</span>origin<span class="w">
+</span><span class="nv">repo_branch</span><span class="o">=</span>master<span class="w">
+</span><span class="nv">DEPLOYMENT_TYPE</span><span class="o">=</span>DEV
 </pre>
 <p>Replace the <tt class="docutils literal">ansible_ssh_private_key_file</tt> with a valid path from your <tt class="docutils literal">.vagrant</tt> directory.</p>
 <p>Now try running your Ansible with</p>
 <pre class="code bash literal-block">
-ansible-playbook -i virtualhosts playbook.yml
+ansible-playbook<span class="w"> </span>-i<span class="w"> </span>virtualhosts<span class="w"> </span>playbook.yml
 </pre>
 <p>And it's done, with your <tt class="docutils literal">ansible.cfg</tt>, the private ssh key would be correctly chosen for authentication and the <tt class="docutils literal">playbook</tt> would run by user <tt class="docutils literal">vagrant</tt>.</p>
 <p>One can model more complex setups with lot of servers and load balancer to mimic actual deployment on servers.</p>

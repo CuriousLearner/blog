@@ -117,16 +117,16 @@
 <p>The very next day, I did <tt class="docutils literal"><span class="pre">docker-compose</span> up</tt>, I was expecting that 2 containers would run and I would start debugging the issue with the forward flow pipeline service; and it wasn't that easy.</p>
 <p>As soon as the 2 containers were spawned, they were destroyed. After inspecting the logs, I realized I was getting an error while connecting to Amazon services as:</p>
 <pre class="code bash literal-block">
-Amazon SQS SignatureDoesNotMatch: An error occurred <span class="o">(</span>SignatureDoesNotMatch<span class="o">)</span>
-when calling the GetQueueUrl operation: Signature expired<span class="o">)</span><span class="s2">&quot;</span>
+Amazon<span class="w"> </span>SQS<span class="w"> </span>SignatureDoesNotMatch:<span class="w"> </span>An<span class="w"> </span>error<span class="w"> </span>occurred<span class="w"> </span><span class="o">(</span>SignatureDoesNotMatch<span class="o">)</span><span class="w">
+</span>when<span class="w"> </span>calling<span class="w"> </span>the<span class="w"> </span>GetQueueUrl<span class="w"> </span>operation:<span class="w"> </span>Signature<span class="w"> </span>expired<span class="o">)</span><span class="s2">&quot;</span>
 </pre>
 <p>I immediately tried to verify the AWS keys for expiry, but they were correctly working. The services would run separately on a host correctly. So, I realized it has something to do with Docker.</p>
 <p>This would happen if you're using any of the Amazon's servies and here is the how I came to know about the problem: I tried to manually run the container and then exec a shell in it; to know the date. I was astonished to see that my container was running at a time lag of around one day.</p>
 <p>Amazon allows only a time discrepancy of 15 mins than the actual time. So, the solution to this problem is either match the time of the host to the container while running it. <strong>But this can be a problem if the host's time is not correct</strong>. So, you cannot <strong>always</strong> guarantee that it would work on all your Dev, Stage and Prod environments.</p>
 <p>So, I set the TZ variable for running the container, and kept Time Zone as <tt class="docutils literal">Asia/Kolkata</tt> inside the <tt class="docutils literal">Dockerfile</tt> like:</p>
 <pre class="code bash literal-block">
-ENV <span class="nv">TZ</span><span class="o">=</span>Asia/Kolkata
-RUN ln -snf /usr/share/zoneinfo/<span class="nv">$TZ</span> /etc/localtime <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="nv">$TZ</span> &gt; /etc/timezone
+ENV<span class="w"> </span><span class="nv">TZ</span><span class="o">=</span>Asia/Kolkata<span class="w">
+</span>RUN<span class="w"> </span>ln<span class="w"> </span>-snf<span class="w"> </span>/usr/share/zoneinfo/<span class="nv">$TZ</span><span class="w"> </span>/etc/localtime<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$TZ</span><span class="w"> </span>&gt;<span class="w"> </span>/etc/timezone
 </pre>
 <p>This shall ensure that correct time zone reaches the container.</p>
 <p>I was pretty close to the solution, but not in the 15 mins discrepancy window that Amazon allows. So, another issue was <a class="reference external" href="https://en.wikipedia.org/wiki/Clock_drift">clock drift</a>. I immediately realized that my Mac was on sleep mode all the time. So, it was clearly <tt class="docutils literal">Clock drift</tt>. I restarted it and then everything was in place.</p>

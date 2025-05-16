@@ -125,11 +125,11 @@
 <p><tt class="docutils literal">Pull changes from remote repository to local</tt></p>
 <p>No! This is not same as <tt class="docutils literal">git pull</tt>! Read out the next command to understand the analogy.</p>
 <pre class="code bash literal-block">
-hg pull
+hg<span class="w"> </span>pull
 </pre>
 <p><tt class="docutils literal">Always update to the tip of repo</tt></p>
 <pre class="code bash literal-block">
-hg update
+hg<span class="w"> </span>update
 </pre>
 <p><strong>Note</strong> : This is different from <tt class="docutils literal">git pull</tt>. <tt class="docutils literal">git pull</tt> essentially does <tt class="docutils literal">git fetch</tt> i.e. fetch remote changes to local and then do <tt class="docutils literal">git merge</tt> which updates the local copy of your code.</p>
 <p>So, <tt class="docutils literal">git pull</tt> = <tt class="docutils literal">git fetch</tt> + <tt class="docutils literal">git merge</tt></p>
@@ -137,42 +137,42 @@ hg update
 <p><tt class="docutils literal">Update to specific revision of the repo</tt></p>
 <p>Here we update to revision 0 with <cite>-r</cite> option. <cite>r</cite> stands for <cite>revision</cite>.</p>
 <pre class="code bash literal-block">
-hg update -r <span class="m">0</span>
+hg<span class="w"> </span>update<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>
 </pre>
 <p><tt class="docutils literal">See file a.txt at revision 0</tt></p>
 <pre class="code bash literal-block">
-hg cat -r <span class="m">0</span> a.txt
+hg<span class="w"> </span>cat<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>a.txt
 </pre>
 <p><tt class="docutils literal">See difference from revision 0 to 1 in file a.txt</tt></p>
 <pre class="code bash literal-block">
-hg diff -r <span class="m">0</span>:1 a.txt
+hg<span class="w"> </span>diff<span class="w"> </span>-r<span class="w"> </span><span class="m">0</span>:1<span class="w"> </span>a.txt
 </pre>
 <p><tt class="docutils literal">hg outgoing: What all changes are waiting to be pushed next</tt></p>
 <pre class="code bash literal-block">
-hg outgoing
+hg<span class="w"> </span>outgoing
 </pre>
 <p><tt class="docutils literal">hg incoming: Changes that are waiting to be brought in to your local from remote repository</tt></p>
 <p>You can see if there are changes on the remote and see their diff with respect to your working copy.</p>
 <pre class="code bash literal-block">
-hg incoming
+hg<span class="w"> </span>incoming
 </pre>
 <p><tt class="docutils literal">Difference between rollback and revert</tt></p>
 <pre class="code bash literal-block">
-If not committed <span class="k">then</span>:
-    hg revert
-<span class="k">else</span>:
-    hg rollback
+If<span class="w"> </span>not<span class="w"> </span>committed<span class="w"> </span><span class="k">then</span>:<span class="w">
+    </span>hg<span class="w"> </span>revert<span class="w">
+</span><span class="k">else</span>:<span class="w">
+    </span>hg<span class="w"> </span>rollback
 </pre>
 <p><tt class="docutils literal">hg backout: To backout a changeset that has been added to tree. Analogous to git revert.</tt></p>
 <p>In essence, what it does is, it looks at the changeset, figures out the opposite, and does that to your current working directory.</p>
 <pre class="code bash literal-block">
-hg backout -r <span class="m">2</span> --merge
+hg<span class="w"> </span>backout<span class="w"> </span>-r<span class="w"> </span><span class="m">2</span><span class="w"> </span>--merge
 </pre>
 <p><tt class="docutils literal">Limit the logs you see</tt></p>
 <p>By default hg log streams from tip till end. While working on large projects such as that of Mozilla with more than million commits, it is messy to let it just stream while you just wanted to see latest commits.</p>
 <p>With -l option you define how many changesets you want to see. That's for displaying first 3 commits.</p>
 <pre class="code bash literal-block">
-hg log -l <span class="m">3</span>
+hg<span class="w"> </span>log<span class="w"> </span>-l<span class="w"> </span><span class="m">3</span>
 </pre>
 <p>I hope this shall help people who have familarity with git and are playing around with mercurial.</p>
 <p>I'll be updating this post with more commands soon. If you think there is some important command that is not here, please mention that in comments and I'll add it here.</p>
