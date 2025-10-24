@@ -20,7 +20,7 @@ Whether you're navigating your own struggles, searching for meaning, or simply a
 1. Blooming in Defeat (हर हार में)
 =====================================
 
-.. image:: /images/sanyam-ny.jpg
+.. image:: images/sanyam-ny.jpg
     :alt: Sanyam Khurana
     :align: center
 
@@ -43,7 +43,7 @@ Whether you're navigating your own struggles, searching for meaning, or simply a
    ख़ुदी को ख़ुद से मिला दिया,
    न जाने इसकी वजह क्या है!
 
-.. image:: /images/blooming-in-defeat.jpg
+.. image:: images/blooming-in-defeat.jpg
    :alt: Blooming in Defeat
    :align: center
 
@@ -96,7 +96,7 @@ This poem carries a paradox: when everything is gone, fear of losing fades—and
    चंद शब्दों में ही,
    पूरी दास्तान बयान कर जाता हूँ...
 
-.. image:: /images/in-life-carnival.jpg
+.. image:: images/in-life-carnival.jpg
    :alt: In Life's Carnival
    :align: center
 
@@ -157,7 +157,7 @@ Loneliness here is interior. The poem moves between fragmentation and the quiet 
    तुम्हारे सामने मशाल
    बनके जगमगाऊँगा
 
-.. image:: /images/born-of-soil.jpg
+.. image:: images/born-of-soil.jpg
    :alt: Born of Soil
    :align: center
 
@@ -212,7 +212,7 @@ A vow of integrity and fearless light. The soil, wave, and flame images echo a n
    Grinding everyday,
    To open those gate!
 
-.. image:: /images/pursuit-of-authenticity.jpg
+.. image:: images/pursuit-of-authenticity.jpg
    :alt: The Pursuit of Authenticity
    :align: center
 
