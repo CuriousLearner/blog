@@ -4,13 +4,18 @@ About
 :author: Sanyam Khurana
 :slug: about
 
-Hi there!
+Hi, I'm **Sanyam Khurana** 👋
 
-I'm Sanyam, a "self-taught" programmer with a "can-do" attitude. I'm a FOSS contributor and contribute to various upstream projects. You can check them out on my `Github <http://www.github.com/CuriousLearner>`__.
+A builder of production-grade systems and an open-source contributor.
 
-To know more about me, you can visit: `www.SanyamKhurana.com <http://www.SanyamKhurana.com>`__
+I work across **Python/Django**, **DevOps/Cloud**, and **AI/LLM tooling**, focusing on clean APIs, reliable infra, and developer experience. I maintain and contribute to OSS projects used in real products.
 
-This blog is a random Junkyard for stuff I'm upto.
+For the latest on what I’m shipping:
+
+- GitHub: `CuriousLearner <https://github.com/CuriousLearner>`__
+- Website: `sanyamkhurana.com <https://www.sanyamkhurana.com>`__
 
 I blog about Programming, Web Development, Linux etc. at
 `www.TheGeekyWay.com <http://www.TheGeekyWay.com>`__
+
+Always open to interesting problems and collaborations.
