@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>Fixing Doctest's "line None" Problem</title>
+
+            <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
+            <link href="feeds/feeds/{slug}.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
+        <!-- Bootstrap Core CSS -->
+        <link href="https://www.sanyamkhurana.com/blog/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="https://www.sanyamkhurana.com/blog/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://www.sanyamkhurana.com/blog/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="How I fixed a 10-year-old CPython bug that made doctest report "line None" for __test__ dictionary strings, making failures nearly...">
+
+        <meta name="author" content="Sanyam Khurana">
+
+        <meta name="tags" content="Python">
+        <meta name="tags" content="CPython">
+        <meta name="tags" content="Open Source">
+        <meta name="tags" content="doctest">
+        <meta name="tags" content="Debugging">
+        <meta name="tags" content="Contributing">
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Sanyam Khurana">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">
+	<meta property="og:url" content="https://www.sanyamkhurana.com/blog/cpython-doctest-line-numbers.html">
+	<meta property="og:title" content="Fixing Doctest's "line None" Problem">
+	<meta property="article:published_time" content="2025-12-13 00:00:00+05:30">
+            <meta property="og:description" content="How I fixed a 10-year-old CPython bug that made doctest report "line None" for __test__ dictionary strings, making failures nearly...">
+
+            <meta property="og:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@ErSanyamKhurana">
+        <meta name="twitter:title" content="Fixing Doctest's "line None" Problem">
+
+            <meta name="twitter:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+
+            <meta name="twitter:description" content="How I fixed a 10-year-old CPython bug that made doctest report "line None" for __test__ dictionary strings, making failures nearly...">
+</head>
+
+<body class="article-cpython-doctest-line-numbers">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="https://www.sanyamkhurana.com/blog/">Sanyam Khurana</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="https://www.sanyamkhurana.com/blog/pages/about.html">About</a></li>
+                            <li><a href="https://www.sanyamkhurana.com/blog/pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Fixing Doctest's "line None" Problem</h1>
+                        <span class="meta">Posted by
+                                <a href="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">Sanyam Khurana</a>
+                             on Sat 13 December 2025
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p><strong>TL;DR:</strong> I fixed <a class="reference external" href="https://github.com/python/cpython/issues/69113">a CPython bug</a> that had been open since <strong>August 2015</strong>. When doctests were defined in a module's <tt class="docutils literal">__test__</tt> dictionary as triple-quoted strings, Python would report <tt class="docutils literal">&quot;line None&quot;</tt> on failure. No line number. No way to find the failing test without manually hunting through the file. The fix landed in CPython in December 2025.</p>
+<hr class="docutils" />
+<div class="section" id="the-bug">
+<h2>The Bug</h2>
+<p>Python's <tt class="docutils literal">doctest</tt> module lets you define tests in a module's <tt class="docutils literal">__test__</tt> dictionary:</p>
+<div class="highlight"><pre><span></span><span class="n">__test__</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;basic_math&#39;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &gt;&gt;&gt; 2 + 2</span>
+<span class="s2">    4</span>
+<span class="s2">    &gt;&gt;&gt; 3 * 7</span>
+<span class="s2">    21</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+<p>This is a perfectly valid way to organize doctests, especially when you want to test things that don't naturally belong in a function's docstring. The problem? When one of these tests failed, you'd see something like this:</p>
+<div class="highlight"><pre><span></span>File &quot;my_module.py&quot;, line None, in my_module.__test__.basic_math
+Failed example:
+    2 + 2
+Expected:
+    5
+Got:
+    4
+</pre></div>
+<p><tt class="docutils literal">line None</tt>. That's it. No line number. In a small file, you can eyeball it. In a large module with multiple <tt class="docutils literal">__test__</tt> entries, you're scrolling and guessing.</p>
+<p>This issue was <a class="reference external" href="https://bugs.python.org/issue24925">first reported in 2015</a> on the old <tt class="docutils literal">bugs.python.org</tt> tracker. R. David Murray (bitdancer), one of CPython's core developers, even uploaded a patch back then. Another contributor uploaded a fix in 2018. A <a class="reference external" href="https://github.com/python/cpython/pull/17553">PR was opened in 2019</a>. But nothing made it through to merge. Ten years of &quot;someone should fix this.&quot;</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="why-it-was-tricky">
+<h2>Why It Was Tricky</h2>
+<p>The <tt class="docutils literal">doctest</tt> module already knows how to find line numbers for most things. Functions, classes, methods: it inspects the object, looks up the source, and matches the <tt class="docutils literal">def</tt> or <tt class="docutils literal">class</tt> line. Straightforward.</p>
+<p>But <tt class="docutils literal">__test__</tt> dictionary values are just strings. Python doesn't track where a string literal was defined in the source file. There's no <tt class="docutils literal">__line__</tt> attribute on a <tt class="docutils literal">str</tt>. So <tt class="docutils literal">_find_lineno</tt> (the internal method responsible for this) would hit its fallback case and return <tt class="docutils literal">None</tt>.</p>
+<p>The challenge is: how do you figure out where a string lives in the source file, when Python itself doesn't tell you?</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-fix">
+<h2>The Fix</h2>
+<p>The approach is a search-and-match strategy. Take a non-blank line from the test string, find it in the source file, and verify that the surrounding lines match too (to handle duplicates).</p>
+<p>Here's the core logic added to <tt class="docutils literal">Lib/doctest.py</tt>:</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">source_lines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">obj_lines</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Skip the first line (may be on same line as opening quotes)</span>
+    <span class="c1"># and any blank lines to find a meaningful line to match.</span>
+    <span class="n">start_index</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">start_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj_lines</span><span class="p">)</span>
+           <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj_lines</span><span class="p">[</span><span class="n">start_index</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+        <span class="n">start_index</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">start_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj_lines</span><span class="p">):</span>
+        <span class="n">target_line</span> <span class="o">=</span> <span class="n">obj_lines</span><span class="p">[</span><span class="n">start_index</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">lineno</span><span class="p">,</span> <span class="n">source_line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">source_lines</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">source_line</span> <span class="o">==</span> <span class="n">target_line</span><span class="p">:</span>
+                <span class="c1"># Verify subsequent lines also match</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj_lines</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">source_idx</span> <span class="o">=</span> <span class="n">lineno</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="n">start_index</span>
+                    <span class="k">if</span> <span class="n">source_idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_lines</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">if</span> <span class="n">obj_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">source_lines</span><span class="p">[</span><span class="n">source_idx</span><span class="p">]:</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">lineno</span> <span class="o">-</span> <span class="n">start_index</span>
+</pre></div>
+<p>A few things worth noting:</p>
+<p><strong>Why skip the first line?</strong> Because triple-quoted strings often start on the same line as the opening <tt class="docutils literal">&quot;&quot;&quot;</tt>. The first &quot;line&quot; of the string might be empty or might share a source line with the dictionary key. Starting from the second line gives a cleaner match.</p>
+<p><strong>Why verify subsequent lines?</strong> Because a line like <tt class="docutils literal">&gt;&gt;&gt; x = 1</tt> could appear in multiple test entries. By checking that the lines <em>after</em> the match also correspond, we avoid false positives. This is especially important when a module has several <tt class="docutils literal">__test__</tt> entries with similar content.</p>
+<p><strong>Why use</strong> <tt class="docutils literal">splitlines(keepends=True)</tt> <strong>?</strong> The source lines include their newline characters. If we stripped them during splitting, the comparison would fail on every line. Small detail, easy to get wrong.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-tests">
+<h2>The Tests</h2>
+<p>The patch includes two test cases:</p>
+<p><strong>1. Basic line number detection:</strong> Create a module with a <tt class="docutils literal">__test__</tt> dictionary, run the doctest finder, and verify that the reported line number is not <tt class="docutils literal">None</tt> and points to the right place.</p>
+<p><strong>2. Multi-line matching with duplicates:</strong> Two <tt class="docutils literal">__test__</tt> entries that share the same first line (<tt class="docutils literal">&gt;&gt;&gt; x = 1</tt>) but differ later. The test verifies that each entry gets a <em>different</em> line number, confirming that the multi-line matching logic works.</p>
+<p>The existing test suite also needed updates. Several expected outputs in <tt class="docutils literal">test_DocTestSuite_errors</tt> and <tt class="docutils literal">test_testmod_errors</tt> previously asserted <tt class="docutils literal">line None</tt> or <tt class="docutils literal">line ?</tt>. Those now assert actual line numbers like <tt class="docutils literal">line 37</tt> and <tt class="docutils literal">line 39</tt>. Seeing those assertions change from <tt class="docutils literal">None</tt> to real numbers was satisfying.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-review">
+<h2>The Review</h2>
+<p>The PR was reviewed by <a class="reference external" href="https://github.com/bitdancer">R. David Murray</a> (bitdancer), who had originally uploaded a patch for this same issue back in 2015. We went back and forth on the approach and some style nits, and after a few iterations, he approved it.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-before-and-after">
+<h2>The Before and After</h2>
+<p><strong>Before:</strong></p>
+<div class="highlight"><pre><span></span>File &quot;sample.py&quot;, line None, in sample.__test__.bad
+Failed example:
+    2 + 2
+</pre></div>
+<p><strong>After:</strong></p>
+<div class="highlight"><pre><span></span>File &quot;sample.py&quot;, line 37, in sample.__test__.bad
+    &gt;&gt;&gt; 2 + 2
+Failed example:
+    2 + 2
+</pre></div>
+<p>A small change in the output. A big difference when you're debugging a failing test suite at midnight.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="takeaways">
+<h2>Takeaways</h2>
+<p><strong>&quot;line None&quot; was a papercut, not a showstopper.</strong> Nobody's production was down because of this. But thousands of developers hit this annoyance over the years and silently worked around it. Fixing papercuts matters.</p>
+<p><strong>The fix was already attempted multiple times.</strong> A patch in 2015, another in 2018, a PR in 2019. Sometimes the hard part isn't writing the code. It's shepherding it through review, keeping it rebased, and showing up until it lands.</p>
+<p><strong>String matching as a fallback is pragmatic, not perfect.</strong> In theory, a test string could be constructed dynamically and never appear in the source file. The fix handles the common case (triple-quoted string literals) and gracefully falls back to <tt class="docutils literal">None</tt> for everything else. Perfect is the enemy of shipped.</p>
+<p>You can find <a class="reference external" href="https://github.com/python/cpython/pull/141624">the full PR here</a>.</p>
+<p><a class="reference external" href="https://www.github.com/CuriousLearner">CuriousLearner</a></p>
+</div>
+
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/python.html">Python</a>, <a href="https://www.sanyamkhurana.com/blog/tag/cpython.html">CPython</a>, <a href="https://www.sanyamkhurana.com/blog/tag/open-source.html">Open Source</a>, <a href="https://www.sanyamkhurana.com/blog/tag/doctest.html">doctest</a>, <a href="https://www.sanyamkhurana.com/blog/tag/debugging.html">Debugging</a>, <a href="https://www.sanyamkhurana.com/blog/tag/contributing.html">Contributing</a></p>
+        </div>
+
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'curiouslearner';
+                var disqus_identifier = 'cpython-doctest-line-numbers.html';
+                var disqus_url = 'https://www.sanyamkhurana.com/blog/cpython-doctest-line-numbers.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//curiouslearner.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/ErSanyamKhurana">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://facebook.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:sanyam@sanyamkhurana.com">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.sanyamkhurana.com/blog/feeds/all.rss.xml">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-feed fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>. <br />        &copy;  Sanyam Khurana
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="https://www.sanyamkhurana.com/blog/theme/js/clean-blog.min.js"></script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-61049901-1', 'auto');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var disqus_shortname = 'curiouslearner';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

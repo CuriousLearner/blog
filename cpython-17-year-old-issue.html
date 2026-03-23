@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>Fixing a 17-Year-Old CPython Issue</title>
+
+            <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
+            <link href="feeds/feeds/{slug}.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
+        <!-- Bootstrap Core CSS -->
+        <link href="https://www.sanyamkhurana.com/blog/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="https://www.sanyamkhurana.com/blog/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://www.sanyamkhurana.com/blog/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="How I picked up a CPython issue from 2008, wrote a C extension patch, and got it merged into Python's stdlib 17 years later.">
+
+        <meta name="author" content="Sanyam Khurana">
+
+        <meta name="tags" content="Python">
+        <meta name="tags" content="CPython">
+        <meta name="tags" content="Open Source">
+        <meta name="tags" content="readline">
+        <meta name="tags" content="C">
+        <meta name="tags" content="Contributing">
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Sanyam Khurana">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">
+	<meta property="og:url" content="https://www.sanyamkhurana.com/blog/cpython-17-year-old-issue.html">
+	<meta property="og:title" content="Fixing a 17-Year-Old CPython Issue">
+	<meta property="article:published_time" content="2025-12-12 00:00:00+05:30">
+            <meta property="og:description" content="How I picked up a CPython issue from 2008, wrote a C extension patch, and got it merged into Python's stdlib 17 years later.">
+
+            <meta property="og:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@ErSanyamKhurana">
+        <meta name="twitter:title" content="Fixing a 17-Year-Old CPython Issue">
+
+            <meta name="twitter:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+
+            <meta name="twitter:description" content="How I picked up a CPython issue from 2008, wrote a C extension patch, and got it merged into Python's stdlib 17 years later.">
+</head>
+
+<body class="article-cpython-17-year-old-issue">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="https://www.sanyamkhurana.com/blog/">Sanyam Khurana</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="https://www.sanyamkhurana.com/blog/pages/about.html">About</a></li>
+                            <li><a href="https://www.sanyamkhurana.com/blog/pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Fixing a 17-Year-Old CPython Issue</h1>
+                        <span class="meta">Posted by
+                                <a href="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">Sanyam Khurana</a>
+                             on Fri 12 December 2025
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p><strong>TL;DR:</strong> I fixed <a class="reference external" href="https://github.com/python/cpython/issues/48752">a CPython issue</a> that had been open since <strong>December 2008</strong>. The patch adds <tt class="docutils literal">readline.get_pre_input_hook()</tt> to Python's standard library. It was reviewed by Victor Stinner and merged into CPython in December 2025.</p>
+<hr class="docutils" />
+<div class="section" id="the-issue">
+<h2>The Issue</h2>
+<p>Back in December 2008, a developer named Conrad Irwin <a class="reference external" href="https://bugs.python.org/issue4502">opened a feature request</a> on Python's bug tracker. The ask was simple: Python's <tt class="docutils literal">readline</tt> module had <tt class="docutils literal">set_pre_input_hook()</tt> to register a callback, but no way to <strong>retrieve</strong> the current hook. If you wanted to temporarily override the hook and restore it later, you were out of luck.</p>
+<p>The original issue even came with a patch. A diff against <tt class="docutils literal">Modules/readline.c</tt>. Clean, focused, and ready to go.</p>
+<p>And then... nothing. For <strong>17 years</strong>.</p>
+<p>The issue sat there. It migrated from <tt class="docutils literal">bugs.python.org</tt> (the old Roundup tracker) to GitHub when CPython moved its issue tracking. It collected dust. Not because it was controversial or hard, but because nobody picked it up.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="why-i-picked-it-up">
+<h2>Why I Picked It Up</h2>
+<p>I've been a <a class="reference external" href="https://github.com/python/cpython/commits?author=CuriousLearner">CPython contributor</a> for a while, and I keep an eye on older issues that have clear value but just need someone to do the work. This one caught my attention because:</p>
+<ol class="arabic simple">
+<li><strong>The use case was real.</strong> Any application that wraps <tt class="docutils literal">readline</tt> (think custom REPLs, debugging tools, or CLI frameworks) might need to save and restore hooks. Without a getter, you're either stomping on someone else's hook or maintaining your own shadow state.</li>
+<li><strong>The API gap was obvious.</strong> Python's <tt class="docutils literal">readline</tt> module already had <tt class="docutils literal">get_startup_hook()</tt> paired with <tt class="docutils literal">set_startup_hook()</tt>. But <tt class="docutils literal">set_pre_input_hook()</tt> had no matching getter. It was just... missing.</li>
+<li><strong>The fix was well-scoped.</strong> No design debates needed. No deprecations. No backwards compatibility concerns. Just add the getter function.</li>
+</ol>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-patch">
+<h2>The Patch</h2>
+<p>The change touched five files:</p>
+<p><strong>1. The C implementation</strong> (<tt class="docutils literal">Modules/readline.c</tt>)</p>
+<p>This is where the actual function lives. The implementation is straightforward: look up the stored hook in the module state and return it (or <tt class="docutils literal">None</tt> if no hook is set).</p>
+<div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="n">PyObject</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">readline_get_pre_input_hook_impl</span><span class="p">(</span><span class="n">PyObject</span><span class="w"> </span><span class="o">*</span><span class="n">module</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">readlinestate</span><span class="w"> </span><span class="o">*</span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_readline_state</span><span class="p">(</span><span class="n">module</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">pre_input_hook</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Py_RETURN_NONE</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Py_NewRef</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">pre_input_hook</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>Nothing fancy. But if you've never worked with CPython internals, a few things stand out:</p>
+<ul class="simple">
+<li><tt class="docutils literal">get_readline_state(module)</tt> retrieves the module's internal state. CPython modules store their state in a struct rather than global variables (this matters for sub-interpreters and free-threading).</li>
+<li><tt class="docutils literal">Py_NewRef()</tt> increments the reference count before returning. If you forget this, you get a use-after-free. If you do it wrong, you get a memory leak. Reference counting is the thing that makes C extension work feel like defusing a bomb.</li>
+<li><tt class="docutils literal">Py_RETURN_NONE</tt> is a macro that increments <tt class="docutils literal">None</tt>'s refcount and returns it. Yes, even <tt class="docutils literal">None</tt> is reference-counted.</li>
+</ul>
+<p><strong>2. Argument Clinic</strong> (<tt class="docutils literal">Modules/clinic/readline.c.h</tt>)</p>
+<p>CPython uses <a class="reference external" href="https://devguide.python.org/development-tools/clinic/">Argument Clinic</a>, a preprocessor that auto-generates argument parsing boilerplate from a DSL. You write a short spec in a comment block:</p>
+<div class="highlight"><pre><span></span><span class="cm">/*[clinic input]</span>
+<span class="cm">readline.get_pre_input_hook</span>
+
+<span class="cm">Get the current pre-input hook function.</span>
+<span class="cm">[clinic start generated code]*/</span>
+</pre></div>
+<p>And Clinic generates the <tt class="docutils literal">PyMethodDef</tt> entry, the docstring, and the wrapper function. It's one of those things that makes contributing to CPython less painful than you'd expect.</p>
+<p><strong>3. Tests</strong> (<tt class="docutils literal">Lib/test/test_readline.py</tt>)</p>
+<p>Every CPython patch needs tests. The test covers the basics: no hook set returns <tt class="docutils literal">None</tt>, setting a hook and retrieving it returns the same function object.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_get_pre_input_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">original_hook</span> <span class="o">=</span> <span class="n">readline</span><span class="o">.</span><span class="n">get_pre_input_hook</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">addCleanup</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">set_pre_input_hook</span><span class="p">,</span> <span class="n">original_hook</span><span class="p">)</span>
+
+    <span class="n">readline</span><span class="o">.</span><span class="n">set_pre_input_hook</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">get_pre_input_hook</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">my_hook</span><span class="p">():</span>
+        <span class="k">pass</span>
+
+    <span class="n">readline</span><span class="o">.</span><span class="n">set_pre_input_hook</span><span class="p">(</span><span class="n">my_hook</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertIs</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">get_pre_input_hook</span><span class="p">(),</span> <span class="n">my_hook</span><span class="p">)</span>
+</pre></div>
+<p>Note the <tt class="docutils literal">addCleanup</tt> call. Always restore state in tests, especially when you're poking at module-level singletons.</p>
+<p><strong>4. Documentation</strong> (<tt class="docutils literal">Doc/library/readline.rst</tt>)</p>
+<p>Added the function signature and description to the official docs, with a <tt class="docutils literal">.. versionadded:: next</tt> directive (which gets replaced with the actual version number at release time).</p>
+<p><strong>5. NEWS entry</strong> (<tt class="docutils literal"><span class="pre">Misc/NEWS.d/...</span></tt>)</p>
+<p>CPython uses <a class="reference external" href="https://github.com/python/blurb">blurb</a> for changelogs. Each change gets a small <tt class="docutils literal">.rst</tt> file in <tt class="docutils literal">Misc/NEWS.d/</tt> that gets compiled into the final changelog.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-review">
+<h2>The Review</h2>
+<p>The PR was reviewed by <a class="reference external" href="https://github.com/vstinner">Victor Stinner</a>, one of CPython's most active core developers. There were a couple of rounds of feedback, mostly around the implementation details. The whole process, from opening the PR to getting it merged, took about three weeks. Not bad for a 17-year-old issue.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="what-i-learned-again">
+<h2>What I Learned (Again)</h2>
+<p>I've contributed to CPython before, but every patch reinforces the same lessons:</p>
+<p><strong>Old issues are gold.</strong> The bug tracker is full of valid, well-scoped issues that just need someone to show up. You don't need to find a new problem. Sometimes the best contribution is finishing what someone else started.</p>
+<p><strong>The CPython codebase is more approachable than people think.</strong> Yes, it's C. Yes, reference counting is tricky. But the patterns are consistent, Argument Clinic handles the boilerplate, and the <a class="reference external" href="https://devguide.python.org/">devguide</a> walks you through every step.</p>
+<p><strong>Small patches matter.</strong> This wasn't a new feature that'll make headlines. It's a getter function. But it fills a real gap, and every Python developer who builds a custom REPL or CLI tool might benefit from it. Not every contribution needs to be a PEP.</p>
+<hr class="docutils" />
+<p>If you've been thinking about contributing to CPython, don't wait for the perfect issue. Find something old, something simple, something useful. And just start.</p>
+<p>The <a class="reference external" href="https://devguide.python.org/">CPython Developer Guide</a> is your friend.</p>
+<p>You can find <a class="reference external" href="https://github.com/python/cpython/pull/141586">the full PR here</a>.</p>
+<p><a class="reference external" href="https://www.github.com/CuriousLearner">CuriousLearner</a></p>
+</div>
+
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/python.html">Python</a>, <a href="https://www.sanyamkhurana.com/blog/tag/cpython.html">CPython</a>, <a href="https://www.sanyamkhurana.com/blog/tag/open-source.html">Open Source</a>, <a href="https://www.sanyamkhurana.com/blog/tag/readline.html">readline</a>, <a href="https://www.sanyamkhurana.com/blog/tag/c.html">C</a>, <a href="https://www.sanyamkhurana.com/blog/tag/contributing.html">Contributing</a></p>
+        </div>
+
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'curiouslearner';
+                var disqus_identifier = 'cpython-17-year-old-issue.html';
+                var disqus_url = 'https://www.sanyamkhurana.com/blog/cpython-17-year-old-issue.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//curiouslearner.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/ErSanyamKhurana">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://facebook.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:sanyam@sanyamkhurana.com">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.sanyamkhurana.com/blog/feeds/all.rss.xml">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-feed fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>. <br />        &copy;  Sanyam Khurana
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="https://www.sanyamkhurana.com/blog/theme/js/clean-blog.min.js"></script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-61049901-1', 'auto');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var disqus_shortname = 'curiouslearner';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
