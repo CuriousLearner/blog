@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+            <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <title>Teaching getpass How to Handle Keyboard Shortcuts</title>
+
+            <link href="feeds/feeds/all.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Full RSS Feed" />
+            <link href="feeds/feeds/{slug}.rss.xml" type="application/rss+xml" rel="alternate" title="Sanyam Khurana Categories RSS Feed" />
+        <!-- Bootstrap Core CSS -->
+        <link href="https://www.sanyamkhurana.com/blog/theme/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="https://www.sanyamkhurana.com/blog/theme/css/clean-blog.min.css" rel="stylesheet">
+
+        <!-- Code highlight color scheme -->
+            <link href="https://www.sanyamkhurana.com/blog/theme/css/code_blocks/darkly.css" rel="stylesheet">
+
+
+        <!-- Custom Fonts -->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+
+
+        <meta name="description" content="How I fixed keyboard shortcuts in Python's getpass module when using echo_char, turning a raw character reader into a proper line editor.">
+
+        <meta name="author" content="Sanyam Khurana">
+
+        <meta name="tags" content="Python">
+        <meta name="tags" content="CPython">
+        <meta name="tags" content="Open Source">
+        <meta name="tags" content="getpass">
+        <meta name="tags" content="Terminal">
+        <meta name="tags" content="Contributing">
+
+	                <meta property="og:locale" content="">
+		<meta property="og:site_name" content="Sanyam Khurana">
+
+	<meta property="og:type" content="article">
+            <meta property="article:author" content="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">
+	<meta property="og:url" content="https://www.sanyamkhurana.com/blog/cpython-getpass-keyboard-shortcuts.html">
+	<meta property="og:title" content="Teaching getpass How to Handle Keyboard Shortcuts">
+	<meta property="article:published_time" content="2026-03-31 00:00:00+05:30">
+            <meta property="og:description" content="How I fixed keyboard shortcuts in Python's getpass module when using echo_char, turning a raw character reader into a proper line editor.">
+
+            <meta property="og:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@ErSanyamKhurana">
+        <meta name="twitter:title" content="Teaching getpass How to Handle Keyboard Shortcuts">
+
+            <meta name="twitter:image" content="https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg">
+
+            <meta name="twitter:description" content="How I fixed keyboard shortcuts in Python's getpass module when using echo_char, turning a raw character reader into a proper line editor.">
+</head>
+
+<body class="article-cpython-getpass-keyboard-shortcuts">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="https://www.sanyamkhurana.com/blog/">Sanyam Khurana</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+
+                            <li><a href="https://www.sanyamkhurana.com/blog/pages/about.html">About</a></li>
+                            <li><a href="https://www.sanyamkhurana.com/blog/pages/contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+        <header class="intro-header" style="background-image: url('https://www.sanyamkhurana.com/blog/theme/images/post-bg.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-heading">
+                        <h1>Teaching getpass How to Handle Keyboard Shortcuts</h1>
+                        <span class="meta">Posted by
+                                <a href="https://www.sanyamkhurana.com/blog/author/sanyam-khurana.html">Sanyam Khurana</a>
+                             on Tue 31 March 2026
+                        </span>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+    <!-- Post Content -->
+    <article>
+        <p><strong>TL;DR:</strong> Python 3.14 added <tt class="docutils literal">echo_char</tt> support to <tt class="docutils literal">getpass.getpass()</tt>, letting you show <tt class="docutils literal">***</tt> as you type a password. But it broke keyboard shortcuts like Ctrl+U, Ctrl+W, and Ctrl+A. I <a class="reference external" href="https://github.com/python/cpython/pull/141597">fixed it</a> by building a small line editor that reads the terminal's own control character mappings and handles them in non-canonical mode.</p>
+<hr class="docutils" />
+<div class="section" id="the-problem">
+<h2>The Problem</h2>
+<p>Python 3.14 introduced a nice quality-of-life feature for <tt class="docutils literal">getpass</tt>: the <tt class="docutils literal">echo_char</tt> parameter. Instead of typing into a void, you could do:</p>
+<div class="highlight"><pre><span></span><span class="n">password</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="n">echo_char</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+</pre></div>
+<p>And see <tt class="docutils literal">***</tt> appear as you type. Great for UX. But there was a catch.</p>
+<p>When <tt class="docutils literal">echo_char</tt> is set, the terminal gets switched to <strong>non-canonical mode</strong>. To understand why that matters, a quick detour on how Unix terminals work.</p>
+<p>Unix terminals operate in two modes:</p>
+<ul class="simple">
+<li><strong>Canonical mode</strong> (the default): The terminal driver handles line editing for you. It buffers input until you press Enter, and shortcuts like Ctrl+U (clear line), Ctrl+W (delete word), and backspace just work. Your application never sees the raw keystrokes; it only receives the finished line. This is what happens when you call <tt class="docutils literal">input()</tt> or <tt class="docutils literal">getpass()</tt> without <tt class="docutils literal">echo_char</tt>.</li>
+<li><strong>Non-canonical mode</strong>: The terminal sends every keystroke to your application immediately, one character at a time. No buffering, no line editing, no special handling. Ctrl+U doesn't clear the line; it arrives as the byte <tt class="docutils literal">\x15</tt>. Your application is on its own.</li>
+</ul>
+<p><tt class="docutils literal">getpass</tt> needs non-canonical mode when <tt class="docutils literal">echo_char</tt> is set because it has to intercept each keystroke, suppress the real character, and print <tt class="docutils literal">*</tt> instead. You can't do that in canonical mode since the terminal would buffer everything and only hand you the final string.</p>
+<p>But here's the trade-off: the moment you switch to non-canonical mode, you lose all the line editing that the terminal was doing for free.</p>
+<p>The original implementation only handled backspace and Ctrl+C. Everything else was swallowed or, worse, inserted as garbage into the password. Type <tt class="docutils literal">wrongpassword</tt>, hit Ctrl+U to clear it, type the right one, and you'd end up with <tt class="docutils literal">wrongpassword\x15rightpassword</tt>.</p>
+<p>The <a class="reference external" href="https://github.com/python/cpython/issues/138577">issue</a> was filed in September 2025, shortly after the echo_char feature shipped.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="what-needed-to-happen">
+<h2>What Needed to Happen</h2>
+<p>The fix had to do what the terminal normally does, but in Python. That means supporting:</p>
+<ul class="simple">
+<li><strong>Ctrl+A</strong> / <strong>Ctrl+E</strong>: Move cursor to start/end of line</li>
+<li><strong>Ctrl+U</strong>: Kill entire line</li>
+<li><strong>Ctrl+K</strong>: Kill from cursor to end of line</li>
+<li><strong>Ctrl+W</strong>: Erase previous word</li>
+<li><strong>Ctrl+V</strong>: Literal next (insert the next character raw, even if it's a control character)</li>
+<li><strong>Backspace/DEL</strong>: Delete character before cursor</li>
+</ul>
+<p>And crucially, these mappings shouldn't be hardcoded. Different terminals can remap control characters via <tt class="docutils literal">termios</tt> settings. If someone has remapped their kill character from Ctrl+U to something else, the fix should respect that.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-implementation">
+<h2>The Implementation</h2>
+<p>The patch started small and grew. The reviewer, <a class="reference external" href="https://github.com/picnixz">Bénédikt Tran</a> (picnixz), pushed for a cleaner architecture early on, suggesting a dispatcher-based approach instead of a chain of <tt class="docutils literal">if/elif</tt> statements. That feedback shaped the final design.</p>
+<p>The core of the fix is a <tt class="docutils literal">_PasswordLineEditor</tt> class that manages cursor position, character insertion, and control character dispatch:</p>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">_PasswordLineEditor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">echo_char</span><span class="p">,</span> <span class="n">ctrl_chars</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">echo_char</span> <span class="o">=</span> <span class="n">echo_char</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cursor_pos</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eof_pressed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">literal_next</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctrl</span> <span class="o">=</span> <span class="n">ctrl_chars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dispatch</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;SOH&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_move_start</span><span class="p">,</span>      <span class="c1"># Ctrl+A</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;ENQ&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_move_end</span><span class="p">,</span>        <span class="c1"># Ctrl+E</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;VT&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_kill_forward</span><span class="p">,</span>     <span class="c1"># Ctrl+K</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;KILL&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_kill_line</span><span class="p">,</span>      <span class="c1"># Ctrl+U</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;WERASE&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_erase_word</span><span class="p">,</span>   <span class="c1"># Ctrl+W</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;ERASE&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_erase</span><span class="p">,</span>         <span class="c1"># DEL</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;BS&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_erase</span><span class="p">,</span>            <span class="c1"># Backspace</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;LNEXT&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_literal_next</span><span class="p">,</span>  <span class="c1"># Ctrl+V</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;EOF&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_eof</span><span class="p">,</span>             <span class="c1"># Ctrl+D</span>
+            <span class="n">ctrl_chars</span><span class="p">[</span><span class="s1">&#39;INTR&#39;</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_interrupt</span><span class="p">,</span>      <span class="c1"># Ctrl+C</span>
+            <span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_nop</span><span class="p">,</span>                        <span class="c1"># ignore NUL</span>
+        <span class="p">}</span>
+</pre></div>
+<p>The dispatch table maps control characters to handler methods. Each handler manipulates <tt class="docutils literal">self.password</tt> (a list, not a string, because we need middle-of-line insertions) and <tt class="docutils literal">self.cursor_pos</tt>, then refreshes the display. The prompt is tracked too, since <tt class="docutils literal">refresh_display</tt> needs to redraw it when clearing the line.</p>
+<p>The control character values come from <tt class="docutils literal">_get_terminal_ctrl_chars()</tt>, which reads the terminal's <tt class="docutils literal">termios</tt> settings before switching to non-canonical mode:</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_get_terminal_ctrl_chars</span><span class="p">(</span><span class="n">fd</span><span class="p">):</span>
+    <span class="n">ctrl</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_POSIX_CTRL_CHARS</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">cc</span> <span class="o">=</span> <span class="n">old</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>  <span class="c1"># Control characters array</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">termios</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ctrl</span>
+    <span class="c1"># BS, SOH, ENQ, VT are not in the termios control characters</span>
+    <span class="c1"># array, so we only override the ones that are configurable.</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;ERASE&#39;</span><span class="p">,</span> <span class="s1">&#39;KILL&#39;</span><span class="p">,</span> <span class="s1">&#39;WERASE&#39;</span><span class="p">,</span> <span class="s1">&#39;LNEXT&#39;</span><span class="p">,</span> <span class="s1">&#39;EOF&#39;</span><span class="p">,</span> <span class="s1">&#39;INTR&#39;</span><span class="p">):</span>
+        <span class="n">cap</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">termios</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;V</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cap</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">):</span>
+            <span class="n">ctrl</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">cc</span><span class="p">[</span><span class="n">cap</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ctrl</span>
+</pre></div>
+<p>This means if your terminal maps KILL to something other than Ctrl+U, the line editor picks that up automatically. POSIX defaults are used as fallback.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-tricky-parts">
+<h2>The Tricky Parts</h2>
+<p><strong>Display refresh with cursor tracking.</strong> When you're showing <tt class="docutils literal"><span class="pre">*****</span></tt> and the user deletes a character in the middle, you can't just <tt class="docutils literal">\b \b</tt>. You need to redraw the whole line and reposition the cursor. The <tt class="docutils literal">refresh_display</tt> method handles this by writing <tt class="docutils literal">\r</tt>, clearing the full width (prompt + previous password length), rewriting the prompt and echo characters, then moving the cursor back with <tt class="docutils literal">\b</tt>.</p>
+<p><strong>IEXTEN matters too.</strong> It's not enough to just disable <tt class="docutils literal">ICANON</tt>. The <tt class="docutils literal">IEXTEN</tt> flag enables implementation-defined input processing like <tt class="docutils literal">LNEXT</tt> (Ctrl+V). If you leave it on, the terminal driver intercepts Ctrl+V before your code ever sees it. The fix disables both <tt class="docutils literal">ICANON</tt> and <tt class="docutils literal">IEXTEN</tt> so the line editor gets full control.</p>
+<p><strong>Ctrl+V (literal next).</strong> This one is subtle. Ctrl+V tells the terminal &quot;treat the next character as a literal, even if it's a control character.&quot; So Ctrl+V followed by Ctrl+C should insert a literal <tt class="docutils literal">\x03</tt> into the password, not raise <tt class="docutils literal">KeyboardInterrupt</tt>. The implementation uses a <tt class="docutils literal">literal_next</tt> flag that bypasses all dispatch logic for exactly one character.</p>
+<p><strong>Word boundaries for Ctrl+W.</strong> Erasing a word means scanning backwards past spaces, then past non-spaces. Sounds simple until you consider multiple consecutive spaces, words at the start of the line, or an empty buffer. Each edge case needed its own test.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="the-review">
+<h2>The Review</h2>
+<p>Bénédikt's initial review pushed the patch in a better direction. The first version was a chain of <tt class="docutils literal">if/elif</tt> blocks, and he flagged it as hard to extend. The refactor to a class with a dispatch table made the code cleaner and easier to add new shortcuts to in the future.</p>
+<p>The patch went through several rounds over a few months. The implementation was small, but the test suite grew significantly: 30+ new test cases covering every shortcut, edge case, and combination.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="what-changed">
+<h2>What Changed</h2>
+<p><strong>Before</strong> (Python 3.14 with <tt class="docutils literal">echo_char</tt>):</p>
+<ul class="simple">
+<li>Ctrl+U → inserts <tt class="docutils literal">\x15</tt> into password</li>
+<li>Ctrl+W → inserts <tt class="docutils literal">\x17</tt> into password</li>
+<li>Ctrl+A → inserts <tt class="docutils literal">\x01</tt> into password</li>
+<li>Only backspace and Ctrl+C worked</li>
+</ul>
+<p><strong>After</strong> (Python 3.15):</p>
+<ul class="simple">
+<li>Full line editing: cursor movement, word deletion, line kill, kill-forward</li>
+<li>Ctrl+V for literal insertion of control characters</li>
+<li>Terminal-aware control character mappings via <tt class="docutils literal">termios</tt></li>
+<li>Proper display refresh with cursor tracking</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="takeaways">
+<h2>Takeaways</h2>
+<p><strong>Non-canonical mode means you own everything.</strong> The moment you call <tt class="docutils literal">tcsetattr</tt> with <tt class="docutils literal">~ICANON</tt> and <tt class="docutils literal">~IEXTEN</tt>, you've told the terminal &quot;I'll handle it.&quot; And you'd better actually handle it, or your users will notice immediately.</p>
+<p><strong>Reviewer feedback can reshape a patch for the better.</strong> The dispatcher approach wasn't in my first draft. Bénédikt pushed for it, and the result is code that's much easier to maintain and extend.</p>
+<p><strong>Test the combinations, not just the individual shortcuts.</strong> Ctrl+A followed by Ctrl+K followed by typing new text is a different beast than testing each in isolation. The test suite covers these sequences because that's how people actually use a terminal.</p>
+<p>You can find <a class="reference external" href="https://github.com/python/cpython/pull/141597">the full PR here</a>.</p>
+<p><a class="reference external" href="https://www.github.com/CuriousLearner">CuriousLearner</a></p>
+</div>
+
+    </article>
+
+        <div class="tags">
+            <p>tags: <a href="https://www.sanyamkhurana.com/blog/tag/python.html">Python</a>, <a href="https://www.sanyamkhurana.com/blog/tag/cpython.html">CPython</a>, <a href="https://www.sanyamkhurana.com/blog/tag/open-source.html">Open Source</a>, <a href="https://www.sanyamkhurana.com/blog/tag/getpass.html">getpass</a>, <a href="https://www.sanyamkhurana.com/blog/tag/terminal.html">Terminal</a>, <a href="https://www.sanyamkhurana.com/blog/tag/contributing.html">Contributing</a></p>
+        </div>
+
+    <hr>
+
+        <div class="comments">
+            <h2>Comments !</h2>
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'curiouslearner';
+                var disqus_identifier = 'cpython-getpass-keyboard-shortcuts.html';
+                var disqus_url = 'https://www.sanyamkhurana.com/blog/cpython-getpass-keyboard-shortcuts.html';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//curiouslearner.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                            <li>
+                                <a href="https://twitter.com/ErSanyamKhurana">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://facebook.com/CuriousLearner">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="mailto:sanyam@sanyamkhurana.com">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.sanyamkhurana.com/blog/feeds/all.rss.xml">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-feed fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                    </ul>
+<p class="copyright text-muted">
+    Blog powered by <a href="http://getpelican.com">Pelican</a>,
+    which takes great advantage of <a href="http://python.org">Python</a>. <br />        &copy;  Sanyam Khurana
+</p>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://www.sanyamkhurana.com/blog/theme/js/bootstrap.min.js"></script>
+
+        <!-- Custom Theme JavaScript -->
+        <script src="https://www.sanyamkhurana.com/blog/theme/js/clean-blog.min.js"></script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-61049901-1', 'auto');
+    ga('send', 'pageview');
+</script>
+<script type="text/javascript">
+    var disqus_shortname = 'curiouslearner';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
