@@ -171,14 +171,14 @@
 <p>And Clinic generates the <tt class="docutils literal">PyMethodDef</tt> entry, the docstring, and the wrapper function. It's one of those things that makes contributing to CPython less painful than you'd expect.</p>
 <p><strong>3. Tests</strong> (<tt class="docutils literal">Lib/test/test_readline.py</tt>)</p>
 <p>Every CPython patch needs tests. The test covers the basics: no hook set returns <tt class="docutils literal">None</tt>, setting a hook and retrieving it returns the same function object.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_get_pre_input_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_get_pre_input_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">original_hook</span> <span class="o">=</span> <span class="n">readline</span><span class="o">.</span><span class="n">get_pre_input_hook</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">addCleanup</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">set_pre_input_hook</span><span class="p">,</span> <span class="n">original_hook</span><span class="p">)</span>
 
     <span class="n">readline</span><span class="o">.</span><span class="n">set_pre_input_hook</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">readline</span><span class="o">.</span><span class="n">get_pre_input_hook</span><span class="p">())</span>
 
-    <span class="k">def</span> <span class="nf">my_hook</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">my_hook</span><span class="p">():</span>
         <span class="k">pass</span>
 
     <span class="n">readline</span><span class="o">.</span><span class="n">set_pre_input_hook</span><span class="p">(</span><span class="n">my_hook</span><span class="p">)</span>

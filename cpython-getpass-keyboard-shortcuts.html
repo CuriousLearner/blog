@@ -157,8 +157,8 @@
 <h2>The Implementation</h2>
 <p>The patch started small and grew. The reviewer, <a class="reference external" href="https://github.com/picnixz">Bénédikt Tran</a> (picnixz), pushed for a cleaner architecture early on, suggesting a dispatcher-based approach instead of a chain of <tt class="docutils literal">if/elif</tt> statements. That feedback shaped the final design.</p>
 <p>The core of the fix is a <tt class="docutils literal">_PasswordLineEditor</tt> class that manages cursor position, character insertion, and control character dispatch:</p>
-<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">_PasswordLineEditor</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">echo_char</span><span class="p">,</span> <span class="n">ctrl_chars</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">_PasswordLineEditor</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">,</span> <span class="n">echo_char</span><span class="p">,</span> <span class="n">ctrl_chars</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">echo_char</span> <span class="o">=</span> <span class="n">echo_char</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span>
@@ -183,7 +183,7 @@
 </pre></div>
 <p>The dispatch table maps control characters to handler methods. Each handler manipulates <tt class="docutils literal">self.password</tt> (a list, not a string, because we need middle-of-line insertions) and <tt class="docutils literal">self.cursor_pos</tt>, then refreshes the display. The prompt is tracked too, since <tt class="docutils literal">refresh_display</tt> needs to redraw it when clearing the line.</p>
 <p>The control character values come from <tt class="docutils literal">_get_terminal_ctrl_chars()</tt>, which reads the terminal's <tt class="docutils literal">termios</tt> settings before switching to non-canonical mode:</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_get_terminal_ctrl_chars</span><span class="p">(</span><span class="n">fd</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_get_terminal_ctrl_chars</span><span class="p">(</span><span class="n">fd</span><span class="p">):</span>
     <span class="n">ctrl</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_POSIX_CTRL_CHARS</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">old</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
